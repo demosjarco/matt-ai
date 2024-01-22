@@ -3,7 +3,7 @@ import { qwikVite } from '@builder.io/qwik/optimizer';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { defineConfig, type UserConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import type { Bindings } from './src/types';
+import type { EnvVars } from './src/types';
 
 // https://developers.cloudflare.com/workers/runtime-apis/nodejs
 const cloudflareNodeRuntimes: `node:${string}`[] = ['node:assert', 'node:async_hooks', 'node:buffer', 'node:crypto', 'node:diagnostics_channel', 'node:events', 'node:path', 'node:process', 'node:stream', 'node:string_decoder', 'node:util'];
@@ -27,7 +27,7 @@ export default defineConfig((): UserConfig => {
 		},
 		build: {
 			target: 'esnext',
-			sourcemap: ((process.env as Bindings).CF_PAGES_BRANCH ?? 'local') !== 'production',
+			sourcemap: ((process.env as EnvVars).CF_PAGES_BRANCH ?? 'local') !== 'production',
 			emptyOutDir: true,
 			rollupOptions: {
 				external: cloudflareNodeRuntimes,

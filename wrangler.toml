@@ -1,2 +1,5 @@
+[ai]
+binding = "AI"
+
 [vars]
 NODE_ENV = "development"
