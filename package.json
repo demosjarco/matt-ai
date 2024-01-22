@@ -1,0 +1,53 @@
+{
+	"type": "module",
+	"scripts": {
+		"build": "qwik build",
+		"build.client": "vite build",
+		"build.preview": "vite build --ssr src/entry.preview.tsx",
+		"build.types": "tsc --incremental --noEmit",
+		"deploy": "echo 'Run \"npm run qwik add\" to install a server adapter'",
+		"dev": "vite --mode ssr",
+		"dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
+		"fmt": "prettier --write .",
+		"fmt.check": "prettier --check .",
+		"lint": "eslint \"src/**/*.ts*\"",
+		"preview": "qwik build preview && vite preview --open",
+		"start": "vite --open --mode ssr",
+		"qwik": "qwik"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/demosjarco/matt-ai.git"
+	},
+	"author": "DemosJarco <1209494+demosjarco@users.noreply.github.com>",
+	"contributors": [],
+	"license": "Apache-2.0",
+	"private": true,
+	"bugs": {
+		"url": "https://github.com/demosjarco/matt-ai/issues"
+	},
+	"homepage": "https://github.com/demosjarco/matt-ai#readme",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"prettier": "@demosjarco/prettier-config",
+	"dependencies": {
+		"flowbite": "^2.2.1"
+	},
+	"devDependencies": {
+		"@builder.io/qwik": "^1.4.0",
+		"@builder.io/qwik-city": "^1.4.0",
+		"@cloudflare/ai": "^1.0.47",
+		"@cloudflare/workers-types": "^4.20240117.0",
+		"@demosjarco/prettier-config": "^1.0.1",
+		"@rollup/plugin-node-resolve": "^15.2.3",
+		"@types/eslint": "^8.56.2",
+		"@typescript-eslint/eslint-plugin": "^6.19.0",
+		"@typescript-eslint/parser": "^6.19.0",
+		"eslint": "^8.56.0",
+		"eslint-plugin-qwik": "^1.4.0",
+		"prettier": "^3.2.4",
+		"typescript": "^5.3.3",
+		"vite-tsconfig-paths": "^4.3.1"
+	}
+}
