@@ -1,0 +1,2 @@
+[vars]
+NODE_ENV = "development"
