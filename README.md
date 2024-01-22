@@ -30,7 +30,7 @@ Cloudflare's [wrangler](https://github.com/cloudflare/wrangler) CLI can be used 
 npm run serve
 ```
 
-Then visit [http://localhost:8788/](http://localhost:8788/)
+Then visit [https://localhost:8788/](https://localhost:8788/)
 
 ### Deployments
 
