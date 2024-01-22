@@ -1,5 +1,4 @@
 {
-	
 	"scripts": {
 		"build": "npm ci --include dev && qwik build",
 		"build.client": "vite build",
