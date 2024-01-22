@@ -1,0 +1,14 @@
+# https://developers.cloudflare.com/pages/platform/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin
+  Expect-CT: max-age=86400, enforce
+
+/build/*
+  Cache-Control: no-cache, no-store
+
+https://:project.pages.dev/build/*
+  Cache-Control: public, max-age=31536000, s-maxage=31536000, immutable
