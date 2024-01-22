@@ -1,5 +1,5 @@
 {
-	"type": "module",
+	
 	"scripts": {
 		"build": "npm ci --include dev && qwik build",
 		"build.client": "vite build",
@@ -39,7 +39,6 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
-	"prettier": "@demosjarco/prettier-config",
 	"dependencies": {
 		"flowbite": "^2.2.1"
 	},
@@ -53,9 +52,13 @@
 		"@types/eslint": "^8.56.2",
 		"@typescript-eslint/eslint-plugin": "^6.19.0",
 		"@typescript-eslint/parser": "^6.19.0",
+		"autoprefixer": "^10.4.17",
 		"eslint": "^8.56.0",
 		"eslint-plugin-qwik": "^1.4.0",
+		"postcss": "^8.4.33",
 		"prettier": "^3.2.4",
+		"prettier-plugin-tailwindcss": "^0.5.11",
+		"tailwindcss": "^3.4.1",
 		"typescript": "^5.3.3",
 		"vite-tsconfig-paths": "^4.3.1",
 		"wrangler": "^3.23.0"
