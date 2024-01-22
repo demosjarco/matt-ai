@@ -27,7 +27,7 @@ export default defineConfig((): UserConfig => {
 		},
 		build: {
 			target: 'esnext',
-			sourcemap: (process.env as Bindings).CF_PAGES_BRANCH ? (process.env as Bindings).CF_PAGES_BRANCH !== 'production' : true,
+			sourcemap: ((process.env as Bindings).CF_PAGES_BRANCH ?? 'local') !== 'production',
 			emptyOutDir: true,
 			rollupOptions: {
 				external: cloudflareNodeRuntimes,
