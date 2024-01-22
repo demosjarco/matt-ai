@@ -20,7 +20,7 @@
 		"preview:lhci": "qwik build preview && vite preview --port 8080",
 		"clean": "npx -y rimraf@latest ./dist ./server ./tmp",
 		"start:clean": "npm run clean && qwik build && npm run start",
-		"start": "wrangler pages dev dist --live-reload true --local-protocol https --ip localhost --compatibility-flags=\"nodejs_compat\"",
+		"start": "wrangler pages dev dist --live-reload true --local-protocol http --ip localhost --compatibility-flags=\"nodejs_compat\"",
 		"serve": "wrangler pages dev ./dist",
 		"qwik": "qwik"
 	},
