@@ -3,7 +3,7 @@ import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.
 import { initFlowbite } from 'flowbite';
 import { RouterHead } from './components/router-head/router-head';
 
-import './global.css';
+import './global.less';
 
 export default component$(() => {
 	const nonce = useServerData<string | undefined>('nonce');

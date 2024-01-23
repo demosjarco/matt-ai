@@ -38,7 +38,11 @@ updates:
       design:
         patterns:
           - 'tailwind*'
+          - 'postcss'
+          - 'postcss-*'
+          - 'autoprefixer'
           - 'flowbite'
+          - 'less'
       cloudflare:
         patterns:
           - '@cloudflare/*'
