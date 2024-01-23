@@ -9,7 +9,8 @@
 			"request": "launch",
 			"type": "chrome",
 			"url": "http://localhost:8788",
-			"webRoot": "${workspaceFolder}"
+			"webRoot": "${workspaceFolder}",
+			"sourceMaps": true
 		},
 		{
 			"type": "node",
