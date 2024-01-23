@@ -60,6 +60,7 @@ updates:
       code-management:
         patterns:
           - 'prettier'
+          - 'prettier-plugin-*'
           - '@demosjarco/prettier-config'
           - 'eslint'
           - 'eslint-plugin-*'
