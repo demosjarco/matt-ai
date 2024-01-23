@@ -1,4 +1,6 @@
 import { component$ } from '@builder.io/qwik';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { FaIcon } from 'qwik-fontawesome';
 
 export default component$(() => (
 	<footer class="fixed bottom-0 left-0 z-20 w-full border-t border-gray-200 bg-white p-4 shadow md:flex md:items-center md:justify-between md:p-6 dark:border-gray-600 dark:bg-gray-800">
@@ -11,8 +13,9 @@ export default component$(() => (
 		</span>
 		<ul class="mt-3 flex flex-wrap items-center text-sm font-medium text-gray-500 sm:mt-0 dark:text-gray-400">
 			<li>
-				<a href="#" class="me-4 hover:underline md:me-6">
-					About
+				<a href="https://github.com/demosjarco/matt-ai" class="me-4 hover:underline md:me-6">
+					<FaIcon icon={faGithub} />
+					<span class="sr-only">GitHub</span>
 				</a>
 			</li>
 		</ul>
