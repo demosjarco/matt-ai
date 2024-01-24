@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import { ScriptTarget, createProgram, createSourceFile, getDefaultCompilerOptions, type CompilerHost, type Program, type SourceFile } from 'typescript';
 import { Result, error, success } from '../result';
 import { TypeChatJsonValidator } from '../typechat';
 
@@ -34,7 +34,7 @@ export interface TypeScriptJsonValidator<T extends object> extends TypeChatJsonV
  */
 export function createTypeScriptJsonValidator<T extends object = object>(schema: string, typeName: string): TypeScriptJsonValidator<T> {
 	const options = {
-		...ts.getDefaultCompilerOptions(),
+		...getDefaultCompilerOptions(),
 		strict: true,
 		skipLibCheck: true,
 		noLib: true,
@@ -68,9 +68,9 @@ export function createTypeScriptJsonValidator<T extends object = object>(schema:
 		return success(`import { ${typeName} } from './schema';\nconst json: ${typeName} = ${JSON.stringify(jsonObject, undefined, 2)};\n`);
 	}
 
-	function createProgramFromModuleText(moduleText: string, oldProgram?: ts.Program) {
+	function createProgramFromModuleText(moduleText: string, oldProgram?: Program) {
 		const fileMap = new Map([createFileMapEntry('/lib.d.ts', libText), createFileMapEntry('/schema.ts', schema), createFileMapEntry('/json.ts', moduleText)]);
-		const host: ts.CompilerHost = {
+		const host: CompilerHost = {
 			getSourceFile: (fileName) => fileMap.get(fileName),
 			getDefaultLibFileName: () => 'lib.d.ts',
 			writeFile: () => {},
@@ -81,10 +81,10 @@ export function createTypeScriptJsonValidator<T extends object = object>(schema:
 			fileExists: (fileName) => fileMap.has(fileName),
 			readFile: (fileName) => '',
 		};
-		return ts.createProgram(Array.from(fileMap.keys()), options, host, oldProgram);
+		return createProgram(Array.from(fileMap.keys()), options, host, oldProgram);
 	}
 
-	function createFileMapEntry(filePath: string, fileText: string): [string, ts.SourceFile] {
-		return [filePath, ts.createSourceFile(filePath, fileText, ts.ScriptTarget.Latest)];
+	function createFileMapEntry(filePath: string, fileText: string): [string, SourceFile] {
+		return [filePath, createSourceFile(filePath, fileText, ScriptTarget.Latest)];
 	}
 }
