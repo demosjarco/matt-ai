@@ -3,7 +3,7 @@ import { Result, error, success } from './result';
 
 export interface ModelSelector {
 	binding: ConstructorParameters<typeof Ai>[0];
-	options: ConstructorParameters<typeof Ai>[1];
+	options?: ConstructorParameters<typeof Ai>[1];
 	model: Parameters<Ai['run']>[0];
 }
 
