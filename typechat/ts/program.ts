@@ -1,7 +1,7 @@
-import { Result, error, success } from '../result';
 import { TypeChatLanguageModel } from '../model';
-import { createTypeScriptJsonValidator } from './validate';
+import { Result, error, success } from '../result';
 import { TypeChatJsonTranslator, createJsonTranslator } from '../typechat';
+import { createTypeScriptJsonValidator } from './validate';
 
 const programSchemaText = `// A program consists of a sequence of function calls that are evaluated in order.
 export type Program = {
