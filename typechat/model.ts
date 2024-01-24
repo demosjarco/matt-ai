@@ -88,7 +88,9 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 					return success(response ?? '');
 				}
 			} catch (err) {
-				return error(`Workers AI error ${err}`);
+				if (retryCount >= retryMaxAttempts) {
+					return error(`Workers AI error ${err}`);
+				}
 			}
 			await sleep(retryPauseMs);
 			retryCount++;
