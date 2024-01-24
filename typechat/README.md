@@ -1,0 +1,1 @@
+This comes from [https://github.com/microsoft/TypeChat](https://github.com/microsoft/TypeChat) but modified as an expiremental attempt to remove its reliance on OpenAI/Azure OpenAI and `node:fs`. If it works, I'll PR it back to the main repo and until it's approval, release it as a standalone package.
