@@ -1,4 +1,13 @@
-import { ScriptTarget, createProgram, createSourceFile, type CompilerHost, type CompilerOptions, type Program, type SourceFile } from 'typescript';
+import {
+	ScriptTarget,
+	createProgram,
+	createSourceFile,
+	type CompilerHost,
+	type CompilerOptions,
+	type Program,
+	type SourceFile,
+	getDefaultCompilerOptions,
+} from 'typescript';
 import { Result, error, success } from '../result';
 import { TypeChatJsonValidator } from '../typechat';
 
@@ -34,8 +43,7 @@ export interface TypeScriptJsonValidator<T extends object> extends TypeChatJsonV
  */
 export function createTypeScriptJsonValidator<T extends object = object>(schema: string, typeName: string): TypeScriptJsonValidator<T> {
 	const options = {
-		// ...getDefaultCompilerOptions(),
-		...({ target: 1, jsx: 1 } as CompilerOptions),
+		...getDefaultCompilerOptions(),
 		strict: true,
 		skipLibCheck: true,
 		noLib: true,
