@@ -13,6 +13,7 @@ export interface TypeChatJsonTranslator<T extends object> {
 	 * The associated `TypeChatJsonValidator<T>`.
 	 */
 	validator: TypeChatJsonValidator<T>;
+	attemptJsonRepair: boolean;
 	/**
 	 * A boolean indicating whether to attempt repairing JSON objects that fail to validate. The default is `true`,
 	 * but an application can set the property to `false` to disable repair attempts.
@@ -31,7 +32,8 @@ export interface TypeChatJsonTranslator<T extends object> {
 	 * @param request The natural language request.
 	 * @returns A prompt that combines the request with the schema and type name of the underlying validator.
 	 */
-	createRequestPrompt(request: string): string;
+	createRequestPrompt(jsonError: string): string;
+	createJsonRepairPrompt(validationError: string): string;
 	/**
 	 * Creates a repair prompt to append to an original prompt/response in order to repair a JSON object that
 	 * failed to validate. This function is called by `completeAndValidate` when `attemptRepair` is true and the
@@ -94,13 +96,18 @@ export interface TypeChatJsonValidator<T extends object> {
  * @param typeName The name of the JSON target type in the schema.
  * @returns A `TypeChatJsonTranslator<T>` instance.
  */
-export function createJsonTranslator<T extends object>(model: TypeChatLanguageModel, validator: TypeChatJsonValidator<T>): TypeChatJsonTranslator<T> {
+export function createJsonTranslator<T extends object>(
+	model: TypeChatLanguageModel,
+	validator: TypeChatJsonValidator<T>
+): TypeChatJsonTranslator<T> {
 	const typeChat: TypeChatJsonTranslator<T> = {
 		model,
 		validator,
+		attemptJsonRepair: true,
 		attemptRepair: true,
 		stripNulls: false,
 		createRequestPrompt,
+		createJsonRepairPrompt,
 		createRepairPrompt,
 		validateInstance: success,
 		translate,
@@ -108,16 +115,36 @@ export function createJsonTranslator<T extends object>(model: TypeChatLanguageMo
 	return typeChat;
 
 	function createRequestPrompt(request: string) {
-		return `You are a service that translates user requests into JSON objects of type "${validator.getTypeName()}" according to the following TypeScript definitions:\n` + `\`\`\`\n${validator.getSchemaText()}\`\`\`\n` + `The following is a user request:\n` + `"""\n${request}\n"""\n` + `The following is the user request translated into a JSON object with 2 spaces of indentation and no properties with the value undefined:\n`;
+		return (
+			`You are a service that translates user requests into JSON objects of type "${validator.getTypeName()}" according to the following TypeScript definitions:\n` +
+			`\`\`\`\n${validator.getSchemaText()}\`\`\`\n` +
+			`The following is a user request:\n` +
+			`"""\n${request}\n"""\n` +
+			`The following is the user request translated into a JSON object with 2 spaces of indentation and no properties with the value undefined:\n`
+		);
+	}
+
+	function createJsonRepairPrompt(jsonError: string) {
+		return (
+			`The JSON object is not parseable for the following reason:\n` +
+			`"""\n${jsonError}\n"""\n` +
+			`The following is a revised JSON object:\n`
+		);
 	}
 
 	function createRepairPrompt(validationError: string) {
-		return `The JSON object is invalid for the following reason:\n` + `"""\n${validationError}\n"""\n` + `The following is a revised JSON object:\n`;
+		return (
+			`The JSON object is invalid for the following reason:\n` +
+			`"""\n${validationError}\n"""\n` +
+			`The following is a revised JSON object:\n`
+		);
 	}
 
 	async function translate(request: string, promptPreamble?: string | PromptSection[]) {
-		const preamble: PromptSection[] = typeof promptPreamble === 'string' ? [{ role: 'user', content: promptPreamble }] : promptPreamble ?? [];
+		const preamble: PromptSection[] =
+			typeof promptPreamble === 'string' ? [{ role: 'user', content: promptPreamble }] : promptPreamble ?? [];
 		let prompt: PromptSection[] = [...preamble, { role: 'user', content: typeChat.createRequestPrompt(request) }];
+		let attemptJsonRepair = typeChat.attemptJsonRepair;
 		let attemptRepair = typeChat.attemptRepair;
 		while (true) {
 			const response = await model.complete(prompt);
@@ -131,26 +158,40 @@ export function createJsonTranslator<T extends object>(model: TypeChatLanguageMo
 				return error(`Response is not JSON:\n${responseText}`);
 			}
 			const jsonText = responseText.slice(startIndex, endIndex + 1);
+			console.debug('Received response', jsonText);
 			let jsonObject;
+			let badJson = false;
 			try {
 				jsonObject = JSON.parse(jsonText) as object;
 			} catch (e) {
-				return error(e instanceof SyntaxError ? e.message : 'JSON parse error');
+				if (!attemptJsonRepair) {
+					return error(e instanceof SyntaxError ? e.message : 'JSON parse error');
+				}
+				badJson = true;
+				prompt.push({ role: 'assistant', content: responseText });
+				prompt.push({
+					role: 'system',
+					content: typeChat.createJsonRepairPrompt(e instanceof SyntaxError ? e.message : 'JSON parse error'),
+				});
+				attemptJsonRepair = false;
 			}
-			if (typeChat.stripNulls) {
-				stripNulls(jsonObject);
+			if (!badJson) {
+				if (typeChat.stripNulls) {
+					stripNulls(jsonObject);
+				}
+				const schemaValidation = validator.validate(jsonObject!);
+				const validation = schemaValidation.success ? typeChat.validateInstance(schemaValidation.data) : schemaValidation;
+				if (validation.success) {
+					return validation;
+				}
+				if (!attemptRepair) {
+					return error(`JSON validation failed: ${validation.message}\n${jsonText}`);
+				}
+				prompt.push({ role: 'assistant', content: responseText });
+				prompt.push({ role: 'system', content: typeChat.createRepairPrompt(validation.message) });
+				attemptJsonRepair = true;
+				attemptRepair = false;
 			}
-			const schemaValidation = validator.validate(jsonObject);
-			const validation = schemaValidation.success ? typeChat.validateInstance(schemaValidation.data) : schemaValidation;
-			if (validation.success) {
-				return validation;
-			}
-			if (!attemptRepair) {
-				return error(`JSON validation failed: ${validation.message}\n${jsonText}`);
-			}
-			prompt.push({ role: 'assistant', content: responseText });
-			prompt.push({ role: 'user', content: typeChat.createRepairPrompt(validation.message) });
-			attemptRepair = false;
 		}
 	}
 }
