@@ -168,6 +168,8 @@ export async function evaluateJsonProgram(program: Program, onCall: (func: strin
 			const values = await Promise.all(Object.values(obj).map(evaluate));
 			return Object.fromEntries(Object.keys(obj).map((k, i) => [k, values[i]]));
 		}
+
+		throw new Error('Invalid object structure');
 	}
 
 	function evaluateArray(array: unknown[]) {
