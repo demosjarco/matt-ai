@@ -83,7 +83,71 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 		const messages = typeof prompt === 'string' ? [{ role: 'user', content: prompt }] : prompt;
 		while (true) {
 			try {
-				const { response } = await new Ai(binding).run(model, { messages });
+				console.debug('Sending request to', model, 'with', JSON.stringify(messages, null, '\t'));
+				const { response } = await new Promise<Record<string, any>>((resolve, reject) => {
+					new Ai(binding)
+						.run(model, { messages, max_tokens: 1800, stream: true })
+						.then(async (stream: ReadableStream) => {
+							try {
+								const output: Record<string, any> = {};
+
+								const eventField = 'data';
+								const contentPrefix = `${eventField}: `;
+
+								let numTokens = 0;
+								let accumulatedData = '';
+								let newlineCounter = 0;
+								let streamError = false;
+								for await (const chunk of stream) {
+									numTokens++;
+									const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
+									accumulatedData += decodedChunk;
+
+									let newlineIndex;
+									while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
+										// Found a newline
+										const line = accumulatedData.slice(0, newlineIndex);
+										console.debug(numTokens, line);
+										accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
+
+										if (line.startsWith(contentPrefix)) {
+											const decodedString = line.substring(contentPrefix.length);
+											try {
+												// See if it's JSON
+												const decodedJson = JSON.parse(decodedString);
+
+												if (decodedJson['response'] === '\n') {
+													newlineCounter++; // Increment for each newline found
+													if (newlineCounter >= 5) {
+														streamError = true;
+														break;
+													}
+												} else {
+													newlineCounter = 0;
+												}
+
+												// Return JSON
+												for (const key in decodedJson) {
+													output[key] = output[key] ? output[key] + decodedJson[key] : decodedJson[key];
+												}
+											} catch (error) {
+												// Not valid JSON - just ignore and move on
+											}
+										}
+									}
+
+									if (streamError) break;
+								}
+
+								if (streamError) stream.cancel();
+
+								resolve(output);
+							} catch (error) {
+								reject(error);
+							}
+						})
+						.catch(reject);
+				});
 				if (response) {
 					return success(response ?? '');
 				}
