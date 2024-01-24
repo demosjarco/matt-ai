@@ -59,7 +59,9 @@ export function createTypeScriptJsonValidator<T extends object = object>(schema:
 		const syntacticDiagnostics = program.getSyntacticDiagnostics();
 		const programDiagnostics = syntacticDiagnostics.length ? syntacticDiagnostics : program.getSemanticDiagnostics();
 		if (programDiagnostics.length) {
-			const diagnostics = programDiagnostics.map((d) => (typeof d.messageText === 'string' ? d.messageText : d.messageText.messageText)).join('\n');
+			const diagnostics = programDiagnostics
+				.map((d) => (typeof d.messageText === 'string' ? d.messageText : d.messageText.messageText))
+				.join('\n');
 			return error(diagnostics);
 		}
 		return success(jsonObject as T);
@@ -70,7 +72,11 @@ export function createTypeScriptJsonValidator<T extends object = object>(schema:
 	}
 
 	function createProgramFromModuleText(moduleText: string, oldProgram?: Program) {
-		const fileMap = new Map([createFileMapEntry('/lib.d.ts', libText), createFileMapEntry('/schema.ts', schema), createFileMapEntry('/json.ts', moduleText)]);
+		const fileMap = new Map([
+			createFileMapEntry('/lib.d.ts', libText),
+			createFileMapEntry('/schema.ts', schema),
+			createFileMapEntry('/json.ts', moduleText),
+		]);
 		const host: CompilerHost = {
 			getSourceFile: (fileName) => fileMap.get(fileName),
 			getDefaultLibFileName: () => 'lib.d.ts',
