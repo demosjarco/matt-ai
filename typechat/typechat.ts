@@ -96,10 +96,7 @@ export interface TypeChatJsonValidator<T extends object> {
  * @param typeName The name of the JSON target type in the schema.
  * @returns A `TypeChatJsonTranslator<T>` instance.
  */
-export function createJsonTranslator<T extends object>(
-	model: TypeChatLanguageModel,
-	validator: TypeChatJsonValidator<T>
-): TypeChatJsonTranslator<T> {
+export function createJsonTranslator<T extends object>(model: TypeChatLanguageModel, validator: TypeChatJsonValidator<T>): TypeChatJsonTranslator<T> {
 	const typeChat: TypeChatJsonTranslator<T> = {
 		model,
 		validator,
@@ -115,34 +112,19 @@ export function createJsonTranslator<T extends object>(
 	return typeChat;
 
 	function createRequestPrompt(request: string) {
-		return (
-			`You are a service that translates user requests into JSON objects of type "${validator.getTypeName()}" according to the following TypeScript definitions:\n` +
-			`\`\`\`\n${validator.getSchemaText()}\`\`\`\n` +
-			`The following is a user request:\n` +
-			`"""\n${request}\n"""\n` +
-			`The following is the user request translated into a JSON object with 2 spaces of indentation and no properties with the value undefined:\n`
-		);
+		return `You are a service that translates user requests into JSON objects of type "${validator.getTypeName()}" according to the following TypeScript definitions:\n` + `\`\`\`\n${validator.getSchemaText()}\`\`\`\n` + `The following is a user request:\n` + `"""\n${request}\n"""\n` + `The following is the user request translated into a JSON object with 2 spaces of indentation and no properties with the value undefined:\n`;
 	}
 
 	function createJsonRepairPrompt(jsonError: string) {
-		return (
-			`The JSON object is not parseable for the following reason:\n` +
-			`"""\n${jsonError}\n"""\n` +
-			`The following is a revised JSON object:\n`
-		);
+		return `The JSON object is not parseable for the following reason:\n` + `"""\n${jsonError}\n"""\n` + `The following is a revised JSON object:\n`;
 	}
 
 	function createRepairPrompt(validationError: string) {
-		return (
-			`The JSON object is invalid for the following reason:\n` +
-			`"""\n${validationError}\n"""\n` +
-			`The following is a revised JSON object:\n`
-		);
+		return `The JSON object is invalid for the following reason:\n` + `"""\n${validationError}\n"""\n` + `The following is a revised JSON object:\n`;
 	}
 
 	async function translate(request: string, promptPreamble?: string | PromptSection[]) {
-		const preamble: PromptSection[] =
-			typeof promptPreamble === 'string' ? [{ role: 'user', content: promptPreamble }] : promptPreamble ?? [];
+		const preamble: PromptSection[] = typeof promptPreamble === 'string' ? [{ role: 'user', content: promptPreamble }] : promptPreamble ?? [];
 		let prompt: PromptSection[] = [...preamble, { role: 'user', content: typeChat.createRequestPrompt(request) }];
 		let attemptJsonRepair = typeChat.attemptJsonRepair;
 		let attemptRepair = typeChat.attemptRepair;

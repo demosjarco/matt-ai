@@ -92,14 +92,10 @@ export function createModuleTextFromProgram(jsonObject: object): Result<string> 
 	let functionBody = '';
 	let currentStep = 0;
 	while (currentStep < steps.length) {
-		functionBody += `  ${currentStep === steps.length - 1 ? `return` : `const step${currentStep + 1} =`} ${exprToString(
-			steps[currentStep]
-		)};\n`;
+		functionBody += `  ${currentStep === steps.length - 1 ? `return` : `const step${currentStep + 1} =`} ${exprToString(steps[currentStep])};\n`;
 		currentStep++;
 	}
-	return hasError
-		? error('JSON program contains an invalid expression')
-		: success(`import { API } from "./schema";\nfunction program(api: API) {\n${functionBody}}`);
+	return hasError ? error('JSON program contains an invalid expression') : success(`import { API } from "./schema";\nfunction program(api: API) {\n${functionBody}}`);
 
 	function exprToString(expr: unknown): string {
 		return typeof expr === 'object' && expr !== null ? objectToString(expr as Record<string, unknown>) : JSON.stringify(expr);
@@ -199,30 +195,14 @@ export function createProgramTranslator(model: TypeChatLanguageModel, schema: st
 	return translator;
 
 	function createRequestPrompt(request: string) {
-		return (
-			`You are a service that translates user requests into programs represented as JSON using the following TypeScript definitions:\n` +
-			`\`\`\`\n${programSchemaText}\`\`\`\n` +
-			`The programs can call functions from the API defined in the following TypeScript definitions:\n` +
-			`\`\`\`\n${validator.getSchemaText()}\`\`\`\n` +
-			`The following is a user request:\n` +
-			`"""\n${request}\n"""\n` +
-			`The following is the user request translated into a JSON program object with 2 spaces of indentation and no properties with the value undefined:\n`
-		);
+		return `You are a service that translates user requests into programs represented as JSON using the following TypeScript definitions:\n` + `\`\`\`\n${programSchemaText}\`\`\`\n` + `The programs can call functions from the API defined in the following TypeScript definitions:\n` + `\`\`\`\n${validator.getSchemaText()}\`\`\`\n` + `The following is a user request:\n` + `"""\n${request}\n"""\n` + `The following is the user request translated into a JSON program object with 2 spaces of indentation and no properties with the value undefined:\n`;
 	}
 
 	function createJsonRepairPrompt(jsonError: string) {
-		return (
-			`The JSON object is not parseable for the following reason:\n` +
-			`"""\n${jsonError}\n"""\n` +
-			`The following is a revised JSON object:\n`
-		);
+		return `The JSON object is not parseable for the following reason:\n` + `"""\n${jsonError}\n"""\n` + `The following is a revised JSON object:\n`;
 	}
 
 	function createRepairPrompt(validationError: string) {
-		return (
-			`The JSON program object is invalid for the following reason:\n` +
-			`"""\n${validationError}\n"""\n` +
-			`The following is a revised JSON program object:\n`
-		);
+		return `The JSON program object is invalid for the following reason:\n` + `"""\n${validationError}\n"""\n` + `The following is a revised JSON program object:\n`;
 	}
 }
