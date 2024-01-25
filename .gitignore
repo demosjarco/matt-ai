@@ -155,3 +155,6 @@ tsconfig.tsbuildinfo
 functions/**/*.js
 .wrangler
 .dev.vars
+
+# TypeChat
+worker/aiTypes/*.d.ts
