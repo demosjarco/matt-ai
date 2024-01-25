@@ -140,7 +140,6 @@ export function createJsonTranslator<T extends object>(model: TypeChatLanguageMo
 				return error(`Response is not JSON:\n${responseText}`);
 			}
 			const jsonText = responseText.slice(startIndex, endIndex + 1);
-			console.debug('Received response', jsonText);
 			let jsonObject;
 			let badJson = false;
 			try {

@@ -83,7 +83,6 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 		const messages = typeof prompt === 'string' ? [{ role: 'user', content: prompt }] : prompt;
 		while (true) {
 			try {
-				console.debug('Sending request to', model, 'with', JSON.stringify(messages, null, '\t'));
 				const { response } = await new Promise<Record<string, any>>((resolve, reject) => {
 					new Ai(binding)
 						.run(model, { messages, max_tokens: 1800, stream: true })
