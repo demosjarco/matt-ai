@@ -5,7 +5,7 @@ import { basename, join } from 'node:path';
 class TypeScriptDefinitionsHandler {
 	private readonly directory: string = './aiTypes';
 
-	public async processDefinitions() {
+	public async processDefinitions(minify: boolean = false) {
 		return new Promise<void>((resolve, reject) =>
 			readdir(this.directory)
 				.then(async (files) => {
@@ -20,7 +20,7 @@ class TypeScriptDefinitionsHandler {
 					}
 
 					const outputStream = createWriteStream(join(this.directory, 'types.json'));
-					outputStream.write(JSON.stringify(typesContent), 'utf-8', (err) => {
+					outputStream.write(minify ? JSON.stringify(typesContent).replace(/\\n\s*/g, JSON.stringify(typesContent)) : '', 'utf-8', (err) => {
 						outputStream.end();
 
 						if (err) {
@@ -34,4 +34,4 @@ class TypeScriptDefinitionsHandler {
 		);
 	}
 }
-new TypeScriptDefinitionsHandler().processDefinitions().catch(console.error);
+new TypeScriptDefinitionsHandler().processDefinitions(true).catch(console.error);
