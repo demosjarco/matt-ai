@@ -146,6 +146,7 @@ export function createJsonTranslator<T extends object>(model: TypeChatLanguageMo
 			try {
 				jsonObject = JSON.parse(jsonText) as object;
 			} catch (e) {
+				console.error(e);
 				if (!attemptJsonRepair) {
 					return error(e instanceof SyntaxError ? e.message : 'JSON parse error');
 				}
@@ -165,6 +166,8 @@ export function createJsonTranslator<T extends object>(model: TypeChatLanguageMo
 				const validation = schemaValidation.success ? typeChat.validateInstance(schemaValidation.data) : schemaValidation;
 				if (validation.success) {
 					return validation;
+				} else {
+					console.error(validation.message);
 				}
 				if (!attemptRepair) {
 					return error(`JSON validation failed: ${validation.message}\n${jsonText}`);
