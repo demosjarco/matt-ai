@@ -107,7 +107,6 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 									while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
 										// Found a newline
 										const line = accumulatedData.slice(0, newlineIndex);
-										console.debug(numTokens, line);
 										accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
 
 										if (line.startsWith(contentPrefix)) {
