@@ -2,7 +2,7 @@
 	"name": "worker",
 	"type": "module",
 	"scripts": {
-		"start": "wrangler dev --local-protocol http --ip localhost --persist-to ../.wrangler/state"
+		"start": "wrangler dev --local-protocol http --ip localhost --port 11853 --persist-to ../.wrangler/state"
 	},
 	"repository": {
 		"type": "git",
