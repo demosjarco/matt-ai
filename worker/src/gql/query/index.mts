@@ -40,7 +40,7 @@ export class QueryIndex extends BaseSchema {
 					) =>
 						new Promise<string>((resolve, reject) => {
 							const model = createLanguageModel({
-								binding: this.helpers.c.env.AI,
+								binding: context.AI,
 								model: args.model,
 							});
 							import('../../../aiTypes/types.json')
