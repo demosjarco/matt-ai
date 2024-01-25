@@ -1,4 +1,5 @@
 import { GraphQLError, GraphQLNonNull, GraphQLObjectType, GraphQLString, type GraphQLResolveInfo } from 'graphql';
+import { GraphQLJSONObject } from 'graphql-scalars';
 import { ModelSelector, createJsonTranslator, createLanguageModel } from '../../../typechat/index.js';
 import { createTypeScriptJsonValidator } from '../../../typechat/ts/index.js';
 import type { GqlContext } from '../../types.js';
@@ -10,7 +11,7 @@ export class QueryIndex extends BaseSchema {
 			name: 'Query',
 			fields: {
 				typechatTest: {
-					type: new GraphQLNonNull(GraphQLString),
+					type: new GraphQLNonNull(GraphQLJSONObject),
 					args: {
 						model: {
 							type: new GraphQLNonNull(GraphQLString),
@@ -38,7 +39,7 @@ export class QueryIndex extends BaseSchema {
 						context: GqlContext,
 						info: GraphQLResolveInfo,
 					) =>
-						new Promise<string>((resolve, reject) => {
+						new Promise<Record<string, any>>((resolve, reject) => {
 							const model = createLanguageModel({
 								binding: context.AI,
 								model: args.model,
@@ -54,7 +55,7 @@ export class QueryIndex extends BaseSchema {
 											.translate(args.message, args.instruction ? [{ role: 'system', content: args.instruction }] : undefined)
 											.then((response) => {
 												if (response.success) {
-													resolve(JSON.stringify(response.data));
+													resolve(response.data);
 												} else {
 													console.error(response.message);
 													reject(new GraphQLError('TypeChat Error'));
