@@ -107,4 +107,12 @@
 		"skipLibCheck": true /* Skip type checking all .d.ts files. */,
 	},
 	"include": ["worker"],
+	"ts-node": {
+		"compilerOptions": {
+			"module": "NodeNext",
+			"moduleResolution": "NodeNext",
+			"types": ["node"],
+		},
+		"swc": true,
+	},
 }

@@ -54,6 +54,8 @@ updates:
       typescript-core:
         patterns:
           - 'typescript'
+          - 'ts-node'
+          - '@swc/*'
       typescript-types:
         patterns:
           - '@types/*'
