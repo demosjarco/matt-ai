@@ -87,7 +87,7 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 				const { response } = await new Promise<Record<string, any>>((resolve, reject) => {
 					new Ai(binding)
 						.run(model, { messages, max_tokens: 1800, stream: true })
-						.then(async (stream: ReadableStream) => {
+						.then(async (stream: NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
 							try {
 								const output: Record<string, any> = {};
 
