@@ -27,10 +27,11 @@ Dependabot[bot] will automatically create and merge PRs for the following:
 Cloudflare's [wrangler](https://github.com/cloudflare/wrangler) CLI can be used to preview a production build locally. To start a local server, run:
 
 ```
-npm run serve
+npm -w pages run build
+npm -w pages run serve
 ```
 
-Then visit [http://localhost:8788/](http://localhost:8788/)
+Then visit [http://localhost:11412/](http://localhost:11412/)
 
 ### Deployments
 
