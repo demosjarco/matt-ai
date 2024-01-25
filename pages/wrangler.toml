@@ -1,3 +1,7 @@
+services = [
+    { binding = "BACKEND_WORKER", service = "mattai-worker-development" },
+]
+
 [ai]
 binding = "AI"
 
