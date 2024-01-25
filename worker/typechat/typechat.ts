@@ -1,5 +1,5 @@
-import { Result, success, error } from './result';
-import { TypeChatLanguageModel, PromptSection } from './model';
+import { type PromptSection, type TypeChatLanguageModel } from './model.js';
+import { error, success, type Result } from './result.js';
 
 /**
  * Represents an object that can translate natural language requests in JSON objects of the given type.

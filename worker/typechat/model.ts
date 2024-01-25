@@ -1,5 +1,5 @@
 import { Ai } from '@cloudflare/ai';
-import { Result, error, success } from './result';
+import { error, success, type Result } from './result.js';
 
 export interface ModelSelector {
 	binding: ConstructorParameters<typeof Ai>[0];

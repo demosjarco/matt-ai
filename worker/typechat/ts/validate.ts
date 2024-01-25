@@ -1,6 +1,6 @@
-import { ScriptTarget, createProgram, createSourceFile, type CompilerHost, type CompilerOptions, type Program, type SourceFile, getDefaultCompilerOptions } from 'typescript';
-import { Result, error, success } from '../result';
-import { TypeChatJsonValidator } from '../typechat';
+import { ScriptTarget, createProgram, createSourceFile, getDefaultCompilerOptions, type CompilerHost, type Program, type SourceFile } from 'typescript';
+import { error, success, type Result } from '../result.js';
+import { type TypeChatJsonValidator } from '../typechat.js';
 
 const libText = `interface Array<T> { length: number, [n: number]: T }
 interface Object { toString(): string }
