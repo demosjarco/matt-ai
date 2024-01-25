@@ -1,0 +1,55 @@
+name: Update `workerd` runtime
+
+on:
+  # workflow_run:
+  #   workflows: ['Fix dependabot npm workspaces']
+  #   types:
+  #     - completed
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - '**/package*.json'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  update-toml:
+    if: startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn/') && contains(github.event.pull_request.head.ref, '/cloudflare') && github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          disable-sudo: true
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: 'npm'
+      - run: npm ci --include-workspace-root
+      # No need to run `npm ci` in submodule
+      - name: Get minor version of workerd
+        id: get-version
+        run: |
+          VERSION=$(npm ls workerd --json | jq -r '.. | .workerd?.version? | select(.)')
+          MINOR_VERSION=${VERSION#*.}
+          MINOR_VERSION_HYPHEN="${MINOR_VERSION:0:4}-${MINOR_VERSION:4:2}-${MINOR_VERSION:6:2}"
+          echo "minor-version-hyphen=$MINOR_VERSION_HYPHEN" >> $GITHUB_OUTPUT
+      - name: Update `compatibility_date`
+        run: find . -maxdepth 2 -name "wrangler.toml" -print0 | xargs -0 sed -i "/compatibility_date = .*/s//compatibility_date = \"${{ steps.get-version.outputs.minor-version-hyphen }}\"/"
+      - name: Git Setup
+        run: |
+          git config user.name "dependabot[bot]"
+          git config user.email "dependabot[bot]@users.noreply.github.com"
+      - run: find . -maxdepth 2 -name "wrangler.toml" -print0 | xargs -0 git add
+      - run: git commit -m "Update compatibility_date in wrangler.toml file"
+      - run: git push
