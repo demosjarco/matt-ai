@@ -48,7 +48,7 @@ export class QueryIndex extends BaseSchema {
 									if (args.type in types) {
 										// @ts-expect-error
 										const schema = types[args.type];
-										const validator = createTypeScriptJsonValidator(schema, schema);
+										const validator = createTypeScriptJsonValidator(schema, args.type);
 										const translator = createJsonTranslator(model, validator);
 										translator
 											.translate(args.message, args.instruction ? [{ role: 'system', content: args.instruction }] : undefined)
