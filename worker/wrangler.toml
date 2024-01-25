@@ -26,6 +26,9 @@ minify = true
 [env.staging.vars]
 NODE_ENV = "production"
 
+[env.staging.ai]
+binding = "AI"
+
 
 [env.production]
 name = "mattai-worker"
@@ -37,3 +40,6 @@ minify = true
 
 [env.production.vars]
 NODE_ENV = "production"
+
+[env.production.ai]
+binding = "AI"
