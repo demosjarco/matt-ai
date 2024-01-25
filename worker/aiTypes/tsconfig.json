@@ -1,5 +1,11 @@
 {
 	"extends": "../tsconfig.json",
-	"compilerOptions": {},
+	"compilerOptions": {
+		"module": "NodeNext",
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"removeComments": true,
+		"noEmit": false,
+	},
 	"include": ["*.ts"],
 }
