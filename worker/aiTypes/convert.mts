@@ -20,7 +20,7 @@ class TypeScriptDefinitionsHandler {
 					}
 
 					const outputStream = createWriteStream(join(this.directory, 'types.json'));
-					outputStream.write(minify ? JSON.stringify(typesContent).replace(/\\n\s*/g, JSON.stringify(typesContent)) : '', 'utf-8', (err) => {
+					outputStream.write(minify ? JSON.stringify(typesContent).replace(/\\n\s*/g, '') : JSON.stringify(typesContent), 'utf-8', (err) => {
 						outputStream.end();
 
 						if (err) {
