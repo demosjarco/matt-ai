@@ -29,6 +29,9 @@ updates:
       time: '09:00'
       timezone: 'America/Phoenix'
     open-pull-requests-limit: 999
+    ignore:
+      - dependency-name: '@types/node'
+        versions: '>=21.0.0'
     groups:
       qwik:
         patterns:
