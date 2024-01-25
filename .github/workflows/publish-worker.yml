@@ -41,7 +41,7 @@ jobs:
           check-latest: true
           cache: 'npm'
       - run: npm ci --include-workspace-root --workspace worker
-      - run: npx tsc
+      - run: npx tsc --project tsconfig.json
         working-directory: worker/aiTypes
       - run: echo "wrangler_version=$(npm ls wrangler --depth=0 --json | jq -r '.dependencies.wrangler.version')" >> $GITHUB_OUTPUT
         id: npm_wrangler_version
