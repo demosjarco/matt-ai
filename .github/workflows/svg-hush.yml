@@ -40,14 +40,14 @@ jobs:
       - run: cargo install svg-hush --force
       - name: Clean SVGs in `src`
         run: |
-          for file in $(find ${{ github.workspace }}/src -iname '*.svg'); do
+          for file in $(find ${{ github.workspace }}/pages/src -iname '*.svg'); do
             echo "Sanitizing: $file"
             svg-hush $file > ${file}.tmp
             mv -f ${file}.tmp $file
           done
       - name: Clean SVGs in `public`
         run: |
-          for file in $(find ${{ github.workspace }}/public -iname '*.svg'); do
+          for file in $(find ${{ github.workspace }}/pages/public -iname '*.svg'); do
             echo "Sanitizing: $file"
             svg-hush $file > ${file}.tmp
             mv -f ${file}.tmp $file

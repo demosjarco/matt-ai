@@ -54,7 +54,7 @@ jobs:
           else
             echo "oxipng is up to date."
           fi
-      - run: oxipng --opt max --recursive --preserve --strip safe --alpha --zopfli -t 4 ${{ github.workspace }}/src ${{ github.workspace }}/public
+      - run: oxipng --opt max --recursive --preserve --strip safe --alpha --zopfli -t 4 ${{ github.workspace }}/pages/src ${{ github.workspace }}/pages/public
       - name: Check for Changes
         id: changes
         run: |
