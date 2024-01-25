@@ -1,0 +1,19 @@
+{
+	"name": "worker",
+	"type": "module",
+	"scripts": {
+		"start": "wrangler dev --local-protocol http --ip localhost --persist-to ../.wrangler/state"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/demosjarco/matt-ai.git"
+	},
+	"author": "DemosJarco <1209494+demosjarco@users.noreply.github.com>",
+	"contributors": [],
+	"license": "Apache-2.0",
+	"private": true,
+	"bugs": {
+		"url": "https://github.com/demosjarco/matt-ai/issues"
+	},
+	"homepage": "https://github.com/demosjarco/matt-ai#readme"
+}

@@ -1,0 +1,39 @@
+name = "mattai-worker-development"
+main = "src/index.ts"
+compatibility_date = "2023-12-18"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+minify = true
+
+[vars]
+NODE_ENV = "development"
+
+[ai]
+binding = "AI"
+
+
+[placement]
+mode = "smart"
+
+[env.staging]
+name = "mattai-worker-staging"
+main = "src/index.ts"
+compatibility_date = "2023-12-18"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+minify = true
+
+[env.staging.vars]
+NODE_ENV = "production"
+
+
+[env.production]
+name = "mattai-worker"
+main = "src/index.ts"
+compatibility_date = "2023-12-18"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+minify = true
+
+[env.production.vars]
+NODE_ENV = "production"
