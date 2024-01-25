@@ -158,3 +158,4 @@ functions/**/*.js
 
 # TypeChat
 worker/aiTypes/*.d.ts
+worker/aiTypes/types.json
