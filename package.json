@@ -2,7 +2,7 @@
 	"scripts": {
 		"fmt": "prettier --write .",
 		"fmt.check": "prettier --check .",
-		"build:pages": "npm ci --include dev && npm -w pages run build"
+		"build:pages": "npm ci --include-workspace-root --workspace pages --include dev && npm -w pages run build"
 	},
 	"repository": {
 		"type": "git",
