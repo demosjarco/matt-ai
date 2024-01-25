@@ -48,6 +48,7 @@ updates:
       cloudflare:
         patterns:
           - '@cloudflare/*'
+          - 'wrangler'
         exclude-patterns:
           - '@cloudflare/workers-types'
       typescript-core:
