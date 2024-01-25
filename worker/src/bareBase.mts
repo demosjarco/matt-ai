@@ -1,7 +1,8 @@
 import type { Context } from 'hono';
+import type { EnvVars } from './types.js';
 
 export interface BareBaseHelpers {
-	c: Context;
+	c: Context<{ Bindings: EnvVars }>;
 }
 
 export abstract class BareBase<T extends BareBaseHelpers = BareBaseHelpers> {
