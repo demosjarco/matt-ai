@@ -9,7 +9,6 @@
 				"build.server"
 				// npm run lint
 			],
-			"dependsOrder": "sequence",
 			"isBackground": true,
 			"group": {
 				"kind": "build",
@@ -91,6 +90,7 @@
 		{
 			"label": "build.server",
 			"detail": "vite build -c adapters/cloudflare-pages/vite.config.ts",
+			"dependsOn": ["build.client"],
 			"type": "npm",
 			"script": "build.server",
 			"presentation": {
