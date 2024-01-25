@@ -53,7 +53,6 @@ export class QueryIndex extends BaseSchema {
 										translator
 											.translate(args.message, args.instruction ? [{ role: 'system', content: args.instruction }] : undefined)
 											.then((response) => {
-												console.debug(response);
 												if (response.success) {
 													resolve(JSON.stringify(response.data));
 												} else {
