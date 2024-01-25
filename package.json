@@ -1,74 +1,27 @@
 {
 	"scripts": {
-		"build": "npm ci --include dev && qwik build",
-		"build.client": "vite build",
-		"build.client:watch": "npm run build.client -- --watch",
-		"build.preview": "vite build --ssr src/entry.cloudflare-pages.tsx",
-		"build.preview:watch": "npm run build.preview -- --watch",
-		"build.server": "vite build -c adapters/cloudflare-pages/vite.config.ts",
-		"build.server:watch": "npm run build.server -- --watch",
-		"build.types": "tsc --incremental --noEmit",
-		"build.types:watch": "npm run build.types -- --watch",
-		"deploy": "wrangler pages publish ./dist",
-		"dev": "vite --mode ssr",
-		"dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
-		"fmt": "prettier --write .",
-		"fmt.check": "prettier --check .",
-		"lint": "eslint \"src/**/*.ts*\"",
-		"preview": "qwik build preview && vite preview --open",
-		"preview:lhci": "qwik build preview && vite preview --port 8080",
-		"clean": "npx -y rimraf@latest ./dist ./server ./tmp",
-		"start:clean": "npm run clean && qwik build && npm run start",
-		"start": "wrangler pages dev dist --live-reload true --local-protocol http --ip localhost --port 11412 --compatibility-flags=\"nodejs_compat\"",
-		"serve": "wrangler pages dev ./dist",
-		"qwik": "qwik"
+		"build:pages": "npm ci --include dev && npm -w pages run build"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/demosjarco/matt-ai.git"
 	},
-	"author": "DemosJarco <1209494+demosjarco@users.noreply.github.com>",
-	"contributors": [],
 	"license": "Apache-2.0",
 	"private": true,
 	"bugs": {
 		"url": "https://github.com/demosjarco/matt-ai/issues"
 	},
 	"homepage": "https://github.com/demosjarco/matt-ai#readme",
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"dependencies": {
-		"@fortawesome/free-brands-svg-icons": "^6.5.1",
-		"@fortawesome/free-regular-svg-icons": "^6.5.1",
-		"@fortawesome/free-solid-svg-icons": "^6.5.1",
-		"flowbite": "^2.2.1",
-		"typechat": "^0.0.10"
-	},
+	"workspaces": [
+		"pages",
+		"worker"
+	],
 	"devDependencies": {
-		"@builder.io/qwik": "^1.4.0",
-		"@builder.io/qwik-city": "^1.4.0",
 		"@cloudflare/ai": "^1.0.47",
 		"@cloudflare/workers-types": "^4.20240117.0",
 		"@demosjarco/prettier-config": "^1.0.1",
-		"@fortawesome/fontawesome-svg-core": "^6.5.1",
-		"@rollup/plugin-node-resolve": "^15.2.3",
-		"@types/eslint": "^8.56.2",
-		"@typescript-eslint/eslint-plugin": "^6.19.1",
-		"@typescript-eslint/parser": "^6.19.1",
-		"autoprefixer": "^10.4.17",
-		"eslint": "^8.56.0",
-		"eslint-plugin-qwik": "^1.4.0",
-		"less": "^4.2.0",
-		"postcss": "^8.4.33",
-		"postcss-import": "^16.0.0",
-		"postcss-nesting": "^12.0.2",
 		"prettier": "^3.2.4",
-		"prettier-plugin-tailwindcss": "^0.5.11",
-		"qwik-fontawesome": "^0.2.0",
-		"tailwindcss": "^3.4.1",
 		"typescript": "^5.3.3",
-		"vite-tsconfig-paths": "^4.3.1",
 		"wrangler": "^3.23.0"
 	}
 }

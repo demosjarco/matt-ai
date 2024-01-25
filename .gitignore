@@ -130,10 +130,10 @@ dist
 .pnp.*
 
 # Build
-/dist
-/lib
-/lib-types
-/server
+/pages/dist
+/pages/lib
+/pages/lib-types
+/pages/server
 
 # Development
 *.local

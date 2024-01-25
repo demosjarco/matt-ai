@@ -25,6 +25,9 @@
 			"isBackground": true,
 			"presentation": {
 				"group": "compile"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/pages"
 			}
 		},
 		// {
@@ -57,6 +60,9 @@
 			"script": "build.client",
 			"presentation": {
 				"group": "compile"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/pages"
 			}
 		},
 		// {
@@ -89,6 +95,9 @@
 			"script": "build.server",
 			"presentation": {
 				"group": "compile"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/pages"
 			}
 		}
 	]

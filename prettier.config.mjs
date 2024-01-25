@@ -3,5 +3,12 @@ import baseConfig from '@demosjarco/prettier-config' assert { type: 'json' };
 /** @type {import("prettier").Config} */
 export default {
 	...baseConfig,
-	plugins: ['prettier-plugin-tailwindcss'],
+	overrides: [
+		{
+			files: 'pages/**',
+			options: {
+				plugins: ['prettier-plugin-tailwindcss'],
+			},
+		},
+	],
 };
