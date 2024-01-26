@@ -245,7 +245,7 @@ export default component$(() => {
 				const transaction = db.transaction('conversations', 'readonly', { durability: 'relaxed' });
 				const store = transaction.objectStore(transaction.objectStoreNames[0]!);
 
-				return new Promise((resolve, reject) => {
+				return new Promise<IDBConversation[]>((resolve, reject) => {
 					const result = store.getAll();
 					result.onerror = reject;
 
