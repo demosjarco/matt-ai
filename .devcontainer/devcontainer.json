@@ -34,10 +34,10 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8788],
+	"forwardPorts": [11412],
 	"portsAttributes": {
-		"8788": {
 			"label": "Wrangler",
+		"11412": {
 			"onAutoForward": "notify",
 		},
 	},
