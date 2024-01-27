@@ -1,5 +1,5 @@
-import { GraphQLError, GraphQLNonNull, GraphQLObjectType, GraphQLString, type GraphQLResolveInfo } from 'graphql';
-import { GraphQLJSONObject } from 'graphql-scalars';
+import { GraphQLBoolean, GraphQLError, GraphQLNonNull, GraphQLObjectType, GraphQLString, type GraphQLResolveInfo } from 'graphql';
+import { GraphQLJSONObject, GraphQLPositiveInt } from 'graphql-scalars';
 import { ModelSelector, createJsonTranslator, createLanguageModel } from '../../../typechat/index.js';
 import { createTypeScriptJsonValidator } from '../../../typechat/ts/index.js';
 import type { GqlContext } from '../../types.js';
@@ -27,6 +27,13 @@ export class QueryIndex extends BaseSchema {
 						message: {
 							type: new GraphQLNonNull(GraphQLString),
 						},
+						maxTokens: {
+							type: GraphQLPositiveInt,
+						},
+						internalStream: {
+							type: GraphQLBoolean,
+							defaultValue: false,
+						},
 					},
 					resolve: (
 						obj: {},
@@ -35,6 +42,8 @@ export class QueryIndex extends BaseSchema {
 							type: string;
 							instruction?: string;
 							message: string;
+							maxTokens?: number;
+							internalStream: boolean;
 						},
 						context: GqlContext,
 						info: GraphQLResolveInfo,
@@ -43,6 +52,8 @@ export class QueryIndex extends BaseSchema {
 							const model = createLanguageModel({
 								binding: context.AI,
 								model: args.model,
+								maxTokens: args.maxTokens,
+								stream: args.internalStream,
 							});
 							import('../../../aiTypes/types.json')
 								.then(({ default: types }) => {
