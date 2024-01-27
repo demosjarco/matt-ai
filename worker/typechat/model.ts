@@ -88,7 +88,7 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 		const messages = typeof prompt === 'string' ? [{ role: 'user', content: prompt }] : prompt;
 		while (true) {
 			try {
-				const { response } = await new Promise<ExcludeType<AiTextGenerationOutput, ReadableStream>>((resolve, reject) => {
+				const { response } = await new Promise<Required<ExcludeType<AiTextGenerationOutput, ReadableStream>>>((resolve, reject) =>
 					new Ai(binding, options)
 						.run(model, { messages, max_tokens: maxTokens, stream: shouldStream })
 						.then(async (response: AiTextGenerationOutput) => {
@@ -119,11 +119,13 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 												const decodedString = line.substring(contentPrefix.length);
 												try {
 													// See if it's JSON
-													const decodedJson = JSON.parse(decodedString);
+													const decodedJson: ExcludeType<AiTextGenerationOutput, ReadableStream> = JSON.parse(decodedString);
 
 													// Return JSON
 													for (const key in decodedJson) {
-														if (decodedJson[key] === '\n') {
+														const value = decodedJson[key as keyof typeof decodedJson];
+
+														if (value === '\n') {
 															newlineCounter++; // Increment for each newline found
 															if (newlineCounter >= 5) {
 																streamError = true;
@@ -133,7 +135,8 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 															newlineCounter = 0;
 														}
 
-														output[key] = output[key] ? output[key] + decodedJson[key] : decodedJson[key];
+														const outputValue = output[key as keyof typeof output];
+														output[key as keyof typeof output] = outputValue ? outputValue + value : value;
 													}
 												} catch (error) {
 													// Not valid JSON - just ignore and move on
@@ -146,7 +149,7 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 
 									if (streamError) streamingResponse.cancel();
 
-									resolve(output);
+									resolve(output as Required<typeof output>);
 								} catch (error) {
 									reject(error);
 								}
@@ -154,14 +157,14 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 								const staticResponse = response as ExcludeType<AiTextGenerationOutput, ReadableStream>;
 
 								if (staticResponse.response) {
-									resolve(staticResponse);
+									resolve(staticResponse as Required<typeof staticResponse>);
 								} else {
 									reject(staticResponse);
 								}
 							}
 						})
-						.catch(reject);
-				});
+						.catch(reject),
+				);
 				if (response) {
 					return success(response ?? '');
 				}
