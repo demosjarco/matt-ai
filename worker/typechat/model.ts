@@ -1,10 +1,15 @@
 import { Ai } from '@cloudflare/ai';
+import type { AiTextGenerationInput, AiTextGenerationOutput } from '@cloudflare/ai/dist/tasks/text-generation.js';
 import { error, success, type Result } from './result.js';
+
+export type ExcludeType<UnionType, ExcludedType> = UnionType extends ExcludedType ? never : UnionType;
 
 export interface ModelSelector {
 	binding: ConstructorParameters<typeof Ai>[0];
-	options?: ConstructorParameters<typeof Ai>[1];
 	model: Parameters<Ai['run']>[0];
+	options?: ConstructorParameters<typeof Ai>[1];
+	maxTokens?: AiTextGenerationInput['max_tokens'];
+	stream?: AiTextGenerationInput['stream'];
 }
 
 /**
@@ -64,13 +69,13 @@ export interface TypeChatLanguageModel {
 
 export function createLanguageModel(config: ModelSelector): TypeChatLanguageModel {
 	if (config.binding && config.model) {
-		return createBindingLanguageModel(config.model, config.binding, config.options);
+		return createBindingLanguageModel(config.binding, config.model, config.options, config.stream, config.maxTokens);
 	} else {
 		throw new Error('Missing AI Binding and/or model selection');
 	}
 }
 
-function createBindingLanguageModel(model: ModelSelector['model'], binding: ModelSelector['binding'], options: ModelSelector['options']) {
+function createBindingLanguageModel(binding: ModelSelector['binding'], model: ModelSelector['model'], options: ModelSelector['options'], shouldStream: ModelSelector['stream'] = false, maxTokens: ModelSelector['maxTokens']) {
 	const returnModel: TypeChatLanguageModel = {
 		complete,
 	};
@@ -83,65 +88,76 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 		const messages = typeof prompt === 'string' ? [{ role: 'user', content: prompt }] : prompt;
 		while (true) {
 			try {
-				const { response } = await new Promise<Record<string, any>>((resolve, reject) => {
-					new Ai(binding)
-						.run(model, { messages, max_tokens: 1800, stream: true })
-						.then(async (stream: NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
-							try {
-								const output: Record<string, any> = {};
+				const { response } = await new Promise<ExcludeType<AiTextGenerationOutput, ReadableStream>>((resolve, reject) => {
+					new Ai(binding, options)
+						.run(model, { messages, max_tokens: maxTokens, stream: shouldStream })
+						.then(async (response: AiTextGenerationOutput) => {
+							if (shouldStream) {
+								const streamingResponse = response as ReadableStream;
+								try {
+									const output: ExcludeType<AiTextGenerationOutput, ReadableStream> = {};
 
-								const eventField = 'data';
-								const contentPrefix = `${eventField}: `;
+									const eventField = 'data';
+									const contentPrefix = `${eventField}: `;
 
-								let numTokens = 0;
-								let rawAccumulatedData = '';
-								let newlineCounter = 0;
-								let streamError = false;
-								for await (const chunk of stream) {
-									numTokens++;
-									const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
-									rawAccumulatedData += decodedChunk;
+									let numTokens = 0;
+									let rawAccumulatedData = '';
+									let newlineCounter = 0;
+									let streamError = false;
+									for await (const chunk of streamingResponse) {
+										numTokens++;
+										const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
+										rawAccumulatedData += decodedChunk;
 
-									let newlineIndex;
-									while ((newlineIndex = rawAccumulatedData.indexOf('\n')) >= 0) {
-										// Found a newline
-										const line = rawAccumulatedData.slice(0, newlineIndex);
-										rawAccumulatedData = rawAccumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
+										let newlineIndex;
+										while ((newlineIndex = rawAccumulatedData.indexOf('\n')) >= 0) {
+											// Found a newline
+											const line = rawAccumulatedData.slice(0, newlineIndex);
+											rawAccumulatedData = rawAccumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
 
-										if (line.startsWith(contentPrefix)) {
-											const decodedString = line.substring(contentPrefix.length);
-											try {
-												// See if it's JSON
-												const decodedJson = JSON.parse(decodedString);
+											if (line.startsWith(contentPrefix)) {
+												const decodedString = line.substring(contentPrefix.length);
+												try {
+													// See if it's JSON
+													const decodedJson = JSON.parse(decodedString);
 
-												// Return JSON
-												for (const key in decodedJson) {
-													if (decodedJson[key] === '\n') {
-														newlineCounter++; // Increment for each newline found
-														if (newlineCounter >= 5) {
-															streamError = true;
-															break;
+													// Return JSON
+													for (const key in decodedJson) {
+														if (decodedJson[key] === '\n') {
+															newlineCounter++; // Increment for each newline found
+															if (newlineCounter >= 5) {
+																streamError = true;
+																break;
+															}
+														} else {
+															newlineCounter = 0;
 														}
-													} else {
-														newlineCounter = 0;
-													}
 
-													output[key] = output[key] ? output[key] + decodedJson[key] : decodedJson[key];
+														output[key] = output[key] ? output[key] + decodedJson[key] : decodedJson[key];
+													}
+												} catch (error) {
+													// Not valid JSON - just ignore and move on
 												}
-											} catch (error) {
-												// Not valid JSON - just ignore and move on
 											}
 										}
+
+										if (streamError) break;
 									}
 
-									if (streamError) break;
+									if (streamError) streamingResponse.cancel();
+
+									resolve(output);
+								} catch (error) {
+									reject(error);
 								}
+							} else {
+								const staticResponse = response as ExcludeType<AiTextGenerationOutput, ReadableStream>;
 
-								if (streamError) stream.cancel();
-
-								resolve(output);
-							} catch (error) {
-								reject(error);
+								if (staticResponse.response) {
+									resolve(staticResponse);
+								} else {
+									reject(staticResponse);
+								}
 							}
 						})
 						.catch(reject);
