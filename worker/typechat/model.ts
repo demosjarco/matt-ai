@@ -114,18 +114,18 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 												// See if it's JSON
 												const decodedJson = JSON.parse(decodedString);
 
-												if (decodedJson['response'] === '\n') {
-													newlineCounter++; // Increment for each newline found
-													if (newlineCounter >= 5) {
-														streamError = true;
-														break;
-													}
-												} else {
-													newlineCounter = 0;
-												}
-
 												// Return JSON
 												for (const key in decodedJson) {
+													if (decodedJson[key] === '\n') {
+														newlineCounter++; // Increment for each newline found
+														if (newlineCounter >= 5) {
+															streamError = true;
+															break;
+														}
+													} else {
+														newlineCounter = 0;
+													}
+
 													output[key] = output[key] ? output[key] + decodedJson[key] : decodedJson[key];
 												}
 											} catch (error) {
