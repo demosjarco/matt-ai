@@ -94,19 +94,19 @@ function createBindingLanguageModel(model: ModelSelector['model'], binding: Mode
 								const contentPrefix = `${eventField}: `;
 
 								let numTokens = 0;
-								let accumulatedData = '';
+								let rawAccumulatedData = '';
 								let newlineCounter = 0;
 								let streamError = false;
 								for await (const chunk of stream) {
 									numTokens++;
 									const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
-									accumulatedData += decodedChunk;
+									rawAccumulatedData += decodedChunk;
 
 									let newlineIndex;
-									while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
+									while ((newlineIndex = rawAccumulatedData.indexOf('\n')) >= 0) {
 										// Found a newline
-										const line = accumulatedData.slice(0, newlineIndex);
-										accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
+										const line = rawAccumulatedData.slice(0, newlineIndex);
+										rawAccumulatedData = rawAccumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
 
 										if (line.startsWith(contentPrefix)) {
 											const decodedString = line.substring(contentPrefix.length);
