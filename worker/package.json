@@ -2,6 +2,8 @@
 	"name": "worker",
 	"type": "module",
 	"scripts": {
+		"build:types": "tsc --project aiTypes/tsconfig.json",
+		"build:types:watch": "npm run build:types -- --watch",
 		"build": "node --disallow-code-generation-from-strings --use-largepages=on --loader ts-node/esm aiTypes/convert.mts",
 		"start": "wrangler dev --local-protocol http --ip localhost --port 11853 --persist-to ../.wrangler/state"
 	},

@@ -4,9 +4,11 @@
 		{
 			"label": "Qwik Build",
 			"dependsOn": [
-				"build.types",
-				"build.client",
-				"build.server"
+				"B|build:types",
+				"B|build",
+				"F|build.types",
+				"F|build.client",
+				"F|build.server"
 				// npm run lint
 			],
 			"isBackground": true,
@@ -16,21 +18,48 @@
 			}
 		},
 		{
-			"label": "build.types",
+			"label": "B|build:types",
+			"type": "npm",
+			"script": "build:types:watch",
+			"path": "${workspaceFolder}/worker",
+			"problemMatcher": "$tsc-watch",
+			"isBackground": true,
+			"presentation": {
+				"group": "worker.compile"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/worker/aiTypes"
+			}
+		},
+		{
+			"label": "B|build",
+			"dependsOn": ["B|build:types"],
+			"type": "npm",
+			"script": "build",
+			"path": "${workspaceFolder}/worker",
+			"presentation": {
+				"group": "worker.compile"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/worker"
+			}
+		},
+		{
+			"label": "F|build.types",
 			"detail": "tsc --incremental --noEmit --watch",
 			"type": "npm",
 			"script": "build.types:watch",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
-				"group": "compile"
+				"group": "pages.compile"
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/pages"
 			}
 		},
 		// {
-		// 	"label": "build.client",
+		// 	"label": "F|build.client",
 		// 	"detail": "vite build --watch",
 		// 	"type": "npm",
 		// 	"script": "build.client:watch",
@@ -49,23 +78,23 @@
 		// 	},
 		// 	"isBackground": true,
 		// 	"presentation": {
-		// 		"group": "compile"
+		// 		"group": "pages.compile"
 		// 	}
 		// },
 		{
-			"label": "build.client",
+			"label": "F|build.client",
 			"detail": "vite build",
 			"type": "npm",
 			"script": "build.client",
 			"presentation": {
-				"group": "compile"
+				"group": "pages.compile"
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/pages"
 			}
 		},
 		// {
-		// 	"label": "build.server",
+		// 	"label": "F|build.server",
 		// 	"detail": "vite build -c adapters/cloudflare-pages/vite.config.ts --watch",
 		// 	"type": "npm",
 		// 	"script": "build.server:watch",
@@ -84,17 +113,17 @@
 		// 	},
 		// 	"isBackground": true,
 		// 	"presentation": {
-		// 		"group": "compile"
+		// 		"group": "pages.compile"
 		// 	}
 		// },
 		{
-			"label": "build.server",
+			"label": "F|build.server",
 			"detail": "vite build -c adapters/cloudflare-pages/vite.config.ts",
-			"dependsOn": ["build.client"],
+			"dependsOn": ["F|build.client"],
 			"type": "npm",
 			"script": "build.server",
 			"presentation": {
-				"group": "compile"
+				"group": "pages.compile"
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/pages"
