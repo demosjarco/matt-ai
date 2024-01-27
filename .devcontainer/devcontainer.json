@@ -47,7 +47,7 @@
 	// "updateContentCommand": {},
 	"postCreateCommand": {
 		"fixMountPermissions": ["sudo", "chown", "node", "node_modules"],
-		"setupPackages": ["npm", "ci"],
+		"setupPackages": ["npm", "ci", "--include-workspace-root", "--workspaces"],
 	},
 	"postStartCommand": {
 		"updateCode": "git fetch && git pull --ff-only || git status",
