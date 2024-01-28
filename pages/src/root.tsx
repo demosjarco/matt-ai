@@ -17,71 +17,20 @@ const chatGenerator = server$(function () {
 	return new Promise<{ created: Date; response: string }>((resolve, reject) =>
 		ai
 			.run('@cf/meta/llama-2-7b-chat-fp16', {
-				stream: true,
+				max_tokens: 2500,
 				messages: [{ role: 'system', content: 'You are a dev helper to simulate chat messages. Generate a sample chat message' }],
 			})
-			.then(async (stream: NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
-				try {
+			.then((staticResponse: ExcludeType<AiTextGenerationOutput, ReadableStream>) => {
+				if (staticResponse.response) {
 					const output: { created: Date; response: string } = {
 						created: new Date(),
-						response: '',
+						response: staticResponse.response,
 					};
 
-					const eventField = 'data';
-					const contentPrefix = `${eventField}: `;
-
-					let numTokens = 0;
-					let accumulatedData = '';
-					let newlineCounter = 0;
-					let streamError = false;
-					// @ts-expect-error
-					for await (const chunk of stream) {
-						numTokens++;
-						const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
-						accumulatedData += decodedChunk;
-
-						let newlineIndex;
-						while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
-							// Found a newline
-							const line = accumulatedData.slice(0, newlineIndex);
-							accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
-
-							if (line.startsWith(contentPrefix)) {
-								const decodedString = line.substring(contentPrefix.length);
-								try {
-									// See if it's JSON
-									const decodedJson = JSON.parse(decodedString);
-
-									if (decodedJson['response'] === '\n') {
-										newlineCounter++; // Increment for each newline found
-										if (newlineCounter >= 5) {
-											streamError = true;
-											break;
-										}
-									} else {
-										newlineCounter = 0;
-									}
-
-									// Return JSON
-									for (const key in decodedJson) {
-										output.response = output.response ? output.response + decodedJson[key] : decodedJson[key];
-									}
-								} catch (error) {
-									// Not valid JSON - just ignore and move on
-								}
-							}
-						}
-
-						output.created = new Date();
-
-						if (streamError) break;
-					}
-
-					if (streamError) stream.cancel();
-
 					resolve(output);
-				} catch (error) {
-					reject(error);
+				} else {
+					console.debug('Failed generating dummy chat message');
+					reject(staticResponse.response);
 				}
 			})
 			.catch(reject),
