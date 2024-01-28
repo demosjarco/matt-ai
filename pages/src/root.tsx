@@ -1,8 +1,10 @@
 import { component$, useServerData, useVisibleTask$ } from '@builder.io/qwik';
 import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister, server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
+import type { AiTextGenerationOutput } from '@cloudflare/ai/dist/tasks/text-generation';
 import { initFlowbite } from 'flowbite';
 import { FaStylesheet } from 'qwik-fontawesome';
+import type { ExcludeType } from '../../worker/typechat/model';
 import { RouterHead } from './components/router-head/router-head';
 import { IDBConversationIndexes, IDBMessageIndexes } from './extras';
 import type { EnvVars, IDBConversation, IDBMessage } from './types';
