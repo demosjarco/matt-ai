@@ -112,7 +112,7 @@ export default component$(() => {
 				table.createIndex('atime', 'atime', { unique: false, multiEntry: false });
 				table.createIndex('btime', 'btime', { unique: false, multiEntry: false });
 				table.createIndex('ctime', 'ctime', { unique: false, multiEntry: false });
-				// table.createIndex('mtime', 'mtime', { unique: false, multiEntry: false });
+				table.createIndex('mtime', 'mtime', { unique: false, multiEntry: false });
 
 				// For safety
 				table.createIndex('id', 'id', { unique: true });
