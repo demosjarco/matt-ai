@@ -152,33 +152,6 @@ export default component$(() => {
 				}
 			}
 			// await dummyMessages();
-
-			function getConversations() {
-				const transaction = db.transaction('conversations', 'readonly', { durability: 'relaxed' });
-				const store = transaction.objectStore(transaction.objectStoreNames[0]!);
-
-				return new Promise<IDBConversation[]>((resolve, reject) => {
-					const myIndex = store.index(IDBConversationIndexes.modifiedTime).openCursor(null, 'prev');
-					myIndex.onerror = reject;
-
-					const conversations: IDBConversation[] = [];
-					myIndex.onsuccess = (event) => {
-						const cursorEvent = event.target as ReturnType<IDBIndex['openCursor']>;
-						const cursor = cursorEvent.result;
-
-						if (cursor) {
-							conversations.push(cursor.value as IDBConversation);
-
-							cursor.continue();
-						} else {
-							transaction.commit();
-							resolve(conversations);
-						}
-					};
-				});
-			}
-			const conversations = await getConversations();
-			console.debug(conversations);
 		};
 	});
 
