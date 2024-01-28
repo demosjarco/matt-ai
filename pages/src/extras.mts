@@ -35,7 +35,6 @@ export function isLocal(incoming: string | URL | Request): boolean {
 
 	return false;
 }
-
 export function runningLocally(incomingRequest: Request): boolean {
 	return isLocal(new URL(incomingRequest.headers.get('Origin') ?? `https://${incomingRequest.headers.get('Host')}`));
 }
