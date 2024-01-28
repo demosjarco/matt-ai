@@ -144,8 +144,7 @@ export default component$(() => {
 				// Other columns
 				// table.createIndex('role', 'role', { unique: false, multiEntry: true });
 				// table.createIndex('model_used', 'model_used', { unique: false, multiEntry: false });
-				// table.createIndex('content_message', 'content_message', { unique: false, multiEntry: false });
-				// table.createIndex('content_supplemental', 'content_supplemental', { unique: false, multiEntry: true });
+				// table.createIndex('content', 'content', { unique: false, multiEntry: true });
 				// table.createIndex('content_cards', 'content_cards', { unique: false, multiEntry: true });
 				// table.createIndex('content_chips', 'content_chips', { unique: false, multiEntry: true });
 				// table.createIndex('content_references', 'content_references', { unique: false, multiEntry: true });

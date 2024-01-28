@@ -41,8 +41,7 @@ export interface IDBMessage {
 	btime: Date;
 	role: 'system' | 'user' | 'assistant';
 	model_used: string;
-	content_message: string;
-	content_supplemental: Record<string, any>[];
+	content: Record<string, any>[];
 	content_cards: Record<string, any>[];
 	content_chips: Record<string, any>[];
 	content_references: Record<string, any>[];
