@@ -14,6 +14,7 @@ const chatGenerator = server$(function () {
 
 	const ai = new Ai(AI);
 
+	console.debug('Generating dummy chat message');
 	return new Promise<{ created: Date; response: string }>((resolve, reject) =>
 		ai
 			.run('@cf/meta/llama-2-7b-chat-fp16', {
@@ -27,6 +28,7 @@ const chatGenerator = server$(function () {
 						response: staticResponse.response,
 					};
 
+					console.debug('Done generating dummy chat message');
 					resolve(output);
 				} else {
 					console.debug('Failed generating dummy chat message');
