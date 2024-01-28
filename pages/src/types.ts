@@ -41,8 +41,12 @@ export interface IDBMessage {
 	btime: Date;
 	role: 'system' | 'user' | 'assistant';
 	model_used: string;
-	content: Record<string, any>[];
-	content_cards: Record<string, any>[];
-	content_chips: Record<string, any>[];
-	content_references: Record<string, any>[];
+	content: IDBMessageContent[];
+	content_cards: IDBMessageContentCards[];
+	content_chips: IDBMessageContentChips[];
+	content_references: IDBMessageContentReferences[];
 }
+export interface IDBMessageContent extends Record<string, any> {}
+export interface IDBMessageContentCards extends Record<string, any> {}
+export interface IDBMessageContentChips extends Record<string, any> {}
+export interface IDBMessageContentReferences extends Record<string, any> {}
