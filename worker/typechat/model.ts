@@ -104,6 +104,7 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 									let rawAccumulatedData = '';
 									let newlineCounter = 0;
 									let streamError = false;
+									// @ts-ignore
 									for await (const chunk of streamingResponse) {
 										numTokens++;
 										const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
