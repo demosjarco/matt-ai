@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@builder.io/qwik-city';
 import { isDev } from '@builder.io/qwik/build';
 import { randomBytes } from 'node:crypto';
-import { runningLocally } from '../extras.mjs';
+import { runningLocally } from '../extras';
 
 class CSPGenerator {
 	private directives: Record<string, string> = {};

@@ -1,6 +1,6 @@
 export function isLocal(incoming: string | URL | Request): boolean {
 	let incomingUrl: URL;
-	// @ts-ignore
+
 	if (incoming instanceof Request) {
 		incomingUrl = new URL(incoming.headers.get('origin') ?? incoming.url);
 	} else {
