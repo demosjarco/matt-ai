@@ -16,9 +16,22 @@ interface PagesEnvironmentvariables {
 export interface IDBConversation {
 	id: number;
 	name: string;
+	/**
+	 * `atime` = access time
+	 */
 	atime: Date;
+	/**
+	 * `btime` = birth time
+	 */
 	btime: Date;
+	/**
+	 * `ctime` = changed time (metadata)
+	 */
 	ctime: Date;
+	/**
+	 * `mtime` = modified time (content)
+	 */
+	mtime: Date;
 }
 
 export interface IDBMessage {

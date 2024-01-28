@@ -102,13 +102,6 @@ export default component$(() => {
 
 			db.onerror = console.error;
 
-			/**
-			 * `atime` = access time
-			 * `btime` = birth time
-			 * `ctime` = changed time (metadata)
-			 * `mtime` = modified time (content)
-			 */
-
 			function createConversations() {
 				const table = db.createObjectStore('conversations', {
 					keyPath: 'id',
