@@ -35,7 +35,6 @@ export default defineConfig((): UserConfig => {
 			manifest: true,
 		},
 		optimizeDeps: {
-			include: ['@auth/core'],
 			exclude: cloudflareNodeRuntimes,
 		},
 	};
