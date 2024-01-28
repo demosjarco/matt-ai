@@ -11,6 +11,6 @@ export default component$(() => (
 				</svg>
 			</button> */}
 		</div>
-		<p class="mb-3 text-sm text-blue-800 dark:text-blue-400">Preview the new Flowbite dashboard navigation! You can turn the new navigation off for a limited time in your profile.</p>
+		<p class="mb-3 text-sm text-blue-800 dark:text-blue-400">M.A.T.T. (Magically All The Things) is currently in a BETA phase. This open source is meant to provide an exemplar scalable way to create AIs that can perform complex tasks.</p>
 	</div>
 ));
