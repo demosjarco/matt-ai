@@ -198,59 +198,33 @@ export default component$(() => {
 					}
 				}
 			}
-			// await dummyMessages();
+			await dummyMessages();
 
-			async function getConversationOrder() {
-				const transaction = db.transaction('messages', 'readonly', { durability: 'relaxed' });
+			function getConversations() {
+				const transaction = db.transaction('conversations', 'readonly', { durability: 'relaxed' });
 				const store = transaction.objectStore(transaction.objectStoreNames[0]!);
 
-				return new Promise<number[]>((resolve, reject) => {
-					const latestMessages = new Map<number, IDBMessage>();
-					const myIndex = store.index('conversation_id').openCursor();
+				return new Promise<IDBConversation[]>((resolve, reject) => {
+					const myIndex = store.index(IDBConversationIndexes.modifiedTime).openCursor(null, 'prev');
 					myIndex.onerror = reject;
 
+					const conversations: IDBConversation[] = [];
 					myIndex.onsuccess = (event) => {
 						const cursorEvent = event.target as ReturnType<IDBIndex['openCursor']>;
 						const cursor = cursorEvent.result;
 
 						if (cursor) {
-							const currentMessage = cursor.value as IDBMessage;
-
-							// If this conversation hasn't been encountered yet, or the message is newer, update the map
-							if (!latestMessages.has(currentMessage.conversation_id) || latestMessages.get(currentMessage.conversation_id)!.btime < currentMessage.btime) {
-								latestMessages.set(currentMessage.conversation_id, currentMessage);
-							}
+							conversations.push(cursor.value as IDBConversation);
 
 							cursor.continue();
 						} else {
 							transaction.commit();
-							resolve(
-								Array.from(latestMessages.entries())
-									.sort((a, b) => b[1].btime.getTime() - a[1].btime.getTime())
-									.map((entry) => entry[0]),
-							);
+							resolve(conversations);
 						}
 					};
 				});
 			}
-
-			function getConversations(sortedIds: number[]) {
-				const transaction = db.transaction('conversations', 'readonly', { durability: 'relaxed' });
-				const store = transaction.objectStore(transaction.objectStoreNames[0]!);
-
-				return new Promise<IDBConversation[]>((resolve, reject) => {
-					const result = store.getAll();
-					result.onerror = reject;
-
-					result.onsuccess = (event) => {
-						const getEvent = event.target as ReturnType<IDBIndex['getAll']>;
-						const allConversations: IDBConversation[] = getEvent.result;
-
-						resolve(allConversations.filter((conversation) => sortedIds.includes(conversation.id)).sort((a, b) => sortedIds.indexOf(a.id) - sortedIds.indexOf(b.id)));
-					};
-				});
-			}
-			const conversations = await getConversations(await getConversationOrder());
+			const conversations = await getConversations();
 			console.debug(conversations);
 		};
 	});
