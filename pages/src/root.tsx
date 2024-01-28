@@ -4,6 +4,7 @@ import { Ai } from '@cloudflare/ai';
 import { initFlowbite } from 'flowbite';
 import { FaStylesheet } from 'qwik-fontawesome';
 import { RouterHead } from './components/router-head/router-head';
+import { IDBConversationIndexes, IDBMessageIndexes } from './extras.mjs';
 import type { EnvVars, IDBConversation, IDBMessage } from './types';
 
 import './global.less';
@@ -109,13 +110,13 @@ export default component$(() => {
 				});
 
 				// For search
-				table.createIndex('atime', 'atime', { unique: false, multiEntry: false });
-				table.createIndex('btime', 'btime', { unique: false, multiEntry: false });
-				table.createIndex('ctime', 'ctime', { unique: false, multiEntry: false });
-				table.createIndex('mtime', 'mtime', { unique: false, multiEntry: false });
+				table.createIndex(IDBConversationIndexes.accessTime, 'atime', { unique: false, multiEntry: false });
+				table.createIndex(IDBConversationIndexes.birthTime, 'btime', { unique: false, multiEntry: false });
+				table.createIndex(IDBConversationIndexes.changeTime, 'ctime', { unique: false, multiEntry: false });
+				table.createIndex(IDBConversationIndexes.modifiedTime, 'mtime', { unique: false, multiEntry: false });
 
 				// For safety
-				table.createIndex('id', 'id', { unique: true });
+				table.createIndex(IDBConversationIndexes.conversationId, 'id', { unique: true });
 
 				// For speed
 
@@ -131,15 +132,15 @@ export default component$(() => {
 				});
 
 				// For search
-				table.createIndex('conversation_id', 'conversation_id', { unique: false, multiEntry: false });
-				table.createIndex('content_version', 'content_version', { unique: false, multiEntry: false });
-				table.createIndex('btime', 'btime', { unique: false, multiEntry: false });
+				table.createIndex(IDBMessageIndexes.conversationId, 'conversation_id', { unique: false, multiEntry: false });
+				table.createIndex(IDBMessageIndexes.contentVersion, 'content_version', { unique: false, multiEntry: false });
+				table.createIndex(IDBMessageIndexes.birthTime, 'btime', { unique: false, multiEntry: false });
 
 				// For safety
-				table.createIndex(['conversation_id', 'id', 'content_version'].join('|'), ['conversation_id', 'id', 'content_version'], { unique: true });
+				table.createIndex(IDBMessageIndexes.conversationIdMessageIdContentVersion, ['conversation_id', 'id', 'content_version'], { unique: true });
 
 				// For speed
-				table.createIndex(['conversation_id', 'id'].join('|'), ['conversation_id', 'id'], { unique: false });
+				table.createIndex(IDBMessageIndexes.conversationIdMessageId, ['conversation_id', 'id'], { unique: false });
 
 				// Other columns
 				// table.createIndex('role', 'role', { unique: false, multiEntry: true });

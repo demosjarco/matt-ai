@@ -38,3 +38,18 @@ export function isLocal(incoming: string | URL | Request): boolean {
 export function runningLocally(incomingRequest: Request): boolean {
 	return isLocal(new URL(incomingRequest.headers.get('Origin') ?? `https://${incomingRequest.headers.get('Host')}`));
 }
+
+export enum IDBConversationIndexes {
+	accessTime = 'atime',
+	birthTime = 'btime',
+	changeTime = 'ctime',
+	modifiedTime = 'mtime',
+	conversationId = 'id',
+}
+export enum IDBMessageIndexes {
+	conversationId = 'conversation_id',
+	contentVersion = 'content_version',
+	birthTime = 'btime',
+	conversationIdMessageIdContentVersion = 'conversation_id|id|content_version',
+	conversationIdMessageId = 'conversation_id|id',
+}
