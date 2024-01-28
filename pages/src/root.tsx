@@ -164,6 +164,7 @@ export default component$(() => {
 						atime: new Date(),
 						btime: new Date(),
 						ctime: new Date(),
+						mtime: new Date(),
 					};
 
 					conversationTransaction.objectStore(conversationTransaction.objectStoreNames[0]!).add(insertConversation);
@@ -182,8 +183,7 @@ export default component$(() => {
 								btime: created,
 								role: 'assistant',
 								model_used: '@cf/meta/llama-2-7b-chat-fp16',
-								content_message: response,
-								content_supplemental: [],
+								content: [{ description: response }],
 								content_cards: [],
 								content_chips: [],
 								content_references: [],
