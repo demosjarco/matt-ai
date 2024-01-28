@@ -149,7 +149,7 @@ export default component$(() => {
 					}
 				}
 			}
-			await dummyMessages();
+			// await dummyMessages();
 
 			function getConversations() {
 				const transaction = db.transaction('conversations', 'readonly', { durability: 'relaxed' });
