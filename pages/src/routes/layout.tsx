@@ -23,9 +23,9 @@ export const useConversationId = routeLoader$<string>(({ params }) => {
 export const useCreateConversation = routeAction$(async (data, { params, redirect }) => {
 	if (params['conversationId']) {
 		return;
+	} else {
+		throw redirect(307, '/c/123');
 	}
-
-	throw redirect(307, '/c/123');
 });
 
 export const sendMessage = server$(function (message: string) {
