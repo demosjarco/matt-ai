@@ -1,4 +1,5 @@
 import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { useNavigate } from '@builder.io/qwik-city';
 import { IDBConversationIndexes } from '../../extras';
 import type { IDBConversation } from '../../types';
 import Item from './item';
@@ -47,10 +48,33 @@ export default component$(() => {
 		};
 	});
 
+	const navigate = useNavigate();
+
+	const conversationId = useSignal<number | undefined>(undefined);
+
+	useVisibleTask$(({ track }) => {
+		track(() => conversationId.value);
+
+		if (!conversationId.value) {
+			return;
+		}
+
+		navigate(`/c/${conversationId.value}`, {
+			type: 'link',
+		});
+	});
+
 	return (
 		<ul class="space-y-2 overflow-y-scroll font-medium">
 			{conversations.value.map((conversation) => (
-				<Item key={conversation.id} title={conversation.name} />
+				<Item
+					onClick$={(id) => {
+						conversationId.value = id;
+					}}
+					key={conversation.id}
+					id={conversation.id}
+					title={conversation.name}
+				/>
 			))}
 		</ul>
 	);
