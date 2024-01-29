@@ -1,4 +1,4 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useVisibleTask$ } from '@builder.io/qwik';
 import { Form, type DocumentHead } from '@builder.io/qwik-city';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
@@ -8,6 +8,16 @@ import Message from './Message';
 export default component$(() => {
 	const conversationId = useConversationId();
 	const send = useSendMessage();
+
+	useVisibleTask$(({ track }) => {
+		track(() => conversationId.value);
+
+		if (!conversationId.value) {
+			return;
+		}
+
+		console.debug(conversationId.value);
+	});
 
 	return (
 		<>
