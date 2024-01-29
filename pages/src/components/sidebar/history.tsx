@@ -65,7 +65,7 @@ export default component$(() => {
 	});
 
 	return (
-		<ul class="space-y-2 overflow-y-scroll font-medium">
+		<ul class="space-y-2 overflow-y-auto font-medium">
 			{conversations.value.map((conversation) => (
 				<Item
 					onClick$={(id) => {
