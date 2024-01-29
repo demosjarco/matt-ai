@@ -31,7 +31,6 @@ export default component$(() => {
 	const send = $((message: string) => {
 		console.log('send message', message);
 		sendMessage(message);
-
 		messages.value = [...messages.value, { type: 'me', text: message }];
 	});
 
