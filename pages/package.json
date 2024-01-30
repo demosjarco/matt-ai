@@ -46,8 +46,8 @@
 		"flowbite": "^2.2.1"
 	},
 	"devDependencies": {
-		"@builder.io/qwik": "^1.4.2",
-		"@builder.io/qwik-city": "^1.4.2",
+		"@builder.io/qwik": "^1.4.3",
+		"@builder.io/qwik-city": "^1.4.3",
 		"@fortawesome/fontawesome-svg-core": "^6.5.1",
 		"@rollup/plugin-node-resolve": "^15.2.3",
 		"@types/eslint": "^8.56.2",
