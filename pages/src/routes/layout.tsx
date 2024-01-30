@@ -3,8 +3,10 @@ import type { RequestHandler } from '@builder.io/qwik-city';
 import { routeAction$, routeLoader$, server$, type DocumentHead } from '@builder.io/qwik-city';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
+import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
+import type { ChatFormSubmit, EnvVars } from '../types';
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
 	// Control caching for this request for best performance and to reduce hosting costs:
@@ -21,10 +23,31 @@ export const useConversationId = routeLoader$<string>(({ params }) => {
 	return params['conversationId'] || '';
 });
 
-export const useUserUpdateConversation = routeAction$(async (data, { params, redirect }) => {
-	console.debug('Incoming Form Data', data);
+export const useUserUpdateConversation = routeAction$(async (data, { params, request, platform }) => {
+	const cid: Number | undefined = Number(params['conversationId']) ?? undefined;
+	const incomingFormData = data as unknown as ChatFormSubmit;
+	console.debug('Incoming Form Data', incomingFormData, 'for conversation', cid);
 
-	if (!data['message']) {
+	if (incomingFormData.message) {
+		const graphqlUrl = new URL('/graphql', request.url);
+		const response = await (platform.env as EnvVars).BACKEND_WORKER.fetch(graphqlUrl.toString(), {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			// @ts-expect-error
+			cf: request.cf ?? {},
+			body: JSON.stringify({
+				query: 'query ($message: NonEmptyString!, $longer: Boolean!) { messageAction(message: $message, longer: $longer) }',
+				variables: {
+					message: incomingFormData.message,
+					longer: false,
+				},
+			}),
+		});
+		const json = await response.json<{ data: { messageAction: MessageAction } }>();
+		console.log('I should do:', JSON.stringify(json, null, '\t'));
+	} else {
 		throw new Error('Message is required');
 	}
 });
