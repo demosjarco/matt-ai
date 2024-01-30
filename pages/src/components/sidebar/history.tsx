@@ -44,7 +44,7 @@ export default component$(() => {
 
 			conversations.value = conversationData;
 
-			console.debug(conversations);
+			// console.debug(conversations);
 		};
 	});
 

@@ -28,7 +28,6 @@ export default component$(() => {
 
 		messages.value = [];
 
-		console.debug(conversationId.value);
 	});
 
 	return (
