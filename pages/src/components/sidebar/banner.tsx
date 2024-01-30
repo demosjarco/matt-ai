@@ -9,6 +9,6 @@ export default component$(() => (
 				<FaIcon icon={faXmark} />
 			</button> */}
 		</div>
-		<p class="mb-3 text-sm text-blue-800 dark:text-blue-400">M.A.T.T. (Magically All The Things) is currently in a BETA phase. This open source project is meant to showcase everything possible with Workers AI, seamlessly in 1 place.</p>
+		<p class="mb-3 text-sm text-blue-800 dark:text-blue-400">This open source project is meant to showcase everything possible with Workers AI, seamlessly in 1 place.</p>
 	</div>
 ));
