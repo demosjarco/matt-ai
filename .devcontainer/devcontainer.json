@@ -46,7 +46,7 @@
 			"elevateIfNeeded": true,
 			"label": "Workers",
 			"onAutoForward": "notify",
-			"protocol": "https",
+			"protocol": "http",
 		},
 	},
 
