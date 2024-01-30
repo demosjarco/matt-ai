@@ -4,6 +4,7 @@ import { routeAction$, routeLoader$, server$, type DocumentHead } from '@builder
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
 import Sidebar from '../components/sidebar';
+import { runningLocally } from '../extras';
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
 	// Control caching for this request for best performance and to reduce hosting costs:
@@ -20,16 +21,20 @@ export const useConversationId = routeLoader$<string>(({ params }) => {
 	return params['conversationId'] || '';
 });
 
-export const useCreateConversation = routeAction$(async (data, { params, redirect }) => {
-	if (params['conversationId']) {
-		return;
-	} else {
-		throw redirect(307, '/c/123');
+export const useUserUpdateConversation = routeAction$(async (data, { params, redirect }) => {
+	console.debug('Incoming Form Data', data);
+
+	if (!data['message']) {
+		throw new Error('Message is required');
 	}
 });
 
 export const sendMessage = server$(function (message: string) {
-	console.log('send message', message);
+	console.log(1, 'send message', message);
+});
+
+export const isLocalEdge = routeLoader$(function ({ platform }) {
+	return runningLocally(platform.request);
 });
 
 export default component$(() => {
