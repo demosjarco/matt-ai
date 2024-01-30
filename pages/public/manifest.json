@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/web-manifest-combined.json",
-	"name": "qwik-project-name",
-	"short_name": "Welcome to Qwik",
+	"name": "M.A.T.T. AI",
+	"short_name": "M.A.T.T.",
 	"start_url": ".",
 	"display": "standalone",
 	"background_color": "#fff",

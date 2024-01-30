@@ -57,7 +57,7 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-	title: 'Welcome to M.A.T.T.',
+	title: 'M.A.T.T. AI',
 	meta: [
 		{
 			name: 'description',
