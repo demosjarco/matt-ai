@@ -10,5 +10,11 @@ export default component$(() => (
 			</button> */}
 		</div>
 		<p class="mb-3 text-sm text-blue-800 dark:text-blue-400">This open source project is meant to showcase everything possible with Cloudflare Workers AI, all seamlessly in 1 place.</p>
+		<a class="pr-1 text-sm font-medium text-blue-800 underline hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" href="https://github.com/demosjarco/matt-ai">
+			GitHub
+		</a>
+		<a class="pl-1 text-sm font-medium text-orange-800 underline hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300" href="https://ai.cloudflare.com">
+			Workers AI
+		</a>
 	</div>
 ));
