@@ -1,12 +1,10 @@
 import { Slot, component$ } from '@builder.io/qwik';
 import type { RequestHandler } from '@builder.io/qwik-city';
-import { routeAction$, routeLoader$, server$, type DocumentHead } from '@builder.io/qwik-city';
+import { routeAction$, routeLoader$, z, zod$, type DocumentHead } from '@builder.io/qwik-city';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
-import { MessageProcessing } from '../aiBrain/messageProcessing.mjs';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
-import type { ChatFormSubmit } from '../types';
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
 	// Control caching for this request for best performance and to reduce hosting costs:
@@ -23,21 +21,17 @@ export const useConversationId = routeLoader$<string>(({ params }) => {
 	return params['conversationId'] || '';
 });
 
-export const useUserUpdateConversation = routeAction$(async (data, { params, platform }) => {
-	const cid: Number | undefined = Number(params['conversationId']) ?? undefined;
-	const incomingFormData = data as unknown as ChatFormSubmit;
-	console.debug('Incoming Form Data', incomingFormData, 'for conversation', cid);
-
-	if (incomingFormData.message) {
-		await new MessageProcessing(platform).preProcess(incomingFormData.message);
-	} else {
-		throw new Error('Message is required');
-	}
-});
-
-export const sendMessage = server$(function (message: string) {
-	console.log(1, 'send message', message);
-});
+export const useUserUpdateConversation = routeAction$(
+	async (data, { params }) => {
+		return {
+			cid: Number(params['conversationId']) ?? undefined,
+			sanitizedMessage: z.string().trim().parse(data.message),
+		};
+	},
+	zod$({
+		message: z.string(),
+	}),
+);
 
 export const isLocalEdge = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
