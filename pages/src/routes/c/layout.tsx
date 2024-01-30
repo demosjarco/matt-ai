@@ -3,7 +3,6 @@ import type { ChatFormSubmit, EnvVars } from '../../types';
 
 export const onPost: RequestHandler = async ({ platform, request, parseBody, send }) => {
 	const incomingFormData = (await parseBody()) as ChatFormSubmit;
-	console.debug('Turnstile middleware', 'Incoming Form Data', incomingFormData);
 
 	if (incomingFormData) {
 		if (incomingFormData['cf-turnstile-response']) {
