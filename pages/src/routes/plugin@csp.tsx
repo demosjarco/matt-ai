@@ -240,7 +240,7 @@ class CSPGenerator {
 	private setupCSP() {
 		this.addDefault({ self: true });
 		this.addFont({ self: true, domains: ['https://fonts.gstatic.com'] });
-		this.addScript({ self: true, unsafeInline: true, unsafeEval: true, domains: ['https://static.cloudflareinsights.com'], nonce: true });
+		this.addScript({ self: true, unsafeInline: true, unsafeEval: true, domains: ['https://static.cloudflareinsights.com', 'https://challenges.cloudflare.com'], nonce: true });
 		this.addStyle({ self: true, unsafeInline: true });
 		this.addUpgradeInsecureRequests();
 	}
