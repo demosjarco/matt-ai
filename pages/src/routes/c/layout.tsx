@@ -28,8 +28,6 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sen
 				throw send(500, 'Internal Server Error');
 			}
 
-			console.debug('Turnstile check', turnstileSuccess);
-
 			if (!turnstileSuccess) {
 				throw send(403, 'Forbidden');
 			}
