@@ -6,6 +6,7 @@ export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, R
 
 interface Bindings {
 	AI: any;
+	BACKEND_WORKER: Fetcher;
 }
 
 interface PagesEnvironmentvariables {
