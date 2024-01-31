@@ -1,12 +1,17 @@
 import { $, component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
-import { Form, type DocumentHead } from '@builder.io/qwik-city';
+import { Form, server$, type DocumentHead } from '@builder.io/qwik-city';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
 import { IDBMessages } from '../../IDB/messages';
+import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
 import { getUserLocale, isLocalEdge, useConversationId, useUserUpdateConversation } from '../../routes/layout';
 import type { IDBMessage } from '../../types';
 import Message from './Message';
+
+const preProcess = server$(function (message: Parameters<MessageProcessing['preProcess']>[0]) {
+	return new MessageProcessing(this.platform).preProcess(message);
+});
 
 export default component$(() => {
 	const isLocal = isLocalEdge();
@@ -32,7 +37,7 @@ export default component$(() => {
 
 	const sendMessage = $(
 		(message: string) =>
-			new Promise<IDBMessage>(async (resolve, reject) => {
+			new Promise<IDBMessage>(async (mainResolve, mainReject) => {
 				// Run it in a `.all()` so that the promise chain stays alive until all finish, but don't wait to return promise
 				Promise.all([
 					new IDBMessages()
@@ -47,9 +52,31 @@ export default component$(() => {
 						})
 						.then((fullMessage) => {
 							messageHistory.value.push(fullMessage);
-							resolve(fullMessage);
+							mainResolve(fullMessage);
 						})
-						.catch(reject),
+						.catch(mainReject),
+					new Promise<void>((resolve, reject) =>
+						preProcess(message)
+							.then((messageAction) =>
+								new IDBMessages()
+									.saveMessage({
+										conversation_id: Number(conversationId.value),
+										role: 'assistant',
+										content: [
+											{
+												text: messageAction.action,
+												model_used: messageAction.modelUsed,
+											},
+										],
+									})
+									.then((fullMessage) => {
+										messageHistory.value.push(fullMessage);
+										resolve();
+									})
+									.catch(reject),
+							)
+							.catch(reject),
+					),
 				]);
 			}),
 	);
