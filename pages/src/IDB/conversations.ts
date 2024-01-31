@@ -14,9 +14,9 @@ export class IDBConversations extends IDBBase {
 					transaction.oncomplete = () => resolve(conversations);
 
 					const store = transaction.objectStore(transaction.objectStoreNames[0]!);
-					const myIndex = store.index(IDBConversationIndexes.modifiedTime).openCursor(null, 'prev');
-					myIndex.onerror = reject;
-					myIndex.onsuccess = (event) => {
+					const index = store.index(IDBConversationIndexes.modifiedTime).openCursor(null, 'prev');
+					index.onerror = reject;
+					index.onsuccess = (event) => {
 						const cursorEvent = event.target as ReturnType<IDBIndex['openCursor']>;
 						const cursor = cursorEvent.result;
 
