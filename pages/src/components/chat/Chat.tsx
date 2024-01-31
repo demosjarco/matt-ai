@@ -23,7 +23,6 @@ export default component$(() => {
 			return;
 		}
 
-		console.debug('Pulling convo', conversationId.value, Number(conversationId.value));
 		const initialConversation = await new IDBMessages().getMessagesForConversation(Number(conversationId.value));
 		console.debug('messages for convo', initialConversation);
 
