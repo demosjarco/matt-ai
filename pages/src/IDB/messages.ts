@@ -25,8 +25,8 @@ export class IDBMessages extends IDBBase {
 						if (cursor) {
 							const message: IDBMessage = cursor.value;
 
-							if (!latestMessages[message.conversation_id] || (latestMessages[message.conversation_id] && latestMessages[message.conversation_id]!.content_version < message.content_version)) {
-								latestMessages[message.conversation_id] = message;
+							if (!latestMessages[message.message_id] || (latestMessages[message.message_id] && latestMessages[message.message_id]!.content_version < message.content_version)) {
+								latestMessages[message.message_id] = message;
 							}
 
 							cursor.continue();
