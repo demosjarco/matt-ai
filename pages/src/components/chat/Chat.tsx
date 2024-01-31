@@ -32,22 +32,25 @@ export default component$(() => {
 
 	const sendMessage = $(
 		(message: string) =>
-			new Promise<IDBMessage>((resolve, reject) => {
-				new IDBMessages()
-					.saveMessage({
-						role: 'user',
-						content: [
-							{
-								text: message,
-								model_used: null,
-							},
-						],
-					})
-					.then((fullMessage) => {
-						messageHistory.value.push(fullMessage);
-						resolve(fullMessage);
-					})
-					.catch(reject);
+			new Promise<IDBMessage>(async (resolve, reject) => {
+				// Run it in a `.all()` so that the promise chain stays alive until all finish, but don't wait to return promise
+				Promise.all([
+					new IDBMessages()
+						.saveMessage({
+							role: 'user',
+							content: [
+								{
+									text: message,
+									model_used: null,
+								},
+							],
+						})
+						.then((fullMessage) => {
+							messageHistory.value.push(fullMessage);
+							resolve(fullMessage);
+						})
+						.catch(reject),
+				]);
 			}),
 	);
 
