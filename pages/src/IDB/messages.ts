@@ -73,7 +73,7 @@ export class IDBMessages extends IDBBase {
 									transaction.onerror = reject;
 
 									const store = transaction.objectStore(transaction.objectStoreNames[0]!);
-									const index = store.index(IDBMessageIndexes.conversationId).openCursor(null, 'prev');
+									const index = store.index(IDBMessageIndexes.messageId).openCursor(null, 'prev');
 									index.onerror = reject;
 									let highestValue = 0;
 
@@ -82,7 +82,8 @@ export class IDBMessages extends IDBBase {
 										const cursor = cursorEvent.result;
 
 										if (cursor) {
-											const currentValue = cursor.value[IDBMessageIndexes.conversationId];
+											const currentValue = cursor.value[IDBMessageIndexes.messageId];
+
 											if (currentValue > highestValue) {
 												highestValue = currentValue;
 											}
