@@ -10,7 +10,7 @@ export default component$((props: { message: IDBMessage }) => {
 			<div class={`${isMe ? 'col-start-1 col-end-13 sm:col-start-6' : 'col-start-1 col-end-13 sm:col-end-8'} rounded-lg p-3`}>
 				<div class={`${isMe ? 'flex flex-row-reverse justify-start' : 'flex flex-row items-center'}`}>
 					<div class={`${isMe ? 'ml-2' : ' mr-2'}`}>
-						<Avatar />
+						<Avatar username={props.message.role} />
 					</div>
 
 					<div class="flex w-full flex-col gap-1">
