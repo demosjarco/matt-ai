@@ -1,3 +1,5 @@
+import type { Ai } from '@cloudflare/ai';
+
 export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
 
@@ -44,17 +46,19 @@ export interface IDBConversation {
 
 export interface IDBMessage {
 	id: number;
+	message_id: number;
 	conversation_id: number;
 	content_version: number;
 	btime: Date;
 	role: 'system' | 'user' | 'assistant';
-	model_used: string;
 	content: IDBMessageContent[];
 	content_cards: IDBMessageContentCards[];
 	content_chips: IDBMessageContentChips[];
 	content_references: IDBMessageContentReferences[];
 }
-export interface IDBMessageContent extends Record<string, any> {}
+export interface IDBMessageContent extends Record<string, any> {
+	model_used: Parameters<Ai['run']>[0] | null;
+}
 export interface IDBMessageContentCards extends Record<string, any> {}
 export interface IDBMessageContentChips extends Record<string, any> {}
 export interface IDBMessageContentReferences extends Record<string, any> {}

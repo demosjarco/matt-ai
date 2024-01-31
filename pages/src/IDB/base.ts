@@ -1,53 +1,15 @@
-import { server$ } from '@builder.io/qwik-city';
-import { Ai } from '@cloudflare/ai';
-import type { AiTextGenerationOutput } from '@cloudflare/ai/dist/tasks/text-generation';
-import type { ExcludeType } from '../../../worker/typechat/model';
 import { IDBConversationIndexes, IDBMessageIndexes } from '../extras';
-import type { EnvVars, IDBConversation, IDBMessage } from '../types';
 
 export abstract class IDBBase {
-	private chatGenerator = server$(function () {
-		const { AI } = this.platform.env as EnvVars;
-
-		const ai = new Ai(AI);
-
-		console.debug('Generating dummy chat message');
-		return new Promise<{ created: Date; response: string }>((resolve, reject) =>
-			ai
-				.run('@cf/meta/llama-2-7b-chat-fp16', {
-					max_tokens: 2500,
-					messages: [{ role: 'system', content: 'You are a dev helper to simulate chat messages. Generate a sample chat message' }],
-				})
-				.then((staticResponse: ExcludeType<AiTextGenerationOutput, ReadableStream>) => {
-					if (staticResponse.response) {
-						const output: { created: Date; response: string } = {
-							created: new Date(),
-							response: staticResponse.response,
-						};
-
-						console.debug('Done generating dummy chat message');
-						resolve(output);
-					} else {
-						console.debug('Failed generating dummy chat message');
-						reject(staticResponse.response);
-					}
-				})
-				.catch(reject),
-		);
-	});
-
 	protected get db() {
 		const DBOpenRequest = indexedDB.open('ailocal', 1);
 
 		return new Promise<IDBDatabase>(async (resolve, reject) => {
 			DBOpenRequest.onerror = reject;
 
-			DBOpenRequest.onupgradeneeded = await this.upgradeDB;
+			DBOpenRequest.onupgradeneeded = async (event) => await this.upgradeDB(event);
 
-			DBOpenRequest.onsuccess = (event) => {
-				// this.fillDummyData(DBOpenRequest.result);
-				resolve(DBOpenRequest.result);
-			};
+			DBOpenRequest.onsuccess = (event) => resolve(DBOpenRequest.result);
 		});
 	}
 
@@ -71,18 +33,15 @@ export abstract class IDBBase {
 		});
 
 		// For search
-		table.createIndex(IDBConversationIndexes.accessTime, 'atime', { unique: false, multiEntry: false });
-		table.createIndex(IDBConversationIndexes.birthTime, 'btime', { unique: false, multiEntry: false });
-		table.createIndex(IDBConversationIndexes.changeTime, 'ctime', { unique: false, multiEntry: false });
-		table.createIndex(IDBConversationIndexes.modifiedTime, 'mtime', { unique: false, multiEntry: false });
+		table.createIndex(IDBConversationIndexes.accessTime, IDBConversationIndexes.accessTime, { unique: false, multiEntry: false });
+		table.createIndex(IDBConversationIndexes.birthTime, IDBConversationIndexes.birthTime, { unique: false, multiEntry: false });
+		table.createIndex(IDBConversationIndexes.changeTime, IDBConversationIndexes.changeTime, { unique: false, multiEntry: false });
+		table.createIndex(IDBConversationIndexes.modifiedTime, IDBConversationIndexes.modifiedTime, { unique: false, multiEntry: false });
 
 		// For safety
-		table.createIndex(IDBConversationIndexes.conversationId, 'id', { unique: true });
+		table.createIndex(IDBConversationIndexes.conversationId, IDBConversationIndexes.conversationId, { unique: true });
 
 		// For speed
-
-		// Other columns
-		// table.createIndex('name', 'name', { unique: false, multiEntry: false });
 	}
 	private createMessagesTable(db: IDBDatabase) {
 		const table = db.createObjectStore('messages', {
@@ -91,66 +50,14 @@ export abstract class IDBBase {
 		});
 
 		// For search
-		table.createIndex(IDBMessageIndexes.conversationId, 'conversation_id', { unique: false, multiEntry: false });
-		table.createIndex(IDBMessageIndexes.contentVersion, 'content_version', { unique: false, multiEntry: false });
-		table.createIndex(IDBMessageIndexes.birthTime, 'btime', { unique: false, multiEntry: false });
+		table.createIndex(IDBMessageIndexes.conversationId, IDBMessageIndexes.conversationId, { unique: false, multiEntry: false });
+		table.createIndex(IDBMessageIndexes.contentVersion, IDBMessageIndexes.contentVersion, { unique: false, multiEntry: false });
+		table.createIndex(IDBMessageIndexes.birthTime, IDBMessageIndexes.birthTime, { unique: false, multiEntry: false });
 
 		// For safety
-		table.createIndex(IDBMessageIndexes.conversationIdMessageIdContentVersion, ['conversation_id', 'id', 'content_version'], { unique: true });
+		table.createIndex(IDBMessageIndexes.conversationIdMessageIdContentVersion, [IDBMessageIndexes.conversationId, IDBMessageIndexes.messageId, IDBMessageIndexes.contentVersion], { unique: true });
 
 		// For speed
-		table.createIndex(IDBMessageIndexes.conversationIdMessageId, ['conversation_id', 'id'], { unique: false });
-
-		// Other columns
-		// table.createIndex('role', 'role', { unique: false, multiEntry: true });
-		// table.createIndex('model_used', 'model_used', { unique: false, multiEntry: false });
-		// table.createIndex('content', 'content', { unique: false, multiEntry: true });
-		// table.createIndex('content_cards', 'content_cards', { unique: false, multiEntry: true });
-		// table.createIndex('content_chips', 'content_chips', { unique: false, multiEntry: true });
-		// table.createIndex('content_references', 'content_references', { unique: false, multiEntry: true });
-	}
-
-	private async fillDummyData(db: IDBDatabase) {
-		for (let i = 0; i < 5; i++) {
-			const conversationTransaction = db.transaction('conversations', 'readwrite');
-
-			const insertConversation: Partial<IDBConversation> = {
-				name: `Conversation ${i}`,
-				atime: new Date(),
-				btime: new Date(),
-				ctime: new Date(),
-				mtime: new Date(),
-			};
-
-			conversationTransaction.objectStore(conversationTransaction.objectStoreNames[0]!).add(insertConversation);
-
-			conversationTransaction.commit();
-
-			for (let j = 0; j < 5; j++) {
-				try {
-					const { created, response } = await this.chatGenerator();
-
-					const messageTransaction = db.transaction('messages', 'readwrite');
-
-					const insertMessage: Partial<IDBMessage> = {
-						conversation_id: i,
-						content_version: 1,
-						btime: created,
-						role: 'assistant',
-						model_used: '@cf/meta/llama-2-7b-chat-fp16',
-						content: [{ description: response }],
-						content_cards: [],
-						content_chips: [],
-						content_references: [],
-					};
-
-					messageTransaction.objectStore(messageTransaction.objectStoreNames[0]!).add(insertMessage);
-
-					messageTransaction.commit();
-				} catch (error) {
-					console.error(error);
-				}
-			}
-		}
+		table.createIndex(IDBMessageIndexes.conversationIdMessageId, [IDBMessageIndexes.conversationId, IDBMessageIndexes.messageId], { unique: false });
 	}
 }

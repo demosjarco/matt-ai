@@ -1,10 +1,11 @@
 import { component$ } from '@builder.io/qwik';
+import { IDBMessage, IDBMessageContent } from '~/types';
 import Avatar from './Avatar';
 
-export default component$((props: { text: string; type: 'me' | 'other' }) => {
-	const { text, type } = props;
+export default component$((props: { role: IDBMessage['role']; content: IDBMessageContent[] }) => {
+	const { content, role } = props;
 
-	const isMe = type === 'me' ? true : false;
+	const isMe = role === 'user' ? true : false;
 
 	return (
 		<>
@@ -20,7 +21,11 @@ export default component$((props: { text: string; type: 'me' | 'other' }) => {
 							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
 						</div>
 						<div class={`leading-1.5 flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
-							<p class="text-sm font-normal text-gray-900 dark:text-white">{text}</p>
+							<p class="text-sm font-normal text-gray-900 dark:text-white">
+								{content.map((data) => {
+									return <pre>{JSON.stringify(data, null, '\t')}</pre>;
+								})}
+							</p>
 						</div>
 						<span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400 ${isMe ? 'justify-end' : ''}`}>Delivered</span>
 					</div>

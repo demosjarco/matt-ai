@@ -1,9 +1,11 @@
-import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { $, component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { Form, type DocumentHead } from '@builder.io/qwik-city';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
+import { IDBMessages } from '../../IDB/messages';
 import { isLocalEdge, useConversationId, useUserUpdateConversation } from '../../routes/layout';
+import type { IDBMessage } from '../../types';
 import Message from './Message';
 
 export default component$(() => {
@@ -12,23 +14,42 @@ export default component$(() => {
 	const createConversation = useUserUpdateConversation();
 	const formRef = useSignal<HTMLFormElement>();
 
-	const messages = useSignal<
-		{
-			type: 'me' | 'other';
-			text: string;
-		}[]
-	>([]);
+	const messageHistory = useSignal<IDBMessage[]>([]);
 
-	useVisibleTask$(({ track }) => {
+	useVisibleTask$(async ({ track }) => {
 		track(() => conversationId.value);
 
-		if (!conversationId.value) {
+		if (!conversationId.value || isNaN(Number(conversationId.value))) {
 			return;
 		}
 
-		messages.value = [];
+		console.debug('Pulling convo', conversationId.value, Number(conversationId.value));
+		const initialConversation = await new IDBMessages().getMessagesForConversation(Number(conversationId.value));
+		console.debug('messages for convo', initialConversation);
 
+		messageHistory.value = initialConversation;
 	});
+
+	const sendMessage = $(
+		(message: string) =>
+			new Promise<IDBMessage>((resolve, reject) => {
+				new IDBMessages()
+					.saveMessage({
+						role: 'user',
+						content: [
+							{
+								text: message,
+								model_used: null,
+							},
+						],
+					})
+					.then((fullMessage) => {
+						messageHistory.value.push(fullMessage);
+						resolve(fullMessage);
+					})
+					.catch(reject);
+			}),
+	);
 
 	return (
 		<>
@@ -37,8 +58,8 @@ export default component$(() => {
 					<div class="flex flex-col">
 						<div class="grid grid-cols-12 gap-y-2">
 							<div class="text-3xl text-white">{conversationId.value}</div>
-							{messages.value.map((message, index) => {
-								return <Message key={`message-${index}`} type={message.type} text={message.text} />;
+							{messageHistory.value.map((message, index) => {
+								return <Message key={`message-${index}`} role={message.role} content={message.content} />;
 							})}
 						</div>
 					</div>
@@ -46,13 +67,27 @@ export default component$(() => {
 				<Form
 					action={createConversation}
 					ref={formRef}
-					onSubmitCompleted$={(event) => {
-						console.log('ASU DUDE', event);
-						window.history.replaceState({}, '', '/c/123');
-						if (formRef.value) {
-							formRef.value.reset();
-						}
-					}}
+					spaReset={true}
+					onSubmitCompleted$={(event, form) =>
+						new Promise<void>((resolve, reject) => {
+							if (createConversation.status && createConversation.status >= 200 && createConversation.status < 300) {
+								if (createConversation.value && createConversation.value.sanitizedMessage) {
+									sendMessage(createConversation.value.sanitizedMessage)
+										.then((message) => {
+											window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
+											resolve();
+										})
+										.catch(reject);
+								} else {
+									reject();
+									// Bad form
+								}
+							} else {
+								// Failed turnstile
+								reject();
+							}
+						})
+					}
 					class="flex h-16 w-full flex-row items-center bg-white p-2 dark:bg-slate-800">
 					<div>
 						<button class="flex items-center justify-center text-gray-400 hover:text-gray-600">
