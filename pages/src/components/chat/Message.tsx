@@ -15,7 +15,7 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 
 					<div class="flex w-full flex-col gap-1">
 						<div class={`flex items-center space-x-2 rtl:space-x-reverse ${isMe ? 'justify-end' : ''}`}>
-							<span class="text-sm font-semibold text-gray-900 dark:text-white">Bonnie Green</span>
+							<span class="text-sm font-semibold text-gray-900 dark:text-white">{props.message.role}</span>
 							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(props.userLocale)}</span>
 						</div>
 						<div class={`leading-1.5 flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
