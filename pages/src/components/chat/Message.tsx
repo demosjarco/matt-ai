@@ -23,7 +23,7 @@ export default component$((props: { message: IDBMessage }) => {
 								<pre class="whitespace-pre-wrap text-balance">{JSON.stringify(props, null, '\t')}</pre>
 							</p>
 						</div>
-						<span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400 ${isMe ? 'justify-end' : ''}`}>Delivered</span>
+						{isMe ? undefined : <span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400 ${isMe ? 'justify-end' : ''}`}>Delivered</span>}
 					</div>
 				</div>
 			</div>
