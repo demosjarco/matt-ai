@@ -47,8 +47,8 @@ export enum IDBConversationIndexes {
 	conversationId = 'id',
 }
 export enum IDBMessageIndexes {
-	messageId = 'message_id',
 	conversationId = 'conversation_id',
+	messageId = 'message_id',
 	contentVersion = 'content_version',
 	birthTime = 'btime',
 	conversationIdMessageIdContentVersion = `${conversationId}|${messageId}|${contentVersion}`,
