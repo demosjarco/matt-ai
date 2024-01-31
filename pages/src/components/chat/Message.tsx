@@ -19,8 +19,8 @@ export default component$((props: { message: IDBMessage }) => {
 							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
 						</div>
 						<div class={`leading-1.5 flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
-							<p class="text-sm font-normal text-gray-900 dark:text-white">
-								<pre>{JSON.stringify(props, null, '\t')}</pre>
+							<p class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white">
+								<pre class="whitespace-pre-wrap text-balance">{JSON.stringify(props, null, '\t')}</pre>
 							</p>
 						</div>
 						<span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400 ${isMe ? 'justify-end' : ''}`}>Delivered</span>
