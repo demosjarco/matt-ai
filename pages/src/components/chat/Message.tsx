@@ -2,7 +2,7 @@ import { component$ } from '@builder.io/qwik';
 import type { IDBMessage } from '../../types';
 import Avatar from './Avatar';
 
-export default component$((props: { message: IDBMessage }) => {
+export default component$((props: { message: IDBMessage; userLocale?: string }) => {
 	const isMe = props.message.role === 'user' ? true : false;
 
 	return (
@@ -16,7 +16,7 @@ export default component$((props: { message: IDBMessage }) => {
 					<div class="flex w-full flex-col gap-1">
 						<div class={`flex items-center space-x-2 rtl:space-x-reverse ${isMe ? 'justify-end' : ''}`}>
 							<span class="text-sm font-semibold text-gray-900 dark:text-white">Bonnie Green</span>
-							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
+							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(props.userLocale)}</span>
 						</div>
 						<div class={`leading-1.5 flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
 							<p class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white">

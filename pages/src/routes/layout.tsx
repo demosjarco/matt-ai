@@ -37,6 +37,29 @@ export const isLocalEdge = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
 });
 
+export const getUserLocale = routeLoader$(function ({ request }) {
+	const acceptLanguage = request.headers.get('Accept-Language');
+	if (!acceptLanguage) return null;
+
+	const languages = acceptLanguage
+		.split(',')
+		.map((lang) => {
+			const [code, weight] = lang.trim().split(';q=');
+			return {
+				code: code,
+				weight: weight ? parseFloat(weight) : 1,
+			};
+		})
+		.sort((a, b) => b.weight - a.weight);
+
+	if (languages.length > 0) {
+		const topLanguage = languages[0]!.code;
+		return topLanguage !== '*' ? topLanguage : null;
+	} else {
+		return null;
+	}
+});
+
 export default component$(() => {
 	return (
 		<>
