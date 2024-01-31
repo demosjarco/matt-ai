@@ -39,7 +39,6 @@ export abstract class IDBBase {
 		table.createIndex(IDBConversationIndexes.modifiedTime, IDBConversationIndexes.modifiedTime, { unique: false, multiEntry: false });
 
 		// For safety
-		table.createIndex(IDBConversationIndexes.conversationId, IDBConversationIndexes.conversationId, { unique: true });
 
 		// For speed
 	}
