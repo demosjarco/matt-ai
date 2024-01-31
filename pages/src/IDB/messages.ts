@@ -44,8 +44,9 @@ export class IDBMessages extends IDBBase {
 			this.db
 				.then((db) =>
 					new Promise<IDBMessage['conversation_id']>((resolve, reject) => {
-						if (message.conversation_id) {
-							resolve(message.conversation_id);
+						// IDB has 1-based autoincrement
+						if ('conversation_id' in message && !isNaN(message.conversation_id!) && message.conversation_id! > 0) {
+							resolve(message.conversation_id!);
 						} else {
 							const transaction = db.transaction('conversations', 'readwrite');
 							transaction.onerror = reject;
