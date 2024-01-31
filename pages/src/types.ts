@@ -1,4 +1,5 @@
 import type { Ai } from '@cloudflare/ai';
+import type { AiTextGenerationOutput } from '@cloudflare/ai/dist/tasks/text-generation';
 
 export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
@@ -52,13 +53,19 @@ export interface IDBMessage {
 	btime: Date;
 	role: 'system' | 'user' | 'assistant';
 	content: IDBMessageContent[];
-	content_cards: IDBMessageContentCards[];
 	content_chips: IDBMessageContentChips[];
 	content_references: IDBMessageContentReferences[];
 }
-export interface IDBMessageContent extends Record<string, any> {
-	model_used: Parameters<Ai['run']>[0] | null;
-}
-export interface IDBMessageContentCards extends Record<string, any> {}
 export interface IDBMessageContentChips extends Record<string, any> {}
 export interface IDBMessageContentReferences extends Record<string, any> {}
+
+export interface IDBMessageContent {
+	action?: Record<string, any>;
+	text?: IDBMessageContentText;
+	image?: IDBMessageContentImage;
+	card?: IDBMessageContentCard;
+	model_used: Parameters<Ai['run']>[0] | null;
+}
+export type IDBMessageContentText = string;
+export interface IDBMessageContentCard extends Record<string, any> {}
+export type IDBMessageContentImage = AiTextGenerationOutput;

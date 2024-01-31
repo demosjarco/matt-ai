@@ -101,7 +101,6 @@ export class IDBMessages extends IDBBase {
 									const insertMessage: Omit<IDBMessage, 'id'> & Pick<Partial<IDBMessage>, 'id'> = {
 										content_version: 0,
 										btime: new Date(),
-										content_cards: [],
 										content_chips: [],
 										content_references: [],
 										...message,
