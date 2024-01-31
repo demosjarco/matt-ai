@@ -58,7 +58,7 @@ export default component$(() => {
 						<div class="grid grid-cols-12 gap-y-2">
 							<div class="text-3xl text-white">{conversationId.value}</div>
 							{messageHistory.value.map((message, index) => {
-								return <Message key={`message-${index}`} role={message.role} content={message.content} />;
+								return <Message key={`message-${index}`} message={message} />;
 							})}
 						</div>
 					</div>
