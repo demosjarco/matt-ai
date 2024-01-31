@@ -18,7 +18,7 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 };
 
 export const useConversationId = routeLoader$<string>(({ params }) => {
-	return params['conversationId'] || '';
+	return params['conversationId'] ?? '';
 });
 
 export const useUserUpdateConversation = routeAction$(
