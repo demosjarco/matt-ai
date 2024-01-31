@@ -1,14 +1,13 @@
 import { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import { CFBase } from '../helpers/base.mjs';
+import type { IDBMessageContent } from '../types';
 
 export class MessageProcessing extends CFBase {
 	public preProcess(message: string) {
-		return new Promise<void>((resolve, reject) => {
-			function onSuccess(messageAction: MessageAction) {
-				console.log('I should do:', JSON.stringify(messageAction, null, '\t'));
-				resolve();
-			}
-
+		return new Promise<{
+			action: MessageAction;
+			modelUsed: IDBMessageContent['model_used'];
+		}>((resolve, reject) => {
 			const query = 'query ($message: NonEmptyString!, $longer: Boolean!) { messageAction(message: $message, longer: $longer) }';
 			this.fetchBackend({
 				query,
@@ -17,7 +16,12 @@ export class MessageProcessing extends CFBase {
 					longer: true,
 				},
 			})
-				.then((response) => onSuccess((response as { messageAction: MessageAction }).messageAction))
+				.then((response) =>
+					resolve({
+						action: (response as { messageAction: MessageAction }).messageAction,
+						modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
+					}),
+				)
 				.catch(() =>
 					this.fetchBackend({
 						query,
@@ -26,7 +30,12 @@ export class MessageProcessing extends CFBase {
 							longer: false,
 						},
 					})
-						.then((response) => onSuccess((response as { messageAction: MessageAction }).messageAction))
+						.then((response) =>
+							resolve({
+								action: (response as { messageAction: MessageAction }).messageAction,
+								modelUsed: '@cf/meta/llama-2-7b-chat-int8',
+							}),
+						)
 						.catch(reject),
 				);
 		});
