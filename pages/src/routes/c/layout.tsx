@@ -1,4 +1,4 @@
-import type { RequestHandler } from '@builder.io/qwik-city';
+import { type RequestHandler } from '@builder.io/qwik-city';
 import type { ChatFormSubmit, EnvVars } from '../../types';
 
 export const onPost: RequestHandler = async ({ platform, request, parseBody, send }) => {
