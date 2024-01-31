@@ -9,8 +9,8 @@ import { getUserLocale, isLocalEdge, useConversationId, useUserUpdateConversatio
 import type { IDBMessage } from '../../types';
 import Message from './Message';
 
-const preProcess = server$(function (message: Parameters<MessageProcessing['preProcess']>[0]) {
-	return new MessageProcessing(this.platform).preProcess(message);
+const aiProcess = server$(function (message: Parameters<MessageProcessing['process']>[0]) {
+	return new MessageProcessing(this.platform).process(message);
 });
 
 const serverConversationId = server$(function () {
@@ -65,7 +65,7 @@ export default component$(() => {
 						})
 						.catch(mainReject),
 					new Promise<void>((resolve, reject) =>
-						preProcess(message)
+						aiProcess(message)
 							.then(async (messageAction) =>
 								new IDBMessages()
 									.saveMessage({

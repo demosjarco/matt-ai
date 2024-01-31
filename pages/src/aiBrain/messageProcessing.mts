@@ -3,7 +3,7 @@ import { CFBase } from '../helpers/base.mjs';
 import type { IDBMessageContent } from '../types';
 
 export class MessageProcessing extends CFBase {
-	public preProcess(message: string) {
+	protected preProcess(message: string) {
 		return new Promise<{
 			action: MessageAction;
 			modelUsed: IDBMessageContent['model_used'];
@@ -39,5 +39,13 @@ export class MessageProcessing extends CFBase {
 						.catch(reject),
 				);
 		});
+	}
+
+	public process(message: string) {
+		return new Promise<Awaited<ReturnType<typeof this.preProcess>>>((resolve, reject) =>
+			this.preProcess(message)
+				.then(({ action, modelUsed }) => resolve({ action, modelUsed }))
+				.catch(reject),
+		);
 	}
 }
