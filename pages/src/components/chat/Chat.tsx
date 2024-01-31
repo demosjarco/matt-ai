@@ -60,7 +60,7 @@ export default component$(() => {
 							],
 						})
 						.then((fullMessage) => {
-							messageHistory.value.push(fullMessage);
+							messageHistory.value = [...messageHistory.value, fullMessage];
 							mainResolve(fullMessage);
 						})
 						.catch(mainReject),
@@ -82,7 +82,7 @@ export default component$(() => {
 										],
 									})
 									.then((fullMessage) => {
-										messageHistory.value.push(fullMessage);
+										messageHistory.value = [...messageHistory.value, fullMessage];
 										resolve();
 									})
 									.catch(reject),
