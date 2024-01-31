@@ -50,6 +50,7 @@ export abstract class IDBBase {
 
 		// For search
 		table.createIndex(IDBMessageIndexes.conversationId, IDBMessageIndexes.conversationId, { unique: false, multiEntry: false });
+		table.createIndex(IDBMessageIndexes.messageId, IDBMessageIndexes.messageId, { unique: false, multiEntry: false });
 		table.createIndex(IDBMessageIndexes.contentVersion, IDBMessageIndexes.contentVersion, { unique: false, multiEntry: false });
 		table.createIndex(IDBMessageIndexes.birthTime, IDBMessageIndexes.birthTime, { unique: false, multiEntry: false });
 
