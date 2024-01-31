@@ -13,6 +13,11 @@ const preProcess = server$(function (message: Parameters<MessageProcessing['preP
 	return new MessageProcessing(this.platform).preProcess(message);
 });
 
+const serverConversationId = server$(function () {
+	const id = this.params['conversationId'] ?? '';
+	return isNaN(Number(id)) ? undefined : Number(id);
+});
+
 export default component$(() => {
 	const isLocal = isLocalEdge();
 	const userLocale = getUserLocale();
@@ -42,6 +47,10 @@ export default component$(() => {
 				Promise.all([
 					new IDBMessages()
 						.saveMessage({
+							/**
+							 * @todo fall back to server$ conversation id because signal isn't being updated
+							 */
+							conversation_id: conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId(),
 							role: 'user',
 							content: [
 								{
@@ -57,14 +66,17 @@ export default component$(() => {
 						.catch(mainReject),
 					new Promise<void>((resolve, reject) =>
 						preProcess(message)
-							.then((messageAction) =>
+							.then(async (messageAction) =>
 								new IDBMessages()
 									.saveMessage({
-										conversation_id: Number(conversationId.value),
-										role: 'assistant',
+										/**
+										 * @todo fall back to server$ conversation id because signal isn't being updated
+										 */
+										conversation_id: conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId(),
+										role: 'system',
 										content: [
 											{
-												text: messageAction.action,
+												action: messageAction.action,
 												model_used: messageAction.modelUsed,
 											},
 										],
