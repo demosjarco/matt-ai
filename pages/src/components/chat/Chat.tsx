@@ -13,6 +13,31 @@ const aiProcess = server$(function (message: Parameters<MessageProcessing['proce
 	return new MessageProcessing(this.platform).process(message);
 });
 
+const realtimeData = async function* () {
+	while (true) {
+		// Infinite loop
+		await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for 3 seconds
+		yield Math.random(); // Yield a random number
+	}
+};
+
+const realtimePing = server$(async function* () {
+	const data = realtimeData();
+
+	// eslint-disable-next-line`
+	while (true) {
+		const { value, done } = await data.next();
+
+		if (done) {
+			break;
+		}
+
+		yield value;
+	}
+
+	return data;
+});
+
 const serverConversationId = server$(function () {
 	const id = this.params['conversationId'] ?? '';
 	return isNaN(Number(id)) ? undefined : Number(id);
@@ -25,7 +50,17 @@ export default component$(() => {
 	const createConversation = useUserUpdateConversation();
 	const formRef = useSignal<HTMLFormElement>();
 
+	const generatedData = useSignal<number | undefined>(undefined);
+
 	const messageHistory = useSignal<IDBMessage[]>([]);
+
+	useVisibleTask$(async () => {
+		const data = await realtimePing();
+
+		for await (const content of data) {
+			generatedData.value = content;
+		}
+	});
 
 	useVisibleTask$(async ({ track }) => {
 		track(() => conversationId.value);
@@ -100,6 +135,7 @@ export default component$(() => {
 					<div class="flex flex-col">
 						<div class="grid grid-cols-12 gap-y-2">
 							<div class="text-3xl text-white">{conversationId.value}</div>
+							<div class="text-4xl text-black dark:text-white">{JSON.stringify(generatedData.value) || 'LOADING'}</div>
 							{messageHistory.value.map((message, index) => {
 								return <Message key={`message-${index}`} message={message} userLocale={userLocale.value ?? undefined} />;
 							})}
