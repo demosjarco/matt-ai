@@ -4,7 +4,7 @@ import { CFBase } from '../helpers/base.mjs';
 import type { IDBMessageContent } from '../types';
 
 export class MessageProcessing extends CFBase {
-	protected preProcess(message: RoleScopedChatInput['content']) {
+	public preProcess(message: RoleScopedChatInput['content']) {
 		return new Promise<{
 			action: MessageAction;
 			modelUsed: IDBMessageContent['model_used'];
