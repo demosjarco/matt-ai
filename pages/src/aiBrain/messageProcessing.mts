@@ -1,9 +1,10 @@
+import type { RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import { CFBase } from '../helpers/base.mjs';
 import type { IDBMessageContent } from '../types';
 
 export class MessageProcessing extends CFBase {
-	protected preProcess(message: string) {
+	protected preProcess(message: RoleScopedChatInput['content']) {
 		return new Promise<{
 			action: MessageAction;
 			modelUsed: IDBMessageContent['model_used'];
