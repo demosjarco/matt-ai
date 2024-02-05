@@ -2,7 +2,7 @@ import { IDBMessageIndexes } from '../extras';
 import type { IDBConversation, IDBMessage } from '../types';
 import { IDBBase } from './base';
 
-type MessageSaveGuarantee = 'role' | 'content';
+type MessageSaveGuarantee = 'role';
 
 export class IDBMessages extends IDBBase {
 	public getMessagesForConversation(cid: number) {
@@ -102,6 +102,7 @@ export class IDBMessages extends IDBBase {
 									const insertMessage: Omit<IDBMessage, 'id'> & Pick<Partial<IDBMessage>, 'id'> = {
 										content_version: 0,
 										btime: new Date(),
+										content: [],
 										content_chips: [],
 										content_references: [],
 										...message,
