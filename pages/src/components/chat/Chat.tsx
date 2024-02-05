@@ -120,19 +120,42 @@ export default component$(() => {
 
 							Promise.all([
 								aiResponse('@cf/meta/llama-2-7b-chat-fp16', [{ role: 'user', content: message }]).then(async (chatResponse) => {
-									for await (const content of chatResponse) {
-										console.debug('aiResponse', content);
+									let accumulatedMessage: string = '';
+									for await (const chatResponseChunk of chatResponse) {
+										accumulatedMessage += chatResponseChunk;
+
+										/**
+										 * @todo @georgeportillo start visually rendering chunks
+										 */
+										console.debug('aiResponse', chatResponseChunk);
 									}
-									/**
-									 * @todo need to save complete message to IDB
-									 */
+									// Save to local db
+									await new IDBMessages().updateMessage({
+										id: fullMessage.id,
+										content: [
+											{
+												text: accumulatedMessage,
+												model_used: '@cf/meta/llama-2-7b-chat-fp16',
+											},
+										],
+									});
 								}),
-								aiPreProcess(message).then((messageAction) => {
-									console.debug('We need to do', messageAction);
+								aiPreProcess(message).then(({ action, modelUsed }) => {
+									console.debug('We need to do', action);
 									/**
 									 * @todo visually update chat message
 									 */
-									const actions: Promise<any>[] = [new IDBMessages().updateMessage(fullMessage)];
+									const actions: Promise<any>[] = [
+										new IDBMessages().updateMessage({
+											id: fullMessage.id,
+											content: [
+												{
+													action,
+													model_used: modelUsed,
+												},
+											],
+										}),
+									];
 									/**
 									 * @todo tasks based on action
 									 */
