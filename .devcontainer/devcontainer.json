@@ -54,7 +54,7 @@
 	// "onCreateCommand": {},
 	// "updateContentCommand": {},
 	"postCreateCommand": {
-		"fixMountPermissions": ["sudo", "chown", "node", "node_modules"],
+		"fixMountPermissions": ["sudo", "chown", "-R", "node", "node_modules"],
 		"setupPackages": ["npm", "ci", "--include-workspace-root", "--workspaces"]
 	},
 	"postStartCommand": {
