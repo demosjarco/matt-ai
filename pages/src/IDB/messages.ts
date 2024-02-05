@@ -1,4 +1,4 @@
-import { IDBMessageIndexes } from '../extras';
+import { IDBMessageIndexes, deepMerge } from '../extras';
 import type { IDBConversation, IDBMessage } from '../types';
 import { IDBBase } from './base';
 
@@ -67,7 +67,7 @@ export class IDBMessages extends IDBBase {
 							const transaction = db.transaction('messages', 'readwrite');
 							transaction.onerror = mainReject;
 
-							const insertMessage: IDBMessage = { ...originalMessage, ...message };
+							const insertMessage = deepMerge(originalMessage, message);
 
 							const insert = transaction.objectStore(transaction.objectStoreNames[0]!).add(insertMessage);
 							insert.onerror = mainReject;
