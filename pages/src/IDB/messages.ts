@@ -3,6 +3,7 @@ import type { IDBConversation, IDBMessage } from '../types';
 import { IDBBase } from './base';
 
 type MessageSaveGuarantee = 'role';
+type MessageGuarantee = Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>;
 
 export class IDBMessages extends IDBBase {
 	public getMessagesForConversation(cid: number) {
@@ -39,7 +40,7 @@ export class IDBMessages extends IDBBase {
 		);
 	}
 
-	public saveMessage(message: Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>) {
+	public saveMessage(message: MessageGuarantee) {
 		return new Promise<IDBMessage>((mainResolve, mainReject) =>
 			this.db
 				.then((db) =>
