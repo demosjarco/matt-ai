@@ -88,6 +88,7 @@ export default component$(() => {
 							 */
 							conversation_id: convId,
 							role: 'user',
+							status: true,
 							content: [
 								{
 									text: message,

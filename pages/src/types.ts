@@ -53,6 +53,7 @@ export interface IDBMessage {
 	content_version: number;
 	btime: Date;
 	role: 'system' | 'user' | 'assistant';
+	status: boolean | ('typing' | 'deciding' | 'translating' | 'historySearching' | 'webSearching' | 'imageGenerating')[];
 	content: IDBMessageContent[];
 	content_chips: IDBMessageContentChips[];
 	content_references: IDBMessageContentReferences[];
