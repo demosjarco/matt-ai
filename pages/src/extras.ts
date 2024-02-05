@@ -64,7 +64,12 @@ export function deepMerge<T>(base: T, incoming: Partial<T>): T {
 			const incomingValue = incoming[key];
 			const baseValue = (base as any)[key];
 
-			if (incomingValue && typeof incomingValue === 'object') {
+			// Check if both incomingValue and baseValue are arrays
+			if (Array.isArray(incomingValue) && Array.isArray(baseValue)) {
+				// Type assertion used here to bypass the type checking
+				output[key] = baseValue.concat(incomingValue) as any;
+			} else if (incomingValue && typeof incomingValue === 'object') {
+				// @ts-expect-error
 				output[key] = baseValue !== null && key in base ? deepMerge(baseValue, incomingValue) : incomingValue;
 			} else {
 				(output as any)[key] = incomingValue;
