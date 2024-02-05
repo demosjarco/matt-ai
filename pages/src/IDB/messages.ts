@@ -69,7 +69,7 @@ export class IDBMessages extends IDBBase {
 
 							const insertMessage = deepMerge(originalMessage, message);
 
-							const insert = transaction.objectStore(transaction.objectStoreNames[0]!).add(insertMessage);
+							const insert = transaction.objectStore(transaction.objectStoreNames[0]!).put(insertMessage);
 							insert.onerror = mainReject;
 							insert.onsuccess = () => mainResolve(insertMessage);
 
