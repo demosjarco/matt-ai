@@ -1,16 +1,50 @@
 import { $, component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { Form, server$, type DocumentHead } from '@builder.io/qwik-city';
+import { Ai } from '@cloudflare/ai';
+import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
 import { IDBMessages } from '../../IDB/messages';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
 import { getUserLocale, isLocalEdge, useConversationId, useUserUpdateConversation } from '../../routes/layout';
-import type { IDBMessage } from '../../types';
+import type { EnvVars, IDBMessage } from '../../types';
 import Message from './Message';
 
-const aiProcess = server$(function (message: Parameters<MessageProcessing['process']>[0]) {
-	return new MessageProcessing(this.platform).process(message);
+const aiResponse = server$(async function* (model: Parameters<Ai['run']>[0], messages: RoleScopedChatInput[]) {
+	const stream = await (new Ai((this.platform.env as EnvVars).AI).run(model, { messages, stream: true }) as Promise<ReadableStream>);
+
+	const eventField = 'data';
+	const contentPrefix = `${eventField}: `;
+
+	let accumulatedData = '';
+	// @ts-expect-error
+	for await (const chunk of stream) {
+		const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
+		accumulatedData += decodedChunk;
+
+		let newlineIndex;
+		while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
+			// Found a newline
+			const line = accumulatedData.slice(0, newlineIndex);
+			accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
+
+			if (line.startsWith(contentPrefix)) {
+				const decodedString = line.substring(contentPrefix.length);
+				try {
+					// See if it's JSON
+					const decodedJson: Exclude<AiTextGenerationOutput, ReadableStream> = JSON.parse(decodedString);
+					// Return JSON
+					yield decodedJson.response;
+				} catch (error) {
+					// Not valid JSON - just ignore and move on
+				}
+			}
+		}
+	}
+});
+const aiPreProcess = server$(function (message: Parameters<MessageProcessing['process']>[0]) {
+	return new MessageProcessing(this.platform).preProcess(message);
 });
 
 const realtimeData = async function* () {
@@ -101,32 +135,48 @@ export default component$(() => {
 							mainResolve(fullMessage);
 						})
 						.catch(mainReject),
-					new Promise<void>((resolve, reject) =>
-						aiProcess(message)
-							.then(async (messageAction) =>
-								new IDBMessages()
-									.saveMessage({
-										/**
-										 * @todo fall back to server$ conversation id because signal isn't being updated
-										 */
-										conversation_id: conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId(),
-										role: 'system',
-										content: [
-											{
-												action: messageAction.action,
-												model_used: messageAction.modelUsed,
-											},
-										],
-									})
-									.then((fullMessage) => {
-										messageHistory.value = [...messageHistory.value, fullMessage];
-										resolve();
-									})
-									.catch(reject),
-							)
-							.catch(reject),
-					),
-				]);
+					new IDBMessages()
+						.saveMessage({
+							/**
+							 * @todo fall back to server$ conversation id because signal isn't being updated
+							 */
+							conversation_id: convId,
+							role: 'assistant',
+							status: false,
+						})
+						.then((fullMessage) => {
+							// Add placeholder
+							messageHistory.value = [...messageHistory.value, fullMessage];
+
+							/**
+							 * @todo Update status to
+							 * `status: ['typing', 'deciding'],`
+							 */
+
+							Promise.all([
+								aiResponse('@cf/meta/llama-2-7b-chat-fp16', [{ role: 'user', content: message }]).then(async (chatResponse) => {
+									for await (const content of chatResponse) {
+										console.debug('aiResponse', content);
+									}
+									/**
+									 * @todo need to save complete message to IDB
+									 */
+								}),
+								aiPreProcess(message).then((messageAction) => {
+									console.debug('We need to do', messageAction);
+									/**
+									 * @todo visually update chat message
+									 */
+									const actions: Promise<any>[] = [new IDBMessages().updateMessage(fullMessage)];
+									/**
+									 * @todo tasks based on action
+									 */
+									return Promise.all([actions]).catch(mainReject);
+								}),
+							]).catch(mainReject);
+						})
+						.catch(mainReject),
+				]).catch(mainReject);
 			}),
 	);
 
