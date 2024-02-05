@@ -1,5 +1,6 @@
 import type { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput } from '@cloudflare/ai/dist/tasks/text-generation';
+import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 
 export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
@@ -60,7 +61,7 @@ export interface IDBMessageContentChips extends Record<string, any> {}
 export interface IDBMessageContentReferences extends Record<string, any> {}
 
 export interface IDBMessageContent {
-	action?: Record<string, any>;
+	action?: MessageAction;
 	text?: IDBMessageContentText;
 	image?: IDBMessageContentImage;
 	card?: IDBMessageContentCard;
