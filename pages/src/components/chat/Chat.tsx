@@ -78,6 +78,7 @@ export default component$(() => {
 	const sendMessage = $(
 		(message: string) =>
 			new Promise<IDBMessage>(async (mainResolve, mainReject) => {
+				const convId = conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId();
 				// Run it in a `.all()` so that the promise chain stays alive until all finish, but don't wait to return promise
 				Promise.all([
 					new IDBMessages()
@@ -85,7 +86,7 @@ export default component$(() => {
 							/**
 							 * @todo fall back to server$ conversation id because signal isn't being updated
 							 */
-							conversation_id: conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId(),
+							conversation_id: convId,
 							role: 'user',
 							content: [
 								{
