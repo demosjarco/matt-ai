@@ -3,7 +3,8 @@ import type { IDBConversation, IDBMessage } from '../types';
 import { IDBBase } from './base';
 
 type MessageSaveGuarantee = 'role';
-type MessageGuarantee = Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>;
+type FullMessageGuarantee = Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>;
+type InternalMessageGuarantee = Pick<IDBMessage, 'id'> & Omit<Partial<IDBMessage>, 'id'>;
 
 export class IDBMessages extends IDBBase {
 	public getMessagesForConversation(cid: number) {
@@ -40,7 +41,47 @@ export class IDBMessages extends IDBBase {
 		);
 	}
 
-	public saveMessage(message: MessageGuarantee) {
+	public getMessage(message: InternalMessageGuarantee) {
+		return new Promise<IDBMessage>((resolve, reject) =>
+			this.db
+				.then((db) => {
+					const transaction = db.transaction('messages', 'readonly', { durability: 'relaxed' });
+					transaction.onerror = reject;
+
+					const select = transaction.objectStore(transaction.objectStoreNames[0]!).get(message.id);
+					select.onerror = reject;
+					select.onsuccess = () => resolve(select.result);
+
+					transaction.commit();
+				})
+				.catch(reject),
+		);
+	}
+
+	public updateMessage(message: InternalMessageGuarantee) {
+		return new Promise<IDBMessage>((mainResolve, mainReject) =>
+			this.db
+				.then((db) =>
+					this.getMessage(message)
+						.then((originalMessage) => {
+							const transaction = db.transaction('messages', 'readwrite');
+							transaction.onerror = mainReject;
+
+							const insertMessage: IDBMessage = { ...originalMessage, ...message };
+
+							const insert = transaction.objectStore(transaction.objectStoreNames[0]!).add(insertMessage);
+							insert.onerror = mainReject;
+							insert.onsuccess = () => mainResolve(insertMessage);
+
+							transaction.commit();
+						})
+						.catch(mainReject),
+				)
+				.catch(mainReject),
+		);
+	}
+
+	public saveMessage(message: FullMessageGuarantee) {
 		return new Promise<IDBMessage>((mainResolve, mainReject) =>
 			this.db
 				.then((db) =>
