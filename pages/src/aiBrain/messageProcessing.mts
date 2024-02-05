@@ -1,4 +1,4 @@
-import { MessageAction } from '../../../worker/aiTypes/MessageAction';
+import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import { CFBase } from '../helpers/base.mjs';
 import type { IDBMessageContent } from '../types';
 
