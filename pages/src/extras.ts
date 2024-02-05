@@ -56,10 +56,6 @@ export enum IDBMessageIndexes {
 }
 
 export function deepMerge<T>(base: T, incoming: Partial<T>): T {
-	if (base === null || incoming === null || typeof base !== 'object' || typeof incoming !== 'object') {
-		throw new Error('Both base and incoming should be non-null objects');
-	}
-
 	const output = { ...base } as T;
 
 	for (const key in incoming) {
