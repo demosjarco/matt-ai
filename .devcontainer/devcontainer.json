@@ -12,8 +12,8 @@
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": true,
 			"configureZshAsDefaultShell": true,
-			"installOhMyZsh": false,
-			"installOhMyZshConfig": false,
+			"installOhMyZsh": true,
+			"installOhMyZshConfig": true,
 			"upgradePackages": true,
 			"username": "node",
 			"nonFreePackages": true
