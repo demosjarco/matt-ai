@@ -54,3 +54,27 @@ export enum IDBMessageIndexes {
 	conversationIdMessageIdContentVersion = `${conversationId}|${messageId}|${contentVersion}`,
 	conversationIdMessageId = `${conversationId}|${messageId}`,
 }
+
+export function deepMerge<T>(base: T, incoming: Partial<T>): T {
+	if (base === null || incoming === null || typeof base !== 'object' || typeof incoming !== 'object') {
+		throw new Error('Both base and incoming should be non-null objects');
+	}
+
+	const output = { ...base } as T;
+
+	for (const key in incoming) {
+		// eslint-disable-next-line no-prototype-builtins
+		if (incoming.hasOwnProperty(key)) {
+			const incomingValue = incoming[key];
+			const baseValue = (base as any)[key];
+
+			if (incomingValue && typeof incomingValue === 'object') {
+				output[key] = baseValue !== null && key in base ? deepMerge(baseValue, incomingValue) : incomingValue;
+			} else {
+				(output as any)[key] = incomingValue;
+			}
+		}
+	}
+
+	return output;
+}
