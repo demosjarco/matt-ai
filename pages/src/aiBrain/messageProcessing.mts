@@ -1,3 +1,4 @@
+import { Ai } from '@cloudflare/ai';
 import type { RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import { CFBase } from '../helpers/base.mjs';
@@ -40,6 +41,39 @@ export class MessageProcessing extends CFBase {
 						.catch(reject),
 				);
 		});
+	}
+
+	public async *generateResponse(model: Parameters<Ai['run']>[0], messages: RoleScopedChatInput[]) {
+		const stream = await (new Ai(this.helpers.c.env.AI).run(model, { messages, stream: true }) as Promise<ReadableStream>);
+
+		const eventField = 'data';
+		const contentPrefix = `${eventField}: `;
+
+		let accumulatedData = '';
+		// @ts-expect-error
+		for await (const chunk of stream) {
+			const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
+			accumulatedData += decodedChunk;
+
+			let newlineIndex;
+			while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
+				// Found a newline
+				const line = accumulatedData.slice(0, newlineIndex);
+				accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
+
+				if (line.startsWith(contentPrefix)) {
+					const decodedString = line.substring(contentPrefix.length);
+					try {
+						// See if it's JSON
+						const decodedJson: Exclude<AiTextGenerationOutput, ReadableStream> = JSON.parse(decodedString);
+						// Return JSON
+						yield decodedJson.response;
+					} catch (error) {
+						// Not valid JSON - just ignore and move on
+					}
+				}
+			}
+		}
 	}
 
 	public process(message: string) {
