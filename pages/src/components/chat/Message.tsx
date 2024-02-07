@@ -1,4 +1,4 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FaIcon } from 'qwik-fontawesome';
 import type { IDBMessage } from '../../types';
@@ -6,6 +6,15 @@ import Avatar from './Avatar';
 
 export default component$((props: { message: IDBMessage; userLocale?: string }) => {
 	const isMe = props.message.role === 'user' ? true : false;
+	const imageContentIndex = props.message.content.findIndex((record) => 'image' in record);
+	const imageContent = props.message.content[imageContentIndex]?.image;
+	const imageName = useSignal<string>('');
+
+	useVisibleTask$(async () => {
+		if (imageContentIndex >= 0) {
+			imageName.value = [...new Uint8Array(await crypto.subtle.digest('SHA-256', imageContent!.buffer))].map((b) => b.toString(16).padStart(2, '0')).join('');
+		}
+	});
 
 	return (
 		<>
@@ -25,18 +34,14 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 								{/* <pre class="whitespace-pre-wrap text-balance">{JSON.stringify(props.message, null, '\t')}</pre> */}
 								{props.message.content[props.message.content.findIndex((record) => 'text' in record)]?.text?.trim() ?? ''}
 							</p>
-							{props.message.content.findIndex((record) => 'image' in record) >= 0 ? (
+							{imageContentIndex >= 0 ? (
 								<div class="group relative my-2.5">
 									<div class="absolute flex h-full w-full items-center justify-center rounded-lg bg-gray-900/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-										<button data-tooltip-target="download-image" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 hover:bg-white/50 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:text-white">
+										<a href={URL.createObjectURL(new Blob([imageContent!.buffer], { type: 'image/png' }))} download={`${imageName.value}.png`} class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 hover:bg-white/50 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:text-white">
 											<FaIcon icon={faDownload} />
-										</button>
-										<div id="download-image" role="tooltip" class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700">
-											Download image
-											<div class="tooltip-arrow" data-popper-arrow></div>
-										</div>
+										</a>
 									</div>
-									<img src={URL.createObjectURL(new Blob([props.message.content[props.message.content.findIndex((record) => 'image' in record)]!.image!], { type: 'image/png' }))} class="rounded-lg" alt={props.message.content[props.message.content.findIndex((record) => 'image' in record)]?.action?.imageGenerate ?? undefined} />
+									<img src={URL.createObjectURL(new Blob([imageContent!.buffer], { type: 'image/png' }))} class="rounded-lg" alt={props.message.content[imageContentIndex]?.action?.imageGenerate ?? undefined} />
 								</div>
 							) : undefined}
 						</div>
