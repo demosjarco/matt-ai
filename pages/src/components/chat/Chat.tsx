@@ -2,8 +2,10 @@ import { $, component$, useSignal, useStore, useVisibleTask$ } from '@builder.io
 import { Form, server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
+import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/tasks/text-to-image';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
+import { Buffer } from 'node:buffer';
 import { FaIcon } from 'qwik-fontawesome';
 import { IDBMessages } from '../../IDB/messages';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
@@ -45,6 +47,26 @@ const aiResponse = server$(async function* (model: Parameters<Ai['run']>[0], mes
 });
 const aiPreProcess = server$(function (message: Parameters<MessageProcessing['preProcess']>[0]) {
 	return new MessageProcessing(this.platform).preProcess(message);
+});
+const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prompt']) {
+	try {
+		const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/stabilityai/stable-diffusion-xl-base-1.0', { prompt, num_steps: 20 });
+		return {
+			raw: Buffer.from(imageGeneration.buffer).toString('base64'),
+			model: '@cf/stabilityai/stable-diffusion-xl-base-1.0',
+		};
+	} catch (error) {
+		try {
+			const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/runwayml/stable-diffusion-v1-5', { prompt, num_steps: 20 });
+			return {
+				raw: Buffer.from(imageGeneration.buffer).toString('base64'),
+				model: '@cf/runwayml/stable-diffusion-v1-5',
+			};
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	}
 });
 
 const serverConversationId = server$(function () {
@@ -128,7 +150,6 @@ export default component$(() => {
 											text: '',
 											model_used: '@cf/meta/llama-2-7b-chat-fp16',
 										};
-										console.debug(1);
 
 										let previousText = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'text' in record);
 										if (previousText >= 0) {
@@ -136,37 +157,28 @@ export default component$(() => {
 										} else {
 											newMessageHistory[fullMessage.id]!.content.push(composedInsert);
 										}
-										console.debug(2);
 
 										for await (const chatResponseChunk of chatResponse) {
 											composedInsert.text += chatResponseChunk ?? '';
 											newMessageHistory[fullMessage.id]!.content[previousText] = composedInsert;
-
-											console.debug(2.5, composedInsert.text);
 										}
-										console.debug(3);
 
 										if (Array.isArray(newMessageHistory[fullMessage.id]!.status)) {
 											// @ts-expect-error
 											newMessageHistory[fullMessage.id]!.status.filter((item) => item !== 'typing');
 										}
-										console.debug(4);
 
 										// Save to local db
 										await new IDBMessages().updateMessage({
 											id: fullMessage.id,
 											content: [composedInsert],
 										});
-										console.debug(5);
 									}),
 									aiPreProcess(message).then(({ action, modelUsed }) => {
-										console.debug(6, action);
-
 										const composedInsert: IDBMessageContent = {
 											action,
 											model_used: modelUsed,
 										};
-										console.debug(7, composedInsert);
 
 										const previousAction = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'action' in record);
 										if (previousAction >= 0) {
@@ -174,13 +186,12 @@ export default component$(() => {
 										} else {
 											newMessageHistory[fullMessage.id]!.content.push(composedInsert);
 										}
-										console.debug(8);
 
 										if (Array.isArray(newMessageHistory[fullMessage.id]!.status)) {
 											// @ts-expect-error
 											newMessageHistory[fullMessage.id]!.status.filter((item) => item !== 'deciding');
 										}
-										console.debug(9);
+										console.debug(1);
 
 										const actions: Promise<any>[] = [
 											new IDBMessages().updateMessage({
@@ -188,10 +199,31 @@ export default component$(() => {
 												content: [composedInsert],
 											}),
 										];
-										/**
-										 * @todo tasks based on action
-										 */
-										console.debug(10);
+										if (action.imageGenerate) {
+											actions.push(
+												aiImageGenerate(action.imageGenerate).then(({ raw, model }) => {
+													const image = Uint8Array.from(atob(raw), (char) => char.charCodeAt(0));
+													console.debug(2, raw, image);
+
+													const composedInsert: IDBMessageContent = {
+														image,
+														model_used: model as Parameters<Ai['run']>[0],
+													};
+
+													const previousImage = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'image' in record);
+													if (previousImage >= 0) {
+														newMessageHistory[fullMessage.id]!.content[previousImage] = composedInsert;
+													} else {
+														newMessageHistory[fullMessage.id]!.content.push(composedInsert);
+													}
+
+													new IDBMessages().updateMessage({
+														id: fullMessage.id,
+														content: [composedInsert],
+													});
+												}),
+											);
+										}
 										return Promise.all([actions]).catch(mainReject);
 									}),
 								]).catch(mainReject);
