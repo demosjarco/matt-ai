@@ -75,12 +75,4 @@ export class MessageProcessing extends CFBase {
 			}
 		}
 	}
-
-	public process(message: string) {
-		return new Promise<Awaited<ReturnType<typeof this.preProcess>>>((resolve, reject) =>
-			this.preProcess(message)
-				.then(({ action, modelUsed }) => resolve({ action, modelUsed }))
-				.catch(reject),
-		);
-	}
 }

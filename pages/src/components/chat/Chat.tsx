@@ -12,7 +12,7 @@ import Message from './Message';
 const aiResponse = server$(async function* (model: Parameters<MessageProcessing['generateResponse']>[0], messages: Parameters<MessageProcessing['generateResponse']>[1]) {
 	return new MessageProcessing(this.platform).generateResponse(model, messages);
 });
-const aiPreProcess = server$(function (message: Parameters<MessageProcessing['process']>[0]) {
+const aiPreProcess = server$(function (message: Parameters<MessageProcessing['preProcess']>[0]) {
 	return new MessageProcessing(this.platform).preProcess(message);
 });
 
