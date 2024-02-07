@@ -130,9 +130,9 @@ export default component$(() => {
 										};
 										console.debug(1);
 
-										let previousAction = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'text' in record);
-										if (previousAction >= 0) {
-											newMessageHistory[fullMessage.id]!.content[previousAction] = composedInsert;
+										let previousText = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'text' in record);
+										if (previousText >= 0) {
+											newMessageHistory[fullMessage.id]!.content[previousText] = composedInsert;
 										} else {
 											newMessageHistory[fullMessage.id]!.content.push(composedInsert);
 										}
@@ -140,7 +140,7 @@ export default component$(() => {
 
 										for await (const chatResponseChunk of chatResponse) {
 											composedInsert.text += chatResponseChunk ?? '';
-											newMessageHistory[fullMessage.id]!.content[previousAction] = composedInsert;
+											newMessageHistory[fullMessage.id]!.content[previousText] = composedInsert;
 
 											console.debug(2.5, composedInsert.text);
 										}
