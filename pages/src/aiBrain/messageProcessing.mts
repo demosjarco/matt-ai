@@ -1,5 +1,5 @@
 import { Ai } from '@cloudflare/ai';
-import type { RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
+import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import { CFBase } from '../helpers/base.mjs';
 import type { IDBMessageContent } from '../types';
