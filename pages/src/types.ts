@@ -1,5 +1,5 @@
 import type { Ai } from '@cloudflare/ai';
-import type { AiTextGenerationOutput } from '@cloudflare/ai/dist/tasks/text-generation';
+import type { AiTextToImageOutput } from '@cloudflare/ai/dist/tasks/text-to-image';
 import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 
 export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
@@ -70,4 +70,4 @@ export interface IDBMessageContent {
 }
 export type IDBMessageContentText = string;
 export interface IDBMessageContentCard extends Record<string, any> {}
-export type IDBMessageContentImage = AiTextGenerationOutput;
+export type IDBMessageContentImage = AiTextToImageOutput;
