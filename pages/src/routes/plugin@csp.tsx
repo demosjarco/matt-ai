@@ -26,13 +26,14 @@ class CSPGenerator {
 		return parsed.protocol === 'https:' && parsed.hostname.length > 0;
 	}
 
-	private addSource(directive: string, all: boolean = false, none: boolean = false, self: boolean = false, data: boolean = false, domains: string[] = [], unsafeInline: boolean = false, unsafeEval: boolean = false, nonce: boolean = false, strictDynamic: boolean = false, unsafeHashes: boolean = false): void {
+	private addSource(directive: string, all: boolean = false, none: boolean = false, self: boolean = false, data: boolean = false, blob: boolean = false, domains: string[] = [], unsafeInline: boolean = false, unsafeEval: boolean = false, nonce: boolean = false, strictDynamic: boolean = false, unsafeHashes: boolean = false): void {
 		const flagsToAdd: string[] = [];
 		const domainsToAdd: Set<string> = new Set();
 
 		if (all) flagsToAdd.push('*');
 		if (none) flagsToAdd.push("'none'");
 		if (self) flagsToAdd.push("'self'");
+		if (blob) flagsToAdd.push('blob:');
 		if (data) flagsToAdd.push('data:');
 
 		for (const domain of domains) {
@@ -80,13 +81,14 @@ class CSPGenerator {
 			none: boolean;
 			self: boolean;
 			data: boolean;
+			blob: boolean;
 			domains: string[];
 			unsafeInline: boolean;
 			unsafeEval: boolean;
 			unsafeHashes: boolean;
 		}>,
 	) {
-		this.addSource('default-src', config.all, config.none, config.self, config.data, config.domains, config.unsafeInline, config.unsafeEval, undefined, undefined, config.unsafeHashes);
+		this.addSource('default-src', config.all, config.none, config.self, config.data, config.blob, config.domains, config.unsafeInline, config.unsafeEval, undefined, undefined, config.unsafeHashes);
 	}
 	private addScript(
 		config: Partial<{
@@ -94,6 +96,7 @@ class CSPGenerator {
 			none: boolean;
 			self: boolean;
 			data: boolean;
+			blob: boolean;
 			domains: string[];
 			unsafeInline: boolean;
 			unsafeEval: boolean;
@@ -102,7 +105,7 @@ class CSPGenerator {
 			unsafeHashes: boolean;
 		}>,
 	) {
-		this.addSource('script-src', config.all, config.none, config.self, config.data, config.domains, config.unsafeInline, config.unsafeEval, config.nonce, config.strictDynamic, config.unsafeHashes);
+		this.addSource('script-src', config.all, config.none, config.self, config.data, config.blob, config.domains, config.unsafeInline, config.unsafeEval, config.nonce, config.strictDynamic, config.unsafeHashes);
 	}
 	private addStyle(
 		config: Partial<{
@@ -110,13 +113,14 @@ class CSPGenerator {
 			none: boolean;
 			self: boolean;
 			data: boolean;
+			blob: boolean;
 			domains: string[];
 			unsafeInline: boolean;
 			nonce: boolean;
 			unsafeHashes: boolean;
 		}>,
 	) {
-		this.addSource('style-src', config.all, config.none, config.self, config.data, config.domains, config.unsafeInline, config.nonce, config.unsafeHashes);
+		this.addSource('style-src', config.all, config.none, config.self, config.data, config.blob, config.domains, config.unsafeInline, config.nonce, config.unsafeHashes);
 	}
 	private addImage(
 		config: Partial<{
@@ -124,10 +128,11 @@ class CSPGenerator {
 			none: boolean;
 			self: boolean;
 			data: boolean;
+			blob: boolean;
 			domains: string[];
 		}>,
 	) {
-		this.addSource('img-src', config.all, config.none, config.self, config.data, config.domains);
+		this.addSource('img-src', config.all, config.none, config.self, config.data, config.blob, config.domains);
 	}
 	private addFont(
 		config: Partial<{
@@ -138,7 +143,7 @@ class CSPGenerator {
 			domains: string[];
 		}>,
 	) {
-		this.addSource('font-src', config.all, config.none, config.self, config.data, config.domains);
+		this.addSource('font-src', config.all, config.none, config.self, config.data, undefined, config.domains);
 	}
 	private addConnect(
 		config: Partial<{
@@ -148,27 +153,29 @@ class CSPGenerator {
 			domains: string[];
 		}>,
 	) {
-		this.addSource('connect-src', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('connect-src', config.all, config.none, config.self, undefined, undefined, config.domains);
 	}
 	private addMedia(
 		config: Partial<{
 			all: boolean;
 			none: boolean;
 			self: boolean;
+			blob: boolean;
 			domains: string[];
 		}>,
 	) {
-		this.addSource('media-src', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('media-src', config.all, config.none, config.self, undefined, config.blob, config.domains);
 	}
 	private addObject(
 		config: Partial<{
 			all: boolean;
 			none: boolean;
 			self: boolean;
+			blob: boolean;
 			domains: string[];
 		}>,
 	) {
-		this.addSource('object-src', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('object-src', config.all, config.none, config.self, undefined, config.blob, config.domains);
 	}
 	private addPrefetch(
 		config: Partial<{
@@ -178,17 +185,18 @@ class CSPGenerator {
 			domains: string[];
 		}>,
 	) {
-		this.addSource('prefetch-src', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('prefetch-src', config.all, config.none, config.self, undefined, undefined, config.domains);
 	}
 	private addChild(
 		config: Partial<{
 			all: boolean;
 			none: boolean;
 			self: boolean;
+			blob: boolean;
 			domains: string[];
 		}>,
 	) {
-		this.addSource('child-src', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('child-src', config.all, config.none, config.self, undefined, config.blob, config.domains);
 	}
 	private addFrame(
 		config: Partial<{
@@ -198,17 +206,18 @@ class CSPGenerator {
 			domains: string[];
 		}>,
 	) {
-		this.addSource('frame-src', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('frame-src', config.all, config.none, config.self, undefined, undefined, config.domains);
 	}
 	private addWorker(
 		config: Partial<{
 			all: boolean;
 			none: boolean;
 			self: boolean;
+			blob: boolean;
 			domains: string[];
 		}>,
 	) {
-		this.addSource('worker-src', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('worker-src', config.all, config.none, config.self, undefined, config.blob, config.domains);
 	}
 	private addFrameAncestors(
 		config: Partial<{
@@ -218,7 +227,7 @@ class CSPGenerator {
 			domains: string[];
 		}>,
 	) {
-		this.addSource('frame-ancestors', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('frame-ancestors', config.all, config.none, config.self, undefined, undefined, config.domains);
 	}
 	private addFormAction(
 		config: Partial<{
@@ -228,7 +237,7 @@ class CSPGenerator {
 			domains: string[];
 		}>,
 	) {
-		this.addSource('form-action', config.all, config.none, config.self, undefined, config.domains);
+		this.addSource('form-action', config.all, config.none, config.self, undefined, undefined, config.domains);
 	}
 	private addUpgradeInsecureRequests(enabled: boolean = true) {
 		this.directives['upgrade-insecure-requests'] = '';
