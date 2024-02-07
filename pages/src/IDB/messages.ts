@@ -86,8 +86,10 @@ export class IDBMessages extends IDBBase {
 			this.db
 				.then((db) =>
 					new Promise<IDBMessage['conversation_id']>((resolve, reject) => {
+						console.debug(19, message.conversation_id!, 'conversation_id' in message, !isNaN(message.conversation_id!), message.conversation_id! > 0);
 						// IDB has 1-based autoincrement
 						if ('conversation_id' in message && !isNaN(message.conversation_id!) && message.conversation_id! > 0) {
+							console.debug(20, message.conversation_id!);
 							resolve(message.conversation_id!);
 						} else {
 							const transaction = db.transaction('conversations', 'readwrite');
@@ -103,14 +105,18 @@ export class IDBMessages extends IDBBase {
 
 							const insert = transaction.objectStore(transaction.objectStoreNames[0]!).add(newConversation);
 							insert.onerror = reject;
-							insert.onsuccess = () => resolve(Number(insert.result));
+							insert.onsuccess = () => {
+								console.debug(21, insert.result);
+								resolve(Number(insert.result));
+							};
 
 							transaction.commit();
 						}
 					})
 						.then((conversation_id) =>
 							Promise.all([
-								new Promise<IDBMessage['conversation_id']>((resolve, reject) => {
+								new Promise<IDBMessage['message_id']>((resolve, reject) => {
+									console.debug(22, conversation_id);
 									const transaction = db.transaction('messages', 'readonly');
 									transaction.onerror = reject;
 
@@ -138,6 +144,7 @@ export class IDBMessages extends IDBBase {
 								}),
 							])
 								.then(([message_id]) => {
+									console.debug(23, conversation_id, message_id);
 									const transaction = db.transaction('messages', 'readwrite');
 									transaction.onerror = mainReject;
 

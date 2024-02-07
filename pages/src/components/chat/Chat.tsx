@@ -1,5 +1,5 @@
-import { $, component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
-import { Form, server$, type DocumentHead } from '@builder.io/qwik-city';
+import { $, component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { Form, server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
@@ -8,7 +8,7 @@ import { FaIcon } from 'qwik-fontawesome';
 import { IDBMessages } from '../../IDB/messages';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
 import { getUserLocale, isLocalEdge, useConversationId, useUserUpdateConversation } from '../../routes/layout';
-import type { EnvVars, IDBMessage } from '../../types';
+import type { EnvVars, IDBMessage, IDBMessageContent } from '../../types';
 import Message from './Message';
 
 const aiResponse = server$(async function* (model: Parameters<Ai['run']>[0], messages: RoleScopedChatInput[]) {
@@ -59,7 +59,7 @@ export default component$(() => {
 	const createConversation = useUserUpdateConversation();
 	const formRef = useSignal<HTMLFormElement>();
 
-	const messageHistory = useSignal<IDBMessage[]>([]);
+	const newMessageHistory = useStore<Record<IDBMessage['id'], IDBMessage>>({}, { deep: true });
 
 	useVisibleTask$(async ({ track }) => {
 		track(() => conversationId.value);
@@ -68,103 +68,137 @@ export default component$(() => {
 			return;
 		}
 
+		Object.keys(newMessageHistory).forEach((key) => {
+			delete newMessageHistory[Number(key)];
+		});
 		const initialConversation = await new IDBMessages().getMessagesForConversation(Number(conversationId.value));
-		console.debug('messages for convo', initialConversation);
-
-		messageHistory.value = initialConversation;
+		initialConversation.forEach((item) => {
+			newMessageHistory[item.id] = item;
+		});
 	});
 
 	const sendMessage = $(
 		(message: string) =>
 			new Promise<IDBMessage>(async (mainResolve, mainReject) => {
-				const convId = conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId();
+				let convId = conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId();
+				if (convId && convId < 1) convId++;
+
 				// Run it in a `.all()` so that the promise chain stays alive until all finish, but don't wait to return promise
-				Promise.all([
-					new IDBMessages()
-						.saveMessage({
-							/**
-							 * @todo fall back to server$ conversation id because signal isn't being updated
-							 */
-							conversation_id: convId,
-							role: 'user',
-							status: true,
-							content: [
-								{
-									text: message,
-									model_used: null,
-								},
-							],
-						})
-						.then((fullMessage) => {
-							messageHistory.value = [...messageHistory.value, fullMessage];
-							mainResolve(fullMessage);
-						})
-						.catch(mainReject),
-					new IDBMessages()
-						.saveMessage({
-							/**
-							 * @todo fall back to server$ conversation id because signal isn't being updated
-							 */
-							conversation_id: convId,
-							role: 'assistant',
-							status: false,
-						})
-						.then((fullMessage) => {
-							// Add placeholder
-							messageHistory.value = [...messageHistory.value, fullMessage];
+				new IDBMessages()
+					.saveMessage({
+						/**
+						 * @todo fall back to server$ conversation id because signal isn't being updated
+						 */
+						conversation_id: convId,
+						role: 'user',
+						status: true,
+						content: [
+							{
+								text: message,
+								model_used: null,
+							},
+						],
+					})
+					.then((fullMessage) => {
+						newMessageHistory[fullMessage.id] = fullMessage;
+						mainResolve(fullMessage);
 
-							/**
-							 * @todo Update status to
-							 * `status: ['typing', 'deciding'],`
-							 */
+						new IDBMessages()
+							.saveMessage({
+								/**
+								 * @todo fall back to server$ conversation id because signal isn't being updated
+								 */
+								conversation_id: convId,
+								role: 'assistant',
+								status: false,
+							})
+							.then((fullMessage) => {
+								// Add placeholder
+								newMessageHistory[fullMessage.id] = fullMessage;
 
-							Promise.all([
-								aiResponse('@cf/meta/llama-2-7b-chat-fp16', [{ role: 'user', content: message }]).then(async (chatResponse) => {
-									let accumulatedMessage: string = '';
-									for await (const chatResponseChunk of chatResponse) {
-										accumulatedMessage += chatResponseChunk;
+								/**
+								 * @todo Update status to
+								 * `status: ['typing', 'deciding'],`
+								 */
+								newMessageHistory[fullMessage.id]!.status = ['typing', 'deciding'];
 
-										/**
-										 * @todo @georgeportillo start visually rendering chunks
-										 */
-										console.debug('aiResponse', chatResponseChunk);
-									}
-									// Save to local db
-									await new IDBMessages().updateMessage({
-										id: fullMessage.id,
-										content: [
-											{
-												text: accumulatedMessage,
-												model_used: '@cf/meta/llama-2-7b-chat-fp16',
-											},
-										],
-									});
-								}),
-								aiPreProcess(message).then(({ action, modelUsed }) => {
-									console.debug('We need to do', action);
-									/**
-									 * @todo visually update chat message
-									 */
-									const actions: Promise<any>[] = [
-										new IDBMessages().updateMessage({
+								Promise.all([
+									aiResponse('@cf/meta/llama-2-7b-chat-fp16', [{ role: 'user', content: message }]).then(async (chatResponse) => {
+										const composedInsert: IDBMessageContent = {
+											text: '',
+											model_used: '@cf/meta/llama-2-7b-chat-fp16',
+										};
+										console.debug(1);
+
+										let previousAction = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'text' in record);
+										if (previousAction >= 0) {
+											newMessageHistory[fullMessage.id]!.content[previousAction] = composedInsert;
+										} else {
+											newMessageHistory[fullMessage.id]!.content.push(composedInsert);
+										}
+										console.debug(2);
+
+										for await (const chatResponseChunk of chatResponse) {
+											composedInsert.text += chatResponseChunk ?? '';
+											newMessageHistory[fullMessage.id]!.content[previousAction] = composedInsert;
+
+											console.debug(2.5, composedInsert.text);
+										}
+										console.debug(3);
+
+										if (Array.isArray(newMessageHistory[fullMessage.id]!.status)) {
+											// @ts-expect-error
+											newMessageHistory[fullMessage.id]!.status.filter((item) => item !== 'typing');
+										}
+										console.debug(4);
+
+										// Save to local db
+										await new IDBMessages().updateMessage({
 											id: fullMessage.id,
-											content: [
-												{
-													action,
-													model_used: modelUsed,
-												},
-											],
-										}),
-									];
-									/**
-									 * @todo tasks based on action
-									 */
-									return Promise.all([actions]).catch(mainReject);
-								}),
-							]).catch(mainReject);
-						})
-						.catch(mainReject),
-				]).catch(mainReject);
+											content: [composedInsert],
+										});
+										console.debug(5);
+									}),
+									aiPreProcess(message).then(({ action, modelUsed }) => {
+										console.debug(6, action);
+
+										const composedInsert: IDBMessageContent = {
+											action,
+											model_used: modelUsed,
+										};
+										console.debug(7, composedInsert);
+
+										const previousAction = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'action' in record);
+										if (previousAction >= 0) {
+											newMessageHistory[fullMessage.id]!.content[previousAction] = composedInsert;
+										} else {
+											newMessageHistory[fullMessage.id]!.content.push(composedInsert);
+										}
+										console.debug(8);
+
+										if (Array.isArray(newMessageHistory[fullMessage.id]!.status)) {
+											// @ts-expect-error
+											newMessageHistory[fullMessage.id]!.status.filter((item) => item !== 'deciding');
+										}
+										console.debug(9);
+
+										const actions: Promise<any>[] = [
+											new IDBMessages().updateMessage({
+												id: fullMessage.id,
+												content: [composedInsert],
+											}),
+										];
+										/**
+										 * @todo tasks based on action
+										 */
+										console.debug(10);
+										return Promise.all([actions]).catch(mainReject);
+									}),
+								]).catch(mainReject);
+							})
+							.catch(mainReject);
+					})
+					.catch(mainReject);
 			}),
 	);
 
@@ -173,10 +207,10 @@ export default component$(() => {
 			<div class="flex h-screen flex-auto flex-shrink-0 flex-col justify-between pt-12 sm:pt-0">
 				<div class="flex flex-col overflow-x-auto">
 					<div class="flex flex-col">
-						<div class="grid grid-cols-12 gap-y-2">
+						<div id="messageList" class="grid grid-cols-12 gap-y-2">
 							<div class="text-3xl text-white">{conversationId.value}</div>
-							{messageHistory.value.map((message, index) => {
-								return <Message key={`message-${index}`} message={message} userLocale={userLocale.value ?? undefined} />;
+							{Object.entries(newMessageHistory).map(([messageId, message]) => {
+								return <Message key={`message-${messageId}`} message={message} userLocale={userLocale.value ?? undefined} />;
 							})}
 						</div>
 					</div>
@@ -239,13 +273,3 @@ export default component$(() => {
 		</>
 	);
 });
-
-export const head: DocumentHead = {
-	title: 'M.A.T.T. AI',
-	meta: [
-		{
-			name: 'description',
-			content: 'Qwik site description',
-		},
-	],
-};
