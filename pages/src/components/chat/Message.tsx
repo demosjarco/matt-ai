@@ -20,7 +20,8 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 						</div>
 						<div class={`leading-1.5 flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
 							<p class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white">
-								<pre class="whitespace-pre-wrap text-balance">{JSON.stringify(props.message, null, '\t')}</pre>
+								{/* <pre class="whitespace-pre-wrap text-balance">{JSON.stringify(props.message, null, '\t')}</pre> */}
+								{props.message.content[props.message.content.findIndex((record) => 'text' in record)]?.text?.trim() ?? ''}
 							</p>
 						</div>
 						{isMe ? undefined : <span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400 ${isMe ? 'justify-end' : ''}`}>{Array.isArray(props.message.status) ? props.message.status.join(', ') : props.message.status ? 'Delivered' : 'Sent'}</span>}
