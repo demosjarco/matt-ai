@@ -36,7 +36,7 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 											<div class="tooltip-arrow" data-popper-arrow></div>
 										</div>
 									</div>
-									<img src={URL.createObjectURL(new Blob([props.message.content[props.message.content.findIndex((record) => 'image' in record)]!.image!], { type: 'image/png' }))} class="rounded-lg" />
+									<img src={URL.createObjectURL(new Blob([props.message.content[props.message.content.findIndex((record) => 'image' in record)]!.image!], { type: 'image/png' }))} class="rounded-lg" alt={props.message.content[props.message.content.findIndex((record) => 'image' in record)]?.action?.imageGenerate ?? undefined} />
 								</div>
 							) : undefined}
 						</div>
