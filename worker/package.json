@@ -28,7 +28,7 @@
 		"hono": "^3.12.11"
 	},
 	"devDependencies": {
-		"@swc/core": "^1.4.0",
+		"@swc/core": "^1.4.2",
 		"@types/node": "^20.11.19",
 		"ts-node": "^10.9.2"
 	}
