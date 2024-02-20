@@ -9,7 +9,6 @@ export interface BaseHelpers {
 export interface GraphQlBody {
 	query?: string;
 	mutation?: string;
-	subscription?: string;
 	variables?: Record<string, any>;
 }
 

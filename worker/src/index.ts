@@ -1,5 +1,4 @@
 import { useDeferStream } from '@graphql-yoga/plugin-defer-stream';
-import { useGraphQLSSE } from '@graphql-yoga/plugin-graphql-sse';
 import { createYoga } from 'graphql-yoga';
 import { Hono } from 'hono';
 import { etag } from 'hono/etag';
@@ -32,12 +31,11 @@ export default <ExportedHandler<EnvVars>>{
 				landingPage: false,
 				graphiql: {
 					title: 'API',
-					subscriptionsProtocol: 'GRAPHQL_SSE',
 				},
 				schema: await new ApiSchema({
 					c,
 				}).schema(),
-				plugins: [useDeferStream(), useGraphQLSSE()],
+				plugins: [useDeferStream()],
 			}).fetch(c.req.raw, c.env, c.executionCtx),
 		);
 
