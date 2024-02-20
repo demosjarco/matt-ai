@@ -32,9 +32,7 @@ export default <ExportedHandler<EnvVars>>{
 				graphiql: {
 					title: 'API',
 				},
-				schema: await new ApiSchema({
-					c,
-				}).schema(),
+				schema: await new ApiSchema({ c }).schema(),
 				plugins: [useDeferStream()],
 			}).fetch(c.req.raw, c.env, c.executionCtx),
 		);
