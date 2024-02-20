@@ -29,7 +29,7 @@
 	},
 	"devDependencies": {
 		"@swc/core": "^1.4.0",
-		"@types/node": "^20.11.16",
+		"@types/node": "^20.11.19",
 		"ts-node": "^10.9.2"
 	}
 }
