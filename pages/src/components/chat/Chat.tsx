@@ -5,6 +5,7 @@ import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/tasks/text-to-image';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
+import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import { FaIcon } from 'qwik-fontawesome';
 import { IDBMessages } from '../../IDB/messages';
@@ -52,14 +53,14 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 	try {
 		const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/stabilityai/stable-diffusion-xl-base-1.0', { prompt, num_steps: 20 });
 		return {
-			raw: Buffer.from(imageGeneration.buffer).toString('base64'),
+			raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'stabilityai/stable-diffusion-xl-base-1.0').buffer).toString('base64'),
 			model: '@cf/stabilityai/stable-diffusion-xl-base-1.0',
 		};
 	} catch (error) {
 		try {
 			const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/runwayml/stable-diffusion-v1-5', { prompt, num_steps: 20 });
 			return {
-				raw: Buffer.from(imageGeneration.buffer).toString('base64'),
+				raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'runwayml/stable-diffusion-v1-5').buffer).toString('base64'),
 				model: '@cf/runwayml/stable-diffusion-v1-5',
 			};
 		} catch (error) {
