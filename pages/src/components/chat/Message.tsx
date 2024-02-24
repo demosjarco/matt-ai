@@ -30,47 +30,10 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(props.userLocale)}</span>
 						</div>
 						<div class={`leading-1.5 flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
-							{(props.message.content[props.message.content.findIndex((record) => 'text' in record)]?.text?.trim() ?? '').length > 0 ? (
-								<p class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white">
-									{/* <pre class="whitespace-pre-wrap text-balance">{JSON.stringify(props.message, null, '\t')}</pre> */}
-									{props.message.content[props.message.content.findIndex((record) => 'text' in record)]?.text?.trim() ?? ''}
-								</p>
-							) : (
-								<div role="status" class="max-w-lg animate-pulse space-y-2.5">
-									<div class="flex w-full items-center">
-										<div class="h-2.5 w-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-										<div class="ms-2 h-2.5 w-24 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-300 dark:bg-gray-600"></div>
-									</div>
-									<div class="flex w-full max-w-[480px] items-center">
-										<div class="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700"></div>
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-300 dark:bg-gray-600"></div>
-										<div class="ms-2 h-2.5 w-24 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-									</div>
-									<div class="flex w-full max-w-[400px] items-center">
-										<div class="h-2.5 w-full rounded-full bg-gray-300 dark:bg-gray-600"></div>
-										<div class="ms-2 h-2.5 w-80 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-300 dark:bg-gray-600"></div>
-									</div>
-									<div class="flex w-full max-w-[480px] items-center">
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700"></div>
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-300 dark:bg-gray-600"></div>
-										<div class="ms-2 h-2.5 w-24 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-									</div>
-									<div class="flex w-full max-w-[440px] items-center">
-										<div class="ms-2 h-2.5 w-32 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-										<div class="ms-2 h-2.5 w-24 rounded-full bg-gray-300 dark:bg-gray-600"></div>
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700"></div>
-									</div>
-									<div class="flex w-full max-w-[360px] items-center">
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-300 dark:bg-gray-600"></div>
-										<div class="ms-2 h-2.5 w-80 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-										<div class="ms-2 h-2.5 w-full rounded-full bg-gray-300 dark:bg-gray-600"></div>
-									</div>
-									<span class="sr-only">Loading...</span>
-								</div>
-							)}
-
+							<p class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white">
+								{/* <pre class="whitespace-pre-wrap text-balance">{JSON.stringify(props.message, null, '\t')}</pre> */}
+								{props.message.content[props.message.content.findIndex((record) => 'text' in record)]?.text?.trim() ?? ''}
+							</p>
 							{imageContentIndex >= 0 ? (
 								<div class="group relative my-2.5">
 									<div class="absolute flex h-full w-full items-center justify-center rounded-lg bg-gray-900/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
