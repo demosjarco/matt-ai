@@ -211,30 +211,30 @@ export default component$(() => {
 											newMessageHistory[fullMessage.id]!.status.push('imageGenerating');
 
 											actions.push(
-												aiImageGenerate(action.imageGenerate).then(({ raw, model }) => {
+												aiImageGenerate(action.imageGenerate)
+													.then(({ raw, model }) => {
+														const image = Uint8Array.from(atob(raw), (char) => char.charCodeAt(0));
+														console.debug(2, raw, image);
+
+														const composedInsert: IDBMessageContent = {
+															image,
+															model_used: model as Parameters<Ai['run']>[0],
+														};
+
+														const previousImage = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'image' in record);
+														if (previousImage >= 0) {
+															newMessageHistory[fullMessage.id]!.content[previousImage] = composedInsert;
+														} else {
+															newMessageHistory[fullMessage.id]!.content.push(composedInsert);
+														}
+
+														new IDBMessages().updateMessage({
+															id: fullMessage.id,
+															content: [composedInsert],
+														});
+													})
 													// @ts-expect-error
-													newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'imageGenerating'.toLowerCase());
-
-													const image = Uint8Array.from(atob(raw), (char) => char.charCodeAt(0));
-													console.debug(2, raw, image);
-
-													const composedInsert: IDBMessageContent = {
-														image,
-														model_used: model as Parameters<Ai['run']>[0],
-													};
-
-													const previousImage = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'image' in record);
-													if (previousImage >= 0) {
-														newMessageHistory[fullMessage.id]!.content[previousImage] = composedInsert;
-													} else {
-														newMessageHistory[fullMessage.id]!.content.push(composedInsert);
-													}
-
-													new IDBMessages().updateMessage({
-														id: fullMessage.id,
-														content: [composedInsert],
-													});
-												}),
+													.finally(() => (newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'imageGenerating'.toLowerCase()))),
 											);
 										}
 										return Promise.all([actions]).catch(mainReject);
