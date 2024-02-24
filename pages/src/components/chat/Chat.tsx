@@ -147,6 +147,9 @@ export default component$(() => {
 
 								Promise.all([
 									aiResponse('@cf/meta/llama-2-7b-chat-fp16', [{ role: 'user', content: message }]).then(async (chatResponse) => {
+										// @ts-expect-error
+										newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'typing'.toLowerCase());
+
 										const composedInsert: IDBMessageContent = {
 											text: '',
 											model_used: '@cf/meta/llama-2-7b-chat-fp16',
@@ -176,6 +179,9 @@ export default component$(() => {
 										});
 									}),
 									aiPreProcess(message).then(({ action, modelUsed }) => {
+										// @ts-expect-error
+										newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'deciding'.toLowerCase());
+
 										const composedInsert: IDBMessageContent = {
 											action,
 											model_used: modelUsed,
@@ -201,8 +207,14 @@ export default component$(() => {
 											}),
 										];
 										if (action.imageGenerate) {
+											// @ts-expect-error
+											newMessageHistory[fullMessage.id]!.status.push('imageGenerating');
+
 											actions.push(
 												aiImageGenerate(action.imageGenerate).then(({ raw, model }) => {
+													// @ts-expect-error
+													newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'imageGenerating'.toLowerCase());
+
 													const image = Uint8Array.from(atob(raw), (char) => char.charCodeAt(0));
 													console.debug(2, raw, image);
 
