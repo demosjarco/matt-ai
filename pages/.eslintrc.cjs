@@ -38,5 +38,7 @@ module.exports = {
 		'@typescript-eslint/no-unnecessary-condition': 'warn',
 		'qwik/jsx-img': 'off',
 		'@typescript-eslint/consistent-type-imports': 'error',
+		// We use visible task to defer `server$()` from page load
+		'qwik/no-use-visible-task': 'off',
 	},
 };
