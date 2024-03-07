@@ -37,5 +37,6 @@ module.exports = {
 		'@typescript-eslint/consistent-type-imports': 'warn',
 		'@typescript-eslint/no-unnecessary-condition': 'warn',
 		'qwik/jsx-img': 'off',
+		'@typescript-eslint/consistent-type-imports': 'error',
 	},
 };
