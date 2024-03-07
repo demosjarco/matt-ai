@@ -155,7 +155,7 @@ export default component$(() => {
 											model_used: '@cf/meta/llama-2-7b-chat-fp16',
 										};
 
-										let previousText = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'text' in record);
+										const previousText = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'text' in record);
 										if (previousText >= 0) {
 											newMessageHistory[fullMessage.id]!.content[previousText] = composedInsert;
 										} else {
