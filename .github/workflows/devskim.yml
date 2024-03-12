@@ -38,7 +38,7 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: 'npm'
-      - uses: microsoft/DevSkim-Action@b41921d947434b27f90b8949f8bfbe056e706bf6 # v1.0.11
+      - uses: microsoft/DevSkim-Action@0c0b1a933b672b50e117db754ae474d5ad58b7ff # v1.0.12
       - uses: github/codeql-action/upload-sarif@8a470fddafa5cbb6266ee11b37ef4d8aae19c571 # v3.24.6
         with:
           sarif_file: devskim-results.sarif
