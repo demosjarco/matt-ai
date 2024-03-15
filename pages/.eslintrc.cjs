@@ -33,10 +33,12 @@ module.exports = {
 		'prefer-spread': 'off',
 		'no-case-declarations': 'off',
 		'no-console': 'off',
-		'@typescript-eslint/no-unused-vars': 'warn',
-		'@typescript-eslint/consistent-type-imports': 'warn',
+		// Note: you must disable the base rule as it can report incorrect errors
+		'no-unused-vars': 'off',
+		'@typescript-eslint/no-unused-vars': 'error',
 		'@typescript-eslint/no-unnecessary-condition': 'warn',
 		'qwik/jsx-img': 'off',
+		'@typescript-eslint/no-import-type-side-effects': 'error',
 		'@typescript-eslint/consistent-type-imports': 'error',
 		// We use visible task to defer `server$()` from page load
 		'qwik/no-use-visible-task': 'off',
