@@ -4,7 +4,7 @@ module.exports = {
 		browser: true,
 		serviceworker: true,
 		node: true,
-		// https://eslint.org/docs/head/use/configure/language-options#specifying-environments
+		// https://eslint.org/docs/head/use/configure/language-options-deprecated#specifying-environments
 		es2024: true,
 	},
 	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:qwik/recommended'],
