@@ -53,10 +53,6 @@ jobs:
         working-directory: pages
         continue-on-error: true
       - run: git add --all
-      - name: Don't touch package files
-        run: |
-          git restore -- package*.json
-          git restore -- **/package*.json
       - name: Check for Changes
         id: changes
         run: |
@@ -65,6 +61,11 @@ jobs:
           else
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
+      - name: Don't touch package files
+        if: steps.changes.outputs.changes == 'true'
+        run: |
+          git reset -- package*.json
+          git reset -- **/package*.json
       - name: Git Setup
         if: steps.changes.outputs.changes == 'true'
         run: |
