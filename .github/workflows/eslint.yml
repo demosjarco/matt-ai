@@ -67,7 +67,10 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
       - run: git add --all
         if: steps.changes.outputs.changes == 'true'
-      - run: git reset -- **/package*.json
+      - name: Don't touch package files
+        run: |
+          git reset -- package*.json
+          git reset -- **/package*.json
         if: steps.changes.outputs.changes == 'true'
       - run: git commit -m "Ran eslint"
         if: steps.changes.outputs.changes == 'true'
