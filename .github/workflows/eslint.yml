@@ -52,7 +52,6 @@ jobs:
       - run: npm -w pages run lint:fix
         working-directory: pages
         continue-on-error: true
-      - run: git add --all
       - name: Check for Changes
         id: changes
         run: |
@@ -61,6 +60,8 @@ jobs:
           else
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
+      - run: git add --all
+        if: steps.changes.outputs.changes == 'true'
       - name: Don't touch package files
         if: steps.changes.outputs.changes == 'true'
         run: |
