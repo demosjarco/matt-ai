@@ -69,8 +69,8 @@ jobs:
         if: steps.changes.outputs.changes == 'true'
       - name: Don't touch package files
         run: |
-          git reset -- package*.json
-          git reset -- **/package*.json
+          git restore -- package*.json
+          git restore -- **/package*.json
         if: steps.changes.outputs.changes == 'true'
       - run: git commit -m "Ran eslint"
         if: steps.changes.outputs.changes == 'true'
