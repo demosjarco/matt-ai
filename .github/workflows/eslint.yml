@@ -52,6 +52,11 @@ jobs:
       - run: npm -w pages run lint:fix
         working-directory: pages
         continue-on-error: true
+      - run: git add --all
+      - name: Don't touch package files
+        run: |
+          git restore -- package*.json
+          git restore -- **/package*.json
       - name: Check for Changes
         id: changes
         run: |
@@ -65,13 +70,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      - run: git add --all
-        if: steps.changes.outputs.changes == 'true'
-      - name: Don't touch package files
-        run: |
-          git restore -- package*.json
-          git restore -- **/package*.json
-        if: steps.changes.outputs.changes == 'true'
       - run: git commit -m "Ran eslint"
         if: steps.changes.outputs.changes == 'true'
       - run: git push
