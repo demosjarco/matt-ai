@@ -58,29 +58,6 @@
 				"cwd": "${workspaceFolder}/pages"
 			}
 		},
-		// {
-		// 	"label": "F|build.client",
-		// 	"detail": "vite build --watch",
-		// 	"type": "npm",
-		// 	"script": "build.client:watch",
-		// 	"problemMatcher": {
-		// 		"owner": "vite",
-		// 		"fileLocation": ["relative", "${workspaceFolder}"],
-		// 		"pattern": {
-		// 			"regexp": "^built in \\d+ms\\.$",
-		// 			"file": 1
-		// 		},
-		// 		"background": {
-		// 			"activeOnStart": true,
-		// 			"beginsPattern": "^> build\\.preview",
-		// 			"endsPattern": "^built in \\d+ms\\.$"
-		// 		}
-		// 	},
-		// 	"isBackground": true,
-		// 	"presentation": {
-		// 		"group": "pages.compile"
-		// 	}
-		// },
 		{
 			"label": "F|build.client",
 			"detail": "vite build",
@@ -93,29 +70,6 @@
 				"cwd": "${workspaceFolder}/pages"
 			}
 		},
-		// {
-		// 	"label": "F|build.server",
-		// 	"detail": "vite build -c adapters/cloudflare-pages/vite.config.ts --watch",
-		// 	"type": "npm",
-		// 	"script": "build.server:watch",
-		// 	"problemMatcher": {
-		// 		"owner": "vite",
-		// 		"fileLocation": ["relative", "${workspaceFolder}"],
-		// 		"pattern": {
-		// 			"regexp": "^built in \\d+ms\\.$",
-		// 			"file": 1
-		// 		},
-		// 		"background": {
-		// 			"activeOnStart": true,
-		// 			"beginsPattern": "^> build\\.server",
-		// 			"endsPattern": "^built in \\d+ms\\.$"
-		// 		}
-		// 	},
-		// 	"isBackground": true,
-		// 	"presentation": {
-		// 		"group": "pages.compile"
-		// 	}
-		// },
 		{
 			"label": "F|build.server",
 			"detail": "vite build -c adapters/cloudflare-pages/vite.config.ts",
