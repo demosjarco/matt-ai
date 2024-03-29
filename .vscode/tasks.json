@@ -2,15 +2,8 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Qwik Build",
-			"dependsOn": [
-				"B|build:types",
-				"B|build",
-				"F|build.types",
-				"F|build.client",
-				"F|build.server"
-				// npm run lint
-			],
+			"label": "Build",
+			"dependsOn": ["TypeChat Types", "TypeChat Compile", "Qwik Types", "Qwik Client", "Qwik Server", "Qwik Lint"],
 			"isBackground": true,
 			"group": {
 				"kind": "build",
@@ -18,22 +11,26 @@
 			}
 		},
 		{
-			"label": "B|build:types",
-			"type": "npm",
-			"script": "build:types:watch",
-			"path": "${workspaceFolder}/worker",
-			"problemMatcher": "$tsc-watch",
+			"label": "TypeChat Types",
+			"type": "typescript",
+			"tsconfig": "worker/aiTypes/tsconfig.json",
+			"option": "watch",
+			"problemMatcher": ["$tsc-watch"],
 			"isBackground": true,
 			"presentation": {
 				"group": "worker.compile"
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/worker/aiTypes"
+			},
+			"icon": {
+				"id": "symbol-type-parameter",
+				"color": "terminal.ansiBlue"
 			}
 		},
 		{
-			"label": "B|build",
-			"dependsOn": ["B|build:types"],
+			"label": "TypeChat Compile",
+			"dependsOn": ["TypeChat Types"],
 			"type": "npm",
 			"script": "build",
 			"path": "${workspaceFolder}/worker",
@@ -42,24 +39,32 @@
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/worker"
+			},
+			"icon": {
+				"id": "json",
+				"color": "terminal.ansiYellow"
 			}
 		},
 		{
-			"label": "F|build.types",
-			"detail": "tsc --incremental --noEmit --watch",
-			"type": "npm",
-			"script": "build.types:watch",
-			"problemMatcher": "$tsc-watch",
+			"label": "Qwik Types",
+			"type": "typescript",
+			"tsconfig": "pages/tsconfig.json",
+			"option": "watch",
+			"problemMatcher": ["$tsc-watch"],
 			"isBackground": true,
 			"presentation": {
 				"group": "pages.compile"
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/pages"
+			},
+			"icon": {
+				"id": "symbol-type-parameter",
+				"color": "terminal.ansiBlue"
 			}
 		},
 		{
-			"label": "F|build.client",
+			"label": "Qwik Client",
 			"detail": "vite build",
 			"type": "npm",
 			"script": "build.client",
@@ -68,12 +73,16 @@
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/pages"
+			},
+			"icon": {
+				"id": "browser",
+				"color": "terminal.ansiYellow"
 			}
 		},
 		{
-			"label": "F|build.server",
+			"label": "Qwik Server",
 			"detail": "vite build -c adapters/cloudflare-pages/vite.config.ts",
-			"dependsOn": ["F|build.client"],
+			"dependsOn": ["Qwik Client"],
 			"type": "npm",
 			"script": "build.server",
 			"presentation": {
@@ -81,6 +90,26 @@
 			},
 			"options": {
 				"cwd": "${workspaceFolder}/pages"
+			},
+			"icon": {
+				"id": "server-process"
+			}
+		},
+		{
+			"label": "Qwik Lint",
+			"dependsOn": ["Qwik Client", "Qwik Server"],
+			"type": "npm",
+			"script": "lint:fix",
+			"problemMatcher": "$eslint-stylish",
+			"presentation": {
+				"group": "pages.compile"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/pages"
+			},
+			"icon": {
+				"id": "lightbulb-autofix",
+				"color": "terminal.ansiGreen"
 			}
 		}
 	]
