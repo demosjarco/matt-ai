@@ -6,6 +6,7 @@
 	},
 	"typescript.preferences.importModuleSpecifier": "relative",
 	"typescript.tsdk": "./node_modules/typescript/lib",
+	"github-actions.workflows.pinned.workflows": [".github/workflows/publish-worker.yml"],
 	"material-icon-theme.activeIconPack": "qwik",
 	"emmet.includeLanguages": {
 		"typescriptreact": "html"
@@ -23,6 +24,5 @@
 			"fileMatch": ["**/devcontainer.json"],
 			"url": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json"
 		}
-	],
-	"github-actions.workflows.pinned.workflows": [".github/workflows/publish-worker.yml"]
+	]
 }
