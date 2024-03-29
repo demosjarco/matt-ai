@@ -8,6 +8,9 @@
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"github-actions.workflows.pinned.workflows": [".github/workflows/publish-worker.yml"],
 	"material-icon-theme.activeIconPack": "qwik",
+	"editor.quickSuggestions": {
+		"strings": "on"
+	},
 	"emmet.includeLanguages": {
 		"typescriptreact": "html"
 	},
@@ -15,6 +18,9 @@
 		// to ensure closing tags are used (e.g. <img/> not just <img> like in HTML)
 		// https://github.com/microsoft/vscode/commit/083bf9020407ea5a91199eb1f0b373859df8d600#diff-88456bc9b7caa2f8126aea0107b4671db0f094961aaf39a7c689f890e23aaaba
 		"output.selfClosingStyle": "xhtml"
+	},
+	"files.associations": {
+		"*.css": "tailwindcss"
 	},
 	"yaml.schemas": {
 		"https://json.schemastore.org/dependabot-2.0.json": "${workspaceFolder}/.github/dependabot.yml"
