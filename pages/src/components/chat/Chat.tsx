@@ -56,7 +56,7 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 		};
 	} catch (error) {
 		try {
-			const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/runwayml/stable-diffusion-v1-5', { prompt, num_steps: 20 });
+			const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/bytedance/stable-diffusion-xl-lightning', { prompt, num_steps: 20 });
 			return {
 				raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'runwayml/stable-diffusion-v1-5').buffer).toString('base64'),
 				model: '@cf/runwayml/stable-diffusion-v1-5',
