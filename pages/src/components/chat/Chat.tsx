@@ -1,13 +1,11 @@
 import { $, component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
 import { Form, server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
-import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
+import { FaPaperPlaneRegular, FaPaperclipSolid } from '@qwikest/icons/font-awesome';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
-import { FaIcon } from 'qwik-fontawesome';
 import { IDBMessages } from '../../IDB/messages';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
 import { useConversationId, useLocalEdgeCheck, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
@@ -287,7 +285,7 @@ export default component$(() => {
 					class="flex h-16 w-full flex-row items-center bg-white p-2 dark:bg-slate-800">
 					<div>
 						<button class="flex items-center justify-center text-gray-400 hover:text-gray-600">
-							<FaIcon icon={faPaperclip} />
+							<FaPaperclipSolid />
 						</button>
 					</div>
 					<div class="ml-4 flex-grow">
@@ -309,7 +307,7 @@ export default component$(() => {
 					<div class="ml-4">
 						<button type="submit" class="flex h-10 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-500 px-4 text-white hover:bg-indigo-600">
 							<span class="relative left-[-2px]">
-								<FaIcon icon={faPaperPlane} />
+								<FaPaperPlaneRegular />
 							</span>
 						</button>
 					</div>

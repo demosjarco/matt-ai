@@ -1,8 +1,7 @@
 import { Slot, component$ } from '@builder.io/qwik';
 import type { RequestHandler } from '@builder.io/qwik-city';
 import { routeAction$, routeLoader$, z, zod$, type DocumentHead } from '@builder.io/qwik-city';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { FaIcon } from 'qwik-fontawesome';
+import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
 
@@ -66,7 +65,7 @@ export default component$(() => {
 			<div class="absolute top-0 w-full">
 				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="ms-3 mt-2 inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 sm:hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
 					<span class="sr-only">Open sidebar</span>
-					<FaIcon icon={faBars} />
+					<FaBarsSolid />
 				</button>
 			</div>
 

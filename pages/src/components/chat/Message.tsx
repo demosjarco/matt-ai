@@ -1,6 +1,5 @@
 import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
-import { FaIcon } from 'qwik-fontawesome';
+import { FaDownloadSolid } from '@qwikest/icons/font-awesome';
 import type { IDBMessage } from '../../types';
 import Avatar from './Avatar';
 
@@ -38,7 +37,7 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 								<div class="group relative my-2.5">
 									<div class="absolute flex h-full w-full items-center justify-center rounded-lg bg-gray-900/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
 										<a href={URL.createObjectURL(new Blob([imageContent!.buffer], { type: 'image/png' }))} download={`${imageName.value}.png`} class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 hover:bg-white/50 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:text-white">
-											<FaIcon icon={faDownload} />
+											<FaDownloadSolid />
 										</a>
 									</div>
 									<img src={URL.createObjectURL(new Blob([imageContent!.buffer], { type: 'image/png' }))} class="rounded-lg" alt={props.message.content[imageContentIndex]?.action?.imageGenerate ?? undefined} />

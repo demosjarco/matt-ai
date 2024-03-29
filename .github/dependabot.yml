@@ -59,8 +59,7 @@ updates:
           - 'autoprefixer'
           - 'flowbite'
           - 'less'
-          - '@fortawesome/*'
-          - 'qwik-fontawesome'
+          - '@qwikest/icons'
       graphql:
         patterns:
           - 'graphql'

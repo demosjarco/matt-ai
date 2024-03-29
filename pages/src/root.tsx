@@ -1,7 +1,6 @@
 import { component$, useServerData, useVisibleTask$ } from '@builder.io/qwik';
 import { QwikCityProvider, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
 import { initFlowbite } from 'flowbite';
-import { FaStylesheet } from 'qwik-fontawesome';
 import { RouterHead } from './components/router-head/router-head';
 
 import './global.less';
@@ -19,7 +18,6 @@ export default component$(() => {
 				<meta charSet="utf-8" />
 				<link rel="manifest" href="/manifest.json" />
 				<RouterHead />
-				<FaStylesheet />
 			</head>
 			<body lang="en">
 				<RouterOutlet />
