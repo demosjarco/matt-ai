@@ -65,7 +65,6 @@
 		},
 		{
 			"label": "Qwik Client",
-			"detail": "vite build",
 			"type": "npm",
 			"script": "build.client",
 			"presentation": {
@@ -81,7 +80,6 @@
 		},
 		{
 			"label": "Qwik Server",
-			"detail": "vite build -c adapters/cloudflare-pages/vite.config.ts",
 			"dependsOn": ["Qwik Client"],
 			"type": "npm",
 			"script": "build.server",
