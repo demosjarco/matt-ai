@@ -33,11 +33,11 @@ export const useUserUpdateConversation = routeAction$(
 	}),
 );
 
-export const isLocalEdge = routeLoader$(function ({ platform }) {
+export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
 });
 
-export const getUserLocale = routeLoader$(function ({ request }) {
+export const useUserLocale = routeLoader$(function ({ request }) {
 	const acceptLanguage = request.headers.get('Accept-Language');
 	if (!acceptLanguage) return null;
 

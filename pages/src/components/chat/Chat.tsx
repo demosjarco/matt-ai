@@ -10,7 +10,7 @@ import { Buffer } from 'node:buffer';
 import { FaIcon } from 'qwik-fontawesome';
 import { IDBMessages } from '../../IDB/messages';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
-import { getUserLocale, isLocalEdge, useConversationId, useUserUpdateConversation } from '../../routes/layout';
+import { useConversationId, useLocalEdgeCheck, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
 import type { EnvVars, IDBMessage, IDBMessageContent } from '../../types';
 import Message from './Message';
 
@@ -76,8 +76,8 @@ const serverConversationId = server$(function () {
 });
 
 export default component$(() => {
-	const isLocal = isLocalEdge();
-	const userLocale = getUserLocale();
+	const isLocal = useLocalEdgeCheck();
+	const userLocale = useUserLocale();
 	const conversationId = useConversationId();
 	const createConversation = useUserUpdateConversation();
 	const formRef = useSignal<HTMLFormElement>();
