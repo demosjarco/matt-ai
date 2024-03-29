@@ -1,10 +1,10 @@
 import { $, component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
 import { Form, server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
-import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/tasks/text-generation';
-import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/tasks/text-to-image';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons';
+import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
+import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import { FaIcon } from 'qwik-fontawesome';
