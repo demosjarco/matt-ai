@@ -2,7 +2,8 @@
 	"scripts": {
 		"fmt": "prettier --write .",
 		"fmt.check": "prettier --check .",
-		"build:pages": "npm ci --include-workspace-root --workspace pages --include dev && npm -w pages run build"
+		"build:pages": "npm ci --include-workspace-root --workspace pages --include dev && npm -w pages run build",
+		"clean": "npx -y rimraf@latest --glob ./**/.wrangler ./pages/dist ./pages/server ./pages/tmp ./worker/aiTypes/*.d.ts ./worker/aiTypes/types.json"
 	},
 	"repository": {
 		"type": "git",
