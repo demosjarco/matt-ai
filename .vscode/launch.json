@@ -5,9 +5,9 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Launch Chrome",
-			"request": "launch",
 			"type": "chrome",
+			"request": "launch",
+			"name": "Launch Chrome",
 			"url": "http://localhost:8788",
 			"webRoot": "${workspaceFolder}",
 			"sourceMaps": true
