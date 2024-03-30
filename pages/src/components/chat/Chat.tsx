@@ -100,6 +100,7 @@ export default component$(() => {
 
 	const sendMessage = $(
 		(message: string) =>
+			// eslint-disable-next-line no-async-promise-executor
 			new Promise<IDBMessage>(async (mainResolve, mainReject) => {
 				let convId = conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId();
 				if (convId && convId < 1) convId++;
