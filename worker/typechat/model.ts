@@ -1,5 +1,5 @@
 import { Ai } from '@cloudflare/ai';
-import type { AiTextGenerationInput, AiTextGenerationOutput } from '@cloudflare/ai/dist/tasks/text-generation.js';
+import type { AiTextGenerationInput, AiTextGenerationOutput } from '@cloudflare/ai/dist/ai/tasks/text-generation.js';
 import { error, success, type Result } from './result.js';
 
 export type ExcludeType<UnionType, ExcludedType> = UnionType extends ExcludedType ? never : UnionType;
