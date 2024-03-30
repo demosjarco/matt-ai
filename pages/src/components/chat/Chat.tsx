@@ -262,7 +262,7 @@ export default component$(() => {
 					action={createConversation}
 					ref={formRef}
 					spaReset={true}
-					onSubmitCompleted$={(event, form) =>
+					onSubmitCompleted$={() =>
 						new Promise<void>((resolve, reject) => {
 							if (createConversation.status && createConversation.status >= 200 && createConversation.status < 300) {
 								if (createConversation.value && createConversation.value.sanitizedMessage) {
