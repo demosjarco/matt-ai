@@ -306,10 +306,10 @@ export default component$(() => {
 							<label for="floating_outlined" class="absolute start-1 top-2 z-10 origin-[0] -translate-y-3 scale-75 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-blue-600 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:bg-gray-800 dark:text-gray-400 peer-focus:dark:text-blue-500">
 								Ask me anything
 							</label>
-							{isLocal.value ? <div class="cf-turnstile" data-sitekey="1x00000000000000000000BB" data-action="send-chat-message"></div> : <div class="cf-turnstile" data-sitekey="0x4AAAAAAAQ34m_klLCEVN51" data-action="send-chat-message"></div>}
 						</div>
 					</div>
 					<div class="ml-4">
+						{isLocal.value ? <div class="cf-turnstile" data-sitekey="1x00000000000000000000BB" data-action="send-chat-message"></div> : <div class="cf-turnstile" data-sitekey="0x4AAAAAAAQ34m_klLCEVN51" data-action="send-chat-message"></div>}
 						<button type="submit" class="flex h-10 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-500 px-4 text-white hover:bg-indigo-600">
 							<span class="relative left-[-2px]">
 								<FaPaperPlaneRegular />
