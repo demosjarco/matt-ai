@@ -9,7 +9,7 @@ export default component$((conversationId: Readonly<Signal<string>>, messageHist
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 
-	const sendMessage = $((message: string) => {});
+	const sendMessage = $((message: string) => new Promise<IDBMessage>((resolve, reject) => {}));
 
 	return (
 		<Form
