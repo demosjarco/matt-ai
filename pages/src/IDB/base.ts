@@ -4,7 +4,7 @@ export abstract class IDBBase {
 	protected get db() {
 		const DBOpenRequest = indexedDB.open('ailocal', 1);
 
-		return new Promise<IDBDatabase>(async (resolve, reject) => {
+		return new Promise<IDBDatabase>((resolve, reject) => {
 			DBOpenRequest.onerror = reject;
 
 			DBOpenRequest.onupgradeneeded = async (event) => await this.upgradeDB(event);
