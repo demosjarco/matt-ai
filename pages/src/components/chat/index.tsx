@@ -8,7 +8,7 @@ import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import { IDBMessages } from '../../IDB/messages';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
-import { useConversationId, useLocalEdgeCheck, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
+import { useConversationId, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
 import type { EnvVars, IDBMessage, IDBMessageContent } from '../../types';
 import Message from './Message';
 import ChatBox from './interactionBar/chatBox';
@@ -76,7 +76,6 @@ const serverConversationId = server$(function () {
 });
 
 export default component$(() => {
-	const isLocal = useLocalEdgeCheck();
 	const userLocale = useUserLocale();
 	const conversationId = useConversationId();
 	const createConversation = useUserUpdateConversation();
