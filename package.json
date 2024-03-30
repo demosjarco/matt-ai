@@ -21,7 +21,7 @@
 	],
 	"devDependencies": {
 		"@cloudflare/ai": "^1.1.0",
-		"@cloudflare/workers-types": "^4.20240320.1",
+		"@cloudflare/workers-types": "^4.20240329.0",
 		"@demosjarco/prettier-config": "^1.0.1",
 		"prettier": "^3.2.5",
 		"typescript": "^5.4.3",
