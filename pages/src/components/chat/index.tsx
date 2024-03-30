@@ -3,7 +3,7 @@ import { Form, server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
-import { FaPaperPlaneRegular, FaPaperclipSolid } from '@qwikest/icons/font-awesome';
+import { FaPaperclipSolid } from '@qwikest/icons/font-awesome';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import { IDBMessages } from '../../IDB/messages';
@@ -12,6 +12,7 @@ import { useConversationId, useLocalEdgeCheck, useUserLocale, useUserUpdateConve
 import type { EnvVars, IDBMessage, IDBMessageContent } from '../../types';
 import Message from './Message';
 import ChatBox from './interactionBar/chatBox';
+import Submit from './interactionBar/submit';
 
 const aiResponse = server$(async function* (model: Parameters<Ai['run']>[0], messages: RoleScopedChatInput[]) {
 	const stream = await (new Ai((this.platform.env as EnvVars).AI).run(model, { messages, stream: true }) as Promise<ReadableStream>);
@@ -291,14 +292,7 @@ export default component$(() => {
 						</button>
 					</div>
 					<ChatBox />
-					<div class="ml-4">
-						{isLocal.value ? <div class="cf-turnstile" data-sitekey="1x00000000000000000000BB" data-action="send-chat-message"></div> : <div class="cf-turnstile" data-sitekey="0x4AAAAAAAQ34m_klLCEVN51" data-action="send-chat-message"></div>}
-						<button type="submit" class="flex h-10 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-500 px-4 text-white hover:bg-indigo-600">
-							<span class="relative left-[-2px]">
-								<FaPaperPlaneRegular />
-							</span>
-						</button>
-					</div>
+					<Submit />
 				</Form>
 			</div>
 		</>
