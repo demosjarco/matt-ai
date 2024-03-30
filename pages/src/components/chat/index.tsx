@@ -283,7 +283,7 @@ export default component$(() => {
 							}
 						})
 					}
-					class="flex h-16 w-full flex-row items-center bg-white p-2 dark:bg-slate-800">
+					class="flex h-16 w-full flex-row items-center bg-gray-50 p-2 dark:bg-slate-800">
 					<ChatBox />
 					<Submit />
 				</Form>
