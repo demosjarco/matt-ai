@@ -4,6 +4,7 @@ import baseConfig from '@demosjarco/prettier-config' assert { type: 'json' };
 export default {
 	...baseConfig,
 	overrides: [
+		...baseConfig.overrides,
 		{
 			files: 'pages/**',
 			options: {
