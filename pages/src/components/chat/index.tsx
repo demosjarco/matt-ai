@@ -285,7 +285,7 @@ export default component$(() => {
 					}
 					class="flex h-16 w-full flex-row items-center bg-white p-2 dark:bg-slate-800">
 					<div>
-						<button class="flex cursor-not-allowed items-center justify-center text-gray-400 hover:text-gray-600" disabled>
+						<button class="flex cursor-not-allowed items-center justify-center text-gray-400 hover:text-gray-600">
 							<FaPaperclipSolid />
 						</button>
 					</div>
