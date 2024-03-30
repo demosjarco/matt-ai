@@ -23,7 +23,7 @@ export const useConversationId = routeLoader$<string>(({ params }) => {
 export const useUserUpdateConversation = routeAction$(
 	async (data, { params }) => {
 		return {
-			cid: Number(params['conversationId']) ?? undefined,
+			cid: params['conversationId'] ? parseInt(params['conversationId']) : undefined,
 			sanitizedMessage: z.string().trim().parse(data.message),
 		};
 	},
