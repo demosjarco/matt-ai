@@ -9,7 +9,7 @@ export abstract class IDBBase {
 
 			DBOpenRequest.onupgradeneeded = async (event) => await this.upgradeDB(event);
 
-			DBOpenRequest.onsuccess = (event) => resolve(DBOpenRequest.result);
+			DBOpenRequest.onsuccess = () => resolve(DBOpenRequest.result);
 		});
 	}
 
