@@ -3,7 +3,6 @@ import { Form, server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
-import { FaPaperclipSolid } from '@qwikest/icons/font-awesome';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import { IDBMessages } from '../../IDB/messages';
@@ -285,11 +284,6 @@ export default component$(() => {
 						})
 					}
 					class="flex h-16 w-full flex-row items-center bg-white p-2 dark:bg-slate-800">
-					<div>
-						<button class="flex cursor-not-allowed items-center justify-center text-gray-400 hover:text-gray-600">
-							<FaPaperclipSolid />
-						</button>
-					</div>
 					<ChatBox />
 					<Submit />
 				</Form>
