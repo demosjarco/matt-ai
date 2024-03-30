@@ -301,7 +301,7 @@ export default component$(() => {
 								enterKeyHint="send"
 								class="flex h-10 w-full rounded-xl border pl-4 focus:border-indigo-300 focus:outline-none"
 							/>
-							{isLocal.value ? <div class="cf-turnstile" data-sitekey="1x00000000000000000000BB" data-action="send-chat-message"></div> : <div class="cf-turnstile" data-sitekey="0x4AAAAAAAQ34m_klLCEVN51" data-action="send-chat-message"></div>}
+							{isLocal.value ? <div class="cf-turnstile" data-sitekey="1x00000000000000000000BB" data-action="send-chat-message" data-appearance="interaction-only"></div> : <div class="cf-turnstile" data-sitekey="0x4AAAAAAAQ34m_klLCEVN51" data-action="send-chat-message" data-appearance="interaction-only"></div>}
 						</div>
 					</div>
 					<div class="ml-4">
