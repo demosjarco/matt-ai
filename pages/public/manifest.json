@@ -1,10 +1,13 @@
 {
 	"$schema": "https://json.schemastore.org/web-manifest-combined.json",
+	"background_color": "#374151",
 	"categories": ["productivity"],
+	"description": "Magically All The Things AI",
+	"display": "minimal-ui",
 	"name": "M.A.T.T. AI",
+	"orientation": "any",
+	"scope": "https://matt-ai.pages.dev/",
 	"short_name": "M.A.T.T.",
 	"start_url": ".",
-	"display": "standalone",
-	"background_color": "#fff",
-	"description": "A Qwik project app."
+	"theme_color": "#1E293B"
 }
