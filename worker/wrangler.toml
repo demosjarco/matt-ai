@@ -1,6 +1,6 @@
 name = "mattai-worker-development"
 main = "src/index.ts"
-compatibility_date = "2024-03-04"
+compatibility_date = "2024-03-20"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 minify = true
@@ -17,7 +17,7 @@ mode = "smart"
 
 [env.staging]
 name = "mattai-worker-staging"
-compatibility_date = "2024-03-04"
+compatibility_date = "2024-03-20"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 minify = true
@@ -31,7 +31,7 @@ binding = "AI"
 
 [env.production]
 name = "mattai-worker"
-compatibility_date = "2024-03-04"
+compatibility_date = "2024-03-20"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 minify = true
