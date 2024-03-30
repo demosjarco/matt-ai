@@ -63,7 +63,7 @@ export default component$(() => {
 	return (
 		<>
 			<div class="absolute top-0 w-full">
-				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="ms-3 mt-2 inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 sm:hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+				<button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="ms-3 mt-2 inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 sm:hidden dark:text-gray-400 dark:hover:bg-slate-700 dark:focus:ring-gray-600">
 					<span class="sr-only">Open sidebar</span>
 					<FaBarsSolid />
 				</button>
@@ -71,7 +71,7 @@ export default component$(() => {
 
 			<Sidebar />
 
-			<div class="bg-slate-100 sm:ml-64 dark:bg-gray-900">
+			<div class="bg-slate-100 sm:ml-64 dark:bg-slate-900">
 				<Slot />
 			</div>
 		</>

@@ -7,7 +7,7 @@ export default component$((props: { id: number; title: string; onClick$: QRL<(id
 			onClick$={() => {
 				props.onClick$(props.id);
 			}}>
-			<div class="group flex items-center rounded-lg py-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+			<div class="group flex items-center rounded-lg py-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-slate-700">
 				<span class="ms-3">{props.title}</span>
 			</div>
 		</li>
