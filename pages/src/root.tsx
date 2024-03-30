@@ -22,7 +22,7 @@ export default component$(() => {
 			<body lang="en">
 				<RouterOutlet />
 				<ServiceWorkerRegister nonce={nonce} />
-				<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+				<script async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
 			</body>
 		</QwikCityProvider>
 	);
