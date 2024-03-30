@@ -5,7 +5,7 @@ import type { IDBMessage } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-export default component$((conversationId: Readonly<Signal<string>>, messageHistory: Record<IDBMessage['id'], IDBMessage>) => {
+export default component$((props: { conversationId: Readonly<Signal<string>>; messageHistory: Record<IDBMessage['id'], IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 
@@ -28,10 +28,10 @@ export default component$((conversationId: Readonly<Signal<string>>, messageHist
 								.catch(reject);
 						} else {
 							// Bad form
-							messageHistory[Number.MAX_SAFE_INTEGER] = {
+							props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 								id: Number.MAX_SAFE_INTEGER,
 								message_id: Number.MAX_SAFE_INTEGER,
-								conversation_id: parseInt(conversationId.value),
+								conversation_id: parseInt(props.conversationId.value),
 								content_version: 1,
 								btime: new Date(),
 								role: 'system',
@@ -49,10 +49,10 @@ export default component$((conversationId: Readonly<Signal<string>>, messageHist
 						}
 					} else {
 						// Failed turnstile
-						messageHistory[Number.MAX_SAFE_INTEGER] = {
+						props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 							id: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
-							conversation_id: parseInt(conversationId.value),
+							conversation_id: parseInt(props.conversationId.value),
 							content_version: 1,
 							btime: new Date(),
 							role: 'system',
