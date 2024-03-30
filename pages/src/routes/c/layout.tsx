@@ -2,7 +2,7 @@ import type { RequestHandler } from '@builder.io/qwik-city';
 import type { ChatFormSubmit, EnvVars } from '../../types';
 
 export const onPost: RequestHandler = async ({ platform, request, parseBody, send }) => {
-	const incomingFormData = (await parseBody()) as ChatFormSubmit;
+	const incomingFormData = (await parseBody()) as ChatFormSubmit | null;
 
 	if (incomingFormData) {
 		if (incomingFormData['cf-turnstile-response']) {
