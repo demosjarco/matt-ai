@@ -41,7 +41,7 @@ export default defineConfig(({ command, mode }): UserConfig => {
 		},
 		build: {
 			target: 'esnext',
-			sourcemap: (process.env as EnvVars).NODE_ENV ? (process.env as EnvVars).NODE_ENV !== 'production' : true,
+			sourcemap: (process.env as EnvVars).NODE_ENV !== 'production',
 			emptyOutDir: true,
 			rollupOptions: {
 				external: [...cloudflareNodeRuntimes],
