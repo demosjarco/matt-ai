@@ -290,7 +290,7 @@ export default component$(() => {
 						</button>
 					</div>
 					<div class="ml-4 flex-grow">
-						<div class="relative flex w-full flex-row flex-nowrap">
+						<div class="relative">
 							<input
 								id="floating_outlined"
 								class="border-1 peer block h-10 w-full appearance-none rounded-xl border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-white dark:focus:border-blue-500"
