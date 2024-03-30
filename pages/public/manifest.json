@@ -1,5 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/web-manifest-combined.json",
+	"categories": ["productivity"],
 	"name": "M.A.T.T. AI",
 	"short_name": "M.A.T.T.",
 	"start_url": ".",
