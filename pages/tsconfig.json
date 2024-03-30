@@ -7,12 +7,12 @@
 		"jsxImportSource": "@builder.io/qwik",
 		"moduleResolution": "Node",
 		"paths": {
-			"~/*": ["./src/*"],
+			"~/*": ["./src/*"]
 		},
 		"types": ["@cloudflare/workers-types/experimental", "turnstile-types", "vite/client"],
 		"inlineSourceMap": true,
-		"outDir": "tmp",
+		"outDir": "tmp"
 	},
 	"files": ["./.eslintrc.cjs"],
-	"include": ["src", "./*.d.ts", "./*.config.ts"],
+	"include": ["src", "./*.d.ts", "./*.config.ts"]
 }

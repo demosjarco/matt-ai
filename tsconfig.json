@@ -104,15 +104,15 @@
 
 		/* Completeness */
 		// "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-		"skipLibCheck": true /* Skip type checking all .d.ts files. */,
+		"skipLibCheck": true /* Skip type checking all .d.ts files. */
 	},
 	"include": ["worker"],
 	"ts-node": {
 		"compilerOptions": {
 			"module": "NodeNext",
 			"moduleResolution": "NodeNext",
-			"types": ["node"],
+			"types": ["node"]
 		},
-		"swc": true,
-	},
+		"swc": true
+	}
 }

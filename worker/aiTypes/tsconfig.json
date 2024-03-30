@@ -5,7 +5,7 @@
 		"declaration": true,
 		"emitDeclarationOnly": true,
 		"removeComments": true,
-		"noEmit": false,
+		"noEmit": false
 	},
-	"include": ["*.ts"],
+	"include": ["*.ts"]
 }
