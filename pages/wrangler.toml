@@ -1,9 +1,13 @@
+compatibility_flags = ["nodejs_compat"]
 services = [
     { binding = "BACKEND_WORKER", service = "mattai-worker-development" },
 ]
-
-[ai]
-binding = "AI"
+ai = { binding = "AI" }
 
 [vars]
 NODE_ENV = "development"
+
+[dev]
+local_protocol = "http"
+ip = "localhost"
+port = 11412
