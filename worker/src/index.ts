@@ -1,5 +1,5 @@
 import { useDeferStream } from '@graphql-yoga/plugin-defer-stream';
-import { createYoga, useExecutionCancellation } from 'graphql-yoga';
+import { createYoga } from 'graphql-yoga';
 import { Hono } from 'hono';
 import { etag } from 'hono/etag';
 import { timing } from 'hono/timing';
@@ -33,7 +33,7 @@ export default <ExportedHandler<EnvVars>>{
 					title: 'API',
 				},
 				schema: await new ApiSchema({ c }).schema(),
-				plugins: [useExecutionCancellation(), useDeferStream()],
+				plugins: [useDeferStream()],
 			}).fetch(c.req.raw, c.env, c.executionCtx),
 		);
 
