@@ -50,21 +50,41 @@ const aiPreProcess = server$(function (message: Parameters<MessageProcessing['pr
 });
 const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prompt']) {
 	try {
-		const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/stabilityai/stable-diffusion-xl-base-1.0', { prompt, num_steps: 20 });
+		let imageGeneration: AiTextToImageOutput | Awaited<ReturnType<typeof fetch>>['body'] = await new Ai((this.platform.env as EnvVars).AI).run('@cf/stabilityai/stable-diffusion-xl-base-1.0', { prompt, num_steps: 20 });
+		if (imageGeneration instanceof ReadableStream) {
+			imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
+		}
+
 		return {
 			raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'stabilityai/stable-diffusion-xl-base-1.0').buffer).toString('base64'),
 			model: '@cf/stabilityai/stable-diffusion-xl-base-1.0',
 		};
 	} catch (error) {
 		try {
-			const imageGeneration: AiTextToImageOutput = await new Ai((this.platform.env as EnvVars).AI).run('@cf/bytedance/stable-diffusion-xl-lightning', { prompt, num_steps: 20 });
+			let imageGeneration: AiTextToImageOutput | Awaited<ReturnType<typeof fetch>>['body'] = await new Ai((this.platform.env as EnvVars).AI).run('@cf/bytedance/stable-diffusion-xl-lightning', { prompt, num_steps: 20 });
+			if (imageGeneration instanceof ReadableStream) {
+				imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
+			}
+
 			return {
-				raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'runwayml/stable-diffusion-v1-5').buffer).toString('base64'),
-				model: '@cf/runwayml/stable-diffusion-v1-5',
+				raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'bytedance/stable-diffusion-xl-lightning').buffer).toString('base64'),
+				model: '@cf/bytedance/stable-diffusion-xl-lightning',
 			};
 		} catch (error) {
-			console.error(error);
-			throw error;
+			try {
+				let imageGeneration: AiTextToImageOutput | Awaited<ReturnType<typeof fetch>>['body'] = await new Ai((this.platform.env as EnvVars).AI).run('@cf/lykon/dreamshaper-8-lcm', { prompt, num_steps: 20 });
+				if (imageGeneration instanceof ReadableStream) {
+					imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
+				}
+
+				return {
+					raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'lykon/dreamshaper-8-lcm').buffer).toString('base64'),
+					model: '@cf/lykon/dreamshaper-8-lcm',
+				};
+			} catch (error) {
+				console.error(error);
+				throw error;
+			}
 		}
 	}
 });
