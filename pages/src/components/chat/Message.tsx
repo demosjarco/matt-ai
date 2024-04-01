@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { component$ } from '@builder.io/qwik';
 import { FaDownloadSolid } from '@qwikest/icons/font-awesome';
 import type { IDBMessage } from '../../types';
 import Avatar from './Avatar';
@@ -7,13 +7,8 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 	const isMe = props.message.role === 'user' ? true : false;
 	const imageContentIndex = props.message.content.findIndex((record) => 'image' in record);
 	const imageContent = props.message.content[imageContentIndex]?.image;
-	const imageName = useSignal<string>('');
-
-	useVisibleTask$(async () => {
-		if (imageContentIndex >= 0) {
-			imageName.value = [...new Uint8Array(await crypto.subtle.digest('SHA-256', imageContent!.buffer))].map((b) => b.toString(16).padStart(2, '0')).join('');
-		}
-	});
+	const imageActionIndex = props.message.content.findIndex((record) => 'action' in record);
+	const imageName = props.message.content[imageActionIndex]?.action?.imageGenerate;
 
 	return (
 		<>
@@ -36,7 +31,7 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 							{imageContentIndex >= 0 ? (
 								<div class="group relative my-2.5">
 									<div class="absolute flex h-full w-full items-center justify-center rounded-lg bg-gray-900/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-										<a href={URL.createObjectURL(new Blob([imageContent!.buffer], { type: 'image/png' }))} download={`${imageName.value}.png`} class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 hover:bg-white/50 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:text-white">
+										<a href={URL.createObjectURL(new Blob([imageContent!.buffer], { type: 'image/png' }))} download={`${imageName}.png`} class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/30 hover:bg-white/50 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:text-white">
 											<FaDownloadSolid />
 										</a>
 									</div>
