@@ -78,6 +78,12 @@ export default component$(() => {
 	);
 });
 
-export const head: DocumentHead = ({ head }) => {
-	return head;
+export const head: DocumentHead = {
+	title: 'M.A.T.T. AI',
+	meta: [
+		{
+			name: 'description',
+			content: 'M.A.T.T.',
+		},
+	],
 };

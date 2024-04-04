@@ -10,17 +10,12 @@ export default component$(() => {
 	);
 });
 
-export const head: DocumentHead = ({ head, params }) => {
-	const title = `${head} - ${params['conversationId']}`;
-
-	return {
-		title,
-		meta: [
-			...head.meta,
-			{
-				property: 'og:title',
-				content: title,
-			},
-		],
-	};
+export const head: DocumentHead = {
+	title: 'M.A.T.T. AI',
+	meta: [
+		{
+			name: 'description',
+			content: 'Qwik site description',
+		},
+	],
 };
