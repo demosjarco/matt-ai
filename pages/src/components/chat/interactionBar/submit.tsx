@@ -12,6 +12,7 @@ export default component$(() => {
 				<span class="relative left-[-2px]">
 					<FaPaperPlaneRegular />
 				</span>
+				<span class="sr-only">Send message</span>
 			</button>
 		</div>
 	);
