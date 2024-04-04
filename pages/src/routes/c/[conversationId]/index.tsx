@@ -11,7 +11,7 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = ({ head, params }) => {
-	const title = `${head} - ${params['conversationId']}`;
+	const title = `${head.title} - ${params['conversationId']}`;
 
 	return {
 		title,
