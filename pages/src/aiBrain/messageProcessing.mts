@@ -4,41 +4,20 @@ import { CFBase } from '../helpers/base.mjs';
 import type { IDBMessageContent } from '../types';
 
 export class MessageProcessing extends CFBase {
-	public preProcess(message: RoleScopedChatInput['content']) {
-		return new Promise<{
-			action: MessageAction;
-			modelUsed: IDBMessageContent['model_used'];
-		}>((resolve, reject) => {
-			const query = 'query ($message: NonEmptyString!, $longer: Boolean!) { messageAction(message: $message, longer: $longer) }';
-			this.fetchBackend({
-				query,
-				variables: {
-					message: message,
-					longer: true,
-				},
-			})
-				.then((response) =>
-					resolve({
-						action: (response as { messageAction: MessageAction }).messageAction,
-						modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
-					}),
-				)
-				.catch(() =>
-					this.fetchBackend({
-						query,
-						variables: {
-							message: message,
-							longer: false,
-						},
-					})
-						.then((response) =>
-							resolve({
-								action: (response as { messageAction: MessageAction }).messageAction,
-								modelUsed: '@cf/meta/llama-2-7b-chat-int8',
-							}),
-						)
-						.catch(reject),
-				);
-		});
+	public async preProcess(message: RoleScopedChatInput['content']): Promise<{
+		action: MessageAction;
+		modelUsed: IDBMessageContent['model_used'];
+	}> {
+		try {
+			return {
+				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, true),
+				modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
+			};
+		} catch (error) {
+			return {
+				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
+				modelUsed: '@cf/meta/llama-2-7b-chat-int8',
+			};
+		}
 	}
 }
