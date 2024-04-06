@@ -5,6 +5,9 @@ import { createJsonTranslator, createLanguageModel } from '../typechat/index.js'
 import { createTypeScriptJsonValidator } from '../typechat/ts/index.js';
 import type { EnvVars } from './types.js';
 
+// Re-export since workerd can only find from from `wrangler.toml`'s `main` file
+export { QueueCallbackHandler } from '../../do/QueueCallbackHandler.mjs';
+
 export default class extends WorkerEntrypoint<EnvVars> {
 	// Dummy entry point, crashes without it
 	override async fetch(request: Request) {
