@@ -59,8 +59,7 @@ export function deepMerge<T>(base: T, incoming: Partial<T>): T {
 	const output = { ...base } as T;
 
 	for (const key in incoming) {
-		// eslint-disable-next-line no-prototype-builtins
-		if (incoming.hasOwnProperty(key)) {
+		if (Object.prototype.hasOwnProperty.call(incoming, key)) {
 			const incomingValue = incoming[key];
 			const baseValue = (base as any)[key];
 
