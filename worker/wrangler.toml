@@ -1,5 +1,5 @@
 name = "mattai-worker-preview"
-main = "src/index.ts"
+main = "rpc/index.ts"
 compatibility_date = "2024-04-03"
 compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
 workers_dev = false
