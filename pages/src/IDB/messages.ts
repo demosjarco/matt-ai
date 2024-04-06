@@ -4,7 +4,7 @@ import { IDBBase } from './base';
 
 type MessageSaveGuarantee = 'role';
 type FullMessageGuarantee = Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>;
-type InternalMessageGuarantee = Pick<IDBMessage, 'id'> & Omit<Partial<IDBMessage>, 'id'>;
+type InternalMessageGuarantee = Pick<IDBMessage, 'key'> & Omit<Partial<IDBMessage>, 'key'>;
 
 export class IDBMessages extends IDBBase {
 	public getMessagesForConversation(cid: number) {
