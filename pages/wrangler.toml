@@ -2,10 +2,10 @@ name = "matt-ai"
 pages_build_output_dir = "pages/dist"
 compatibility_date = "2024-04-03"
 compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
+ai = { binding = "AI" }
 services = [
     { binding = "BACKEND_WORKER", service = "mattai-worker-preview", environment = "production" },
 ]
-ai = { binding = "AI" }
 
 [vars]
 NODE_ENV = "development"
@@ -14,10 +14,10 @@ NODE_ENV = "development"
 [env.production]
 compatibility_date = "2024-04-03"
 compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
+ai = { binding = "AI" }
 services = [
     { binding = "BACKEND_WORKER", service = "mattai-worker", environment = "production" },
 ]
-ai = { binding = "AI" }
 
 [env.production.vars]
 NODE_ENV = "production"
