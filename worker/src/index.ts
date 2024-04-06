@@ -26,6 +26,8 @@ export default class extends WorkerEntrypoint<EnvVars> {
 			/**
 			 * @todo
 			 * Do Browser rendering stuff
+			 * @link https://platform.openai.com/docs/plugins/bot Follow similar practices
+			 * @link https://developers.cloudflare.com/bots/reference/verified-bots-policy/ eventually (once used enough) verify bot
 			 * Ws content back
 			 */
 		}
