@@ -6,6 +6,7 @@ import { createTypeScriptJsonValidator } from '../typechat/ts/index.js';
 import type { EnvVars } from './types.js';
 
 export default class extends WorkerEntrypoint<EnvVars> {
+	// Dummy entry point, crashes without it
 	override async fetch(request: Request) {
 		return new Response('Hello world');
 	}
