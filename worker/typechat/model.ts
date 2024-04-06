@@ -91,7 +91,8 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 				const { response } = await new Promise<Required<ExcludeType<AiTextGenerationOutput, ReadableStream>>>((resolve, reject) =>
 					new Ai(binding, options)
 						.run(model, { messages, max_tokens: maxTokens, stream: shouldStream })
-						.then(async (response: AiTextGenerationOutput) => {
+						.then(async (rawResponse: any) => {
+							const response = rawResponse as AiTextGenerationOutput;
 							if (shouldStream) {
 								const streamingResponse = response as ReadableStream;
 								try {
