@@ -9,7 +9,7 @@
 ### Run local
 
 > [!TIP]
-> This repo supports [GitHub Codespaces](https://github.com/features/codespaces) and is preconfigured for it.
+> This repo supports [GitHub Codespaces](https://github.com/features/codespaces) and is [preconfigured](.devcontainer) for it.
 
 > [!IMPORTANT]  
 > Make sure you are running this project with the latest `lts` version of NodeJS (GitHub Codespaces is already setup with `lts/*`). Other versions may work but are not guaranteed.
