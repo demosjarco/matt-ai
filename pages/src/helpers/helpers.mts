@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import type { UuidExport } from './types.mjs';
 
 export class Helpers {
-	public static get generateUuid(): UuidExport {
+	public static get uuidGenerate(): UuidExport {
 		const uuid = randomUUID();
 		const uuidHex = uuid.replaceAll('-', '');
 
@@ -14,31 +14,34 @@ export class Helpers {
 		};
 	}
 
-	public static uuidConvertFromUtf8(utf8: UuidExport['utf8']): UuidExport {
-		const hex = utf8.replaceAll('-', '');
+	public static uuidConvert(input: UuidExport['blob']): UuidExport;
+	public static uuidConvert(input: UuidExport['utf8']): UuidExport;
+	public static uuidConvert(input: UuidExport['hex']): UuidExport;
+	public static uuidConvert(input: UuidExport['blob'] | UuidExport['utf8'] | UuidExport['hex']): UuidExport {
+		if (Buffer.isBuffer(input)) {
+			const hex = input.toString('hex');
 
-		return {
-			utf8: utf8,
-			hex,
-			blob: Buffer.from(hex, 'hex'),
-		};
-	}
+			return {
+				utf8: `${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}`,
+				hex,
+				blob: input,
+			};
+		} else {
+			if (input.includes('-')) {
+				const hex = input.replaceAll('-', '');
 
-	public static uuidConvertFromHex(hex: UuidExport['hex']): UuidExport {
-		return {
-			utf8: `${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}`,
-			hex: hex,
-			blob: Buffer.from(hex, 'hex'),
-		};
-	}
-
-	public static uuidConvertFromBlob(blob: UuidExport['blob']): UuidExport {
-		const hex = Buffer.from(blob).toString('hex');
-
-		return {
-			utf8: `${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}`,
-			hex,
-			blob: blob,
-		};
+				return {
+					utf8: input as UuidExport['utf8'],
+					hex,
+					blob: Buffer.from(hex, 'hex'),
+				};
+			} else {
+				return {
+					utf8: `${input.substring(0, 8)}-${input.substring(8, 12)}-${input.substring(12, 16)}-${input.substring(16, 20)}-${input.substring(20)}`,
+					hex: input,
+					blob: Buffer.from(input, 'hex'),
+				};
+			}
+		}
 	}
 }
