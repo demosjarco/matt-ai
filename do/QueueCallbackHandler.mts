@@ -1,5 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
-import type { EnvVars } from '../pages/src/types.js';
+import type { EnvVars } from '../worker/src/types.js';
 
 export class QueueCallbackHandler extends DurableObject<EnvVars> {
 	override webSocketMessage(ws: WebSocket, message: string | ArrayBuffer) {}
