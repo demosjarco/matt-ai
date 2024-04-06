@@ -52,7 +52,9 @@
 
 	// https://containers.dev/implementors/spec/#parallel-exec
 	// "onCreateCommand": {},
-	// "updateContentCommand": {},
+	"updateContentCommand": {
+		"updateCode": "git fetch && git pull --ff-only || git status"
+	},
 	"postCreateCommand": {
 		"fixMountPermissions": ["sudo", "chown", "-R", "node", "node_modules"],
 		"setupPackages": ["npm", "ci", "--include-workspace-root", "--workspaces"]
