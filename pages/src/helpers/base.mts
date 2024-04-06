@@ -38,26 +38,4 @@ export abstract class CFBase<T extends BaseHelpers = BaseHelpers> extends Helper
 			this.helpers = incomingContext;
 		}
 	}
-
-	protected fetchBackend(gql: GraphQlBody) {
-		const graphqlUrl = new URL('/graphql', this.helpers.c.req.raw.url);
-
-		return new Promise<Record<string, any>>((resolve, reject) =>
-			this.helpers.c.env.BACKEND_WORKER.fetch(graphqlUrl.toString(), {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				cf: this.helpers.c.req.raw.cf ?? {},
-				body: JSON.stringify(gql),
-			})
-				.then((response) =>
-					response
-						.json<{ data: Record<string, any> }>()
-						.then((json) => resolve(json.data))
-						.catch(reject),
-				)
-				.catch(reject),
-		);
-	}
 }

@@ -1,6 +1,7 @@
 import type { Ai } from '@cloudflare/ai';
 import type { AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import type { MessageAction } from '../../worker/aiTypes/MessageAction';
+import type Helper from '../../worker/rpc/index';
 
 export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
@@ -10,7 +11,7 @@ export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, R
 
 interface Bindings {
 	AI: any;
-	BACKEND_WORKER: Fetcher;
+	BACKEND_WORKER: Service<Helper>;
 }
 
 interface PagesEnvironmentvariables {
