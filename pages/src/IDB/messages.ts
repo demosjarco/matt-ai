@@ -65,7 +65,7 @@ export class IDBMessages extends IDBBase {
 					this.getMessage(message)
 						.then((originalMessage) => {
 							const transaction = db.transaction('messages', 'readwrite');
-							transaction.onerror = mainReject;
+							transaction.done.catch(mainReject);
 
 							const insertMessage = deepMerge(originalMessage, message);
 
@@ -93,7 +93,7 @@ export class IDBMessages extends IDBBase {
 							resolve(message.conversation_id!);
 						} else {
 							const transaction = db.transaction('conversations', 'readwrite');
-							transaction.onerror = reject;
+							transaction.done.catch(reject);
 
 							const newConversation: Partial<IDBConversation> = {
 								name: crypto.randomUUID(),
@@ -118,7 +118,7 @@ export class IDBMessages extends IDBBase {
 								new Promise<IDBMessage['message_id']>((resolve, reject) => {
 									console.debug(22, conversation_id);
 									const transaction = db.transaction('messages', 'readonly');
-									transaction.onerror = reject;
+									transaction.done.catch(reject);
 
 									const store = transaction.objectStore(transaction.objectStoreNames[0]!);
 									const index = store.index(IDBMessageIndexes.messageId).openCursor(null, 'prev');
@@ -146,7 +146,7 @@ export class IDBMessages extends IDBBase {
 								.then(([message_id]) => {
 									console.debug(23, conversation_id, message_id);
 									const transaction = db.transaction('messages', 'readwrite');
-									transaction.onerror = mainReject;
+									transaction.done.catch(mainReject);
 
 									const insertMessage: Omit<IDBMessage, 'id'> & Pick<Partial<IDBMessage>, 'id'> = {
 										content_version: 0,
