@@ -38,6 +38,7 @@ updates:
     open-pull-requests-limit: 999
     target-branch: 'preview'
     ignore:
+      # Match lts/*
       - dependency-name: '@types/node'
         versions: '>=21.0.0'
     groups:
