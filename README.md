@@ -17,14 +17,29 @@
 1. Duplicate [`pages/.dev.vars.example`](pages/.dev.vars.example), but without the `.example` ending and fill in the valueS with appropriate values
 
 > [!NOTE]  
-> On `locahost` turnstile is configured for the [dummy](https://developers.cloudflare.com/turnstile/reference/testing/#dummy-sitekeys-and-secret-keys) `Always passes`/`invisible` keys. Use the `Always passes` secret key to allow usage.
+> On `locahost` turnstile is configured for the [dummy keys](https://developers.cloudflare.com/turnstile/reference/testing/#dummy-sitekeys-and-secret-keys) (`Always passes`/`invisible`). Use the `Always passes` secret key to allow usage.
 
-2. Install packages: `npm ci --include-workspace-root --workspaces` (If you are running in GitHub Codespaces, you can skip this step)
-3. Build everything: `npm run build:local` (If you are running in GitHub Codespaces, you can simply do `ctrl`/`cmd` + `shift` + `b`)
-    - If there's ever a build error or corruption, a handy `npm run clean` is available
-4. To run the site, there are 2 commands (1 for the frontend, 1 for the backend). I personally prefer to have 2 terminals for this.
-    - Frontend: `npm -w pages start` (If you are running in GitHub Codespaces, the port is already forwarded and you should get a notification)
-    - Backend: `npm -w worker start`
+2. Install packages (If you are running in GitHub Codespaces, you can skip this step):
+    ```bash
+    npm ci --include-workspace-root --workspaces
+    ```
+3. Build everything (If you are running in GitHub Codespaces, you can simply do `ctrl`/`cmd` + `shift` + `b`):
+    ```bash
+    npm run build:local
+    ```
+    - If there's ever a build error or corruption:
+        ```bash
+        npm run clean
+        ```
+4. To run the site, there are 2 commands (1 for the frontend, 1 for the backend). Order ran doesn't matter. I personally prefer to have 2 terminals for this.
+    - Frontend (If you are running in GitHub Codespaces, the port is already forwarded and you should get a notification after command):
+        ```bash
+        npm -w pages start
+        ```
+    - Backend:
+        ```bash
+        npm -w worker start
+        ```
 
 > [!NOTE]  
 > If you are not logged into `wrangler` already, you will get a login link in terminal window once the first message is submitted. Follow it and sign in.
