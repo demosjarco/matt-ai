@@ -31,4 +31,3 @@ mode = "smart"
 [dev]
 local_protocol = "http"
 ip = "localhost"
-port = 11853
