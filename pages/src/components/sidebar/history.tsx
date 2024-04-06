@@ -22,7 +22,7 @@ export default component$(() => {
 
 	const navigate = useNavigate();
 
-	const conversationId = useSignal<number | undefined>(undefined);
+	const conversationId = useSignal<number>();
 
 	useVisibleTask$(({ track }) => {
 		track(() => conversationId.value);

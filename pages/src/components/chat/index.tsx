@@ -7,7 +7,7 @@ import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import { IDBMessages } from '../../IDB/messages';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
-import { useConversationId, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
+import { serverConversationId, useConversationId, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
 import type { EnvVars, IDBMessage, IDBMessageContent } from '../../types';
 import Message from './Message';
 import ChatBox from './interactionBar/chatBox';
@@ -89,11 +89,6 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 	}
 });
 
-const serverConversationId = server$(function () {
-	const id = this.params['conversationId'] ?? '';
-	return isNaN(Number(id)) ? undefined : Number(id);
-});
-
 export default component$(() => {
 	const userLocale = useUserLocale();
 	const conversationId = useConversationId();
@@ -105,24 +100,16 @@ export default component$(() => {
 	useVisibleTask$(async ({ track }) => {
 		track(() => conversationId.value);
 
-		if (!conversationId.value || isNaN(Number(conversationId.value))) {
+		if (!conversationId.value) {
 			return;
 		}
-
-		Object.keys(newMessageHistory).forEach((key) => {
-			delete newMessageHistory[Number(key)];
-		});
-		const initialConversation = await new IDBMessages().getMessagesForConversation(Number(conversationId.value));
-		initialConversation.forEach((item) => {
-			newMessageHistory[item.id] = item;
-		});
 	});
 
 	const sendMessage = $(
 		(message: string) =>
 			// eslint-disable-next-line no-async-promise-executor
 			new Promise<IDBMessage>(async (mainResolve, mainReject) => {
-				let convId = conversationId.value.length > 0 ? Number(conversationId.value) : await serverConversationId();
+				let convId = conversationId.value ?? (await serverConversationId());
 				if (convId && convId < 1) convId++;
 
 				// Run it in a `.all()` so that the promise chain stays alive until all finish, but don't wait to return promise
