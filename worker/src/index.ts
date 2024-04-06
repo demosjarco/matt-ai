@@ -14,6 +14,23 @@ export default class extends WorkerEntrypoint<EnvVars> {
 		return new Response('Hello world');
 	}
 
+	override queue(batch: MessageBatch<unknown>) {
+		if (batch.queue.startsWith('mattai-deferred-tasks-dlq')) {
+			/**
+			 * @todo
+			 * Connect to ws
+			 * Tell the client "yea, it ain't happening"
+			 * End all WS and DO
+			 */
+		} else if (batch.queue.startsWith('mattai-deferred-tasks')) {
+			/**
+			 * @todo
+			 * Do Browser rendering stuff
+			 * Ws content back
+			 */
+		}
+	}
+
 	async messageAction(message: string, longer: boolean) {
 		// const urlRegex = /https:\/\/(?:[a-z0-9-]+\.)+[a-z0-9-]+(?:\/[^\s]*)?/gi;
 		// console.debug('URLs detected', args.message.match(urlRegex));
