@@ -29,5 +29,5 @@ mode = "smart"
 
 
 [dev]
-local_protocol = "http"
+local_protocol = "https"
 ip = "localhost"
