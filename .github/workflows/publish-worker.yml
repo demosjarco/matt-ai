@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - production
-      - staging
-      - development
+      - preview
     paths:
       - '.github/workflows/publish-worker.yml'
       - 'package*.json'
@@ -17,7 +16,7 @@ on:
       environment:
         description: 'Choose an environment to deploy to:'
         required: true
-        default: 'development'
+        default: 'preview'
         type: environment
 
 concurrency:
@@ -53,7 +52,7 @@ jobs:
           wranglerVersion: ${{ steps.npm_wrangler_version.outputs.wrangler_version }}
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          environment: ${{ vars.ENVIRONMENT != 'development' && vars.ENVIRONMENT || '' }}
+          environment: ${{ vars.ENVIRONMENT != 'preview' && vars.ENVIRONMENT || '' }}
           workingDirectory: worker
           vars: |
             GIT_HASH

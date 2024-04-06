@@ -10,16 +10,19 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 999
+    target-branch: 'preview'
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
       interval: daily
     open-pull-requests-limit: 999
+    target-branch: 'preview'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: daily
     open-pull-requests-limit: 999
+    target-branch: 'preview'
     groups:
       artifacts:
         patterns:
@@ -33,6 +36,7 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 999
+    target-branch: 'preview'
     ignore:
       - dependency-name: '@types/node'
         versions: '>=21.0.0'

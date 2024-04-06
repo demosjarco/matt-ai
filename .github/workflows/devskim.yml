@@ -9,13 +9,11 @@ on:
   push:
     branches:
       - production
-      - staging
-      - dev
+      - preview
   pull_request:
     branches:
       - production
-      - staging
-      - dev
+      - preview
   schedule:
     - cron: '0 0 * * 0'
 

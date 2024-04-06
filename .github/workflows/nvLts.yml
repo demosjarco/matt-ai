@@ -3,9 +3,8 @@ name: Pin `node` `lts`
 on:
   push:
     branches:
-      - 'production'
-      - 'staging'
-      - 'dev'
+      - production
+      - preview
       - '**-lts'
     paths:
       - '.nvmrc'
@@ -13,9 +12,8 @@ on:
     types:
       - opened
     branches:
-      - 'production'
-      - 'staging'
-      - 'dev'
+      - production
+      - preview
       - '**-lts'
     paths:
       - '.nvmrc'

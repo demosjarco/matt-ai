@@ -1,0 +1,48 @@
+name: Split `node` version
+
+on:
+  push:
+    branches:
+      - preview
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - node-version: 'lts/*'
+            branch-suffix: 'lts'
+          - node-version: 'latest'
+            branch-suffix: 'latest'
+    steps:
+      - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+          disable-sudo: true
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: '${{ github.head_ref || github.ref_name }}-${{ matrix.branch-suffix }}'
+          fetch-depth: 0
+      - name: Git Setup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Merge from ${{ github.head_ref || github.ref_name }} to ${{ github.head_ref || github.ref_name }}-${{ matrix.branch-suffix }}
+        run: git merge -X theirs origin/${{ github.head_ref || github.ref_name }}
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        id: sn
+        with:
+          node-version: ${{ matrix.node-version }}
+          check-latest: true
+          cache: 'npm'
+      - run: echo "${{ steps.sn.outputs.node-version }}" > .nvmrc
+      - run: git commit .nvmrc -m "Set version to ${{ matrix.branch-suffix }}" || echo "nv change not needed"
+      - run: git push
