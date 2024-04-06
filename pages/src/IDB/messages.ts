@@ -1,6 +1,6 @@
-import { IDBMessageIndexes, deepMerge } from '../extras';
-import type { IDBConversation, IDBMessage } from '../types';
+import { deepMerge } from '../extras';
 import { IDBBase } from './base';
+import { IDBMessageIndexes, type IDBConversation, type IDBMessage } from './schemas/v1';
 
 type MessageSaveGuarantee = 'role';
 type FullMessageGuarantee = Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>;
@@ -10,32 +10,22 @@ export class IDBMessages extends IDBBase {
 	public getMessagesForConversation(cid: number) {
 		return new Promise<IDBMessage[]>((resolve, reject) =>
 			this.db
-				.then((db) => {
-					const transaction = db.transaction('messages', 'readonly', { durability: 'relaxed' });
-					transaction.onerror = reject;
-
+				.then(async (db) => {
 					const latestMessages: Record<number, IDBMessage> = {};
-					transaction.oncomplete = () => resolve(Object.values(latestMessages));
 
-					const store = transaction.objectStore(transaction.objectStoreNames[0]!);
-					const index = store.index(IDBMessageIndexes.conversationIdMessageIdContentVersion).openCursor(IDBKeyRange.bound([cid], [cid, [], []]), 'next');
-					index.onerror = reject;
-					index.onsuccess = (event) => {
-						const cursorEvent = event.target as ReturnType<IDBIndex['openCursor']>;
-						const cursor = cursorEvent.result;
+					const transaction = db.transaction('messages', 'readonly', { durability: 'relaxed' });
+					transaction.done.then(() => resolve(Object.values(latestMessages))).catch(reject);
 
-						if (cursor) {
-							const message: IDBMessage = cursor.value;
-
-							if (!latestMessages[message.message_id] || (latestMessages[message.message_id] && latestMessages[message.message_id]!.content_version < message.content_version)) {
-								latestMessages[message.message_id] = message;
-							}
-
-							cursor.continue();
-						} else {
-							transaction.commit();
+					const index = transaction.store.index(IDBMessageIndexes.conversationIdMessageIdContentVersion);
+					for await (const cursor of index.iterate(IDBKeyRange.bound([cid], [cid, [], []]), 'next')) {
+						if (!latestMessages[cursor.value.message_id] || (latestMessages[cursor.value.message_id] && latestMessages[cursor.value.message_id]!.content_version < cursor.value.content_version)) {
+							latestMessages[cursor.value.message_id] = cursor.value;
 						}
-					};
+
+						// cursor.continue();
+					}
+
+					// transaction.commit();
 				})
 				.catch(reject),
 		);
@@ -45,14 +35,16 @@ export class IDBMessages extends IDBBase {
 		return new Promise<IDBMessage>((resolve, reject) =>
 			this.db
 				.then((db) => {
+					db.get('messages', message.key);
 					const transaction = db.transaction('messages', 'readonly', { durability: 'relaxed' });
-					transaction.onerror = reject;
+					transaction.done.catch(reject);
 
-					const select = transaction.objectStore(transaction.objectStoreNames[0]!).get(message.id);
-					select.onerror = reject;
-					select.onsuccess = () => resolve(select.result);
+					transaction.store
+						.get(message.key)
+						.then((value) => (value ? resolve(value) : reject))
+						.catch(reject);
 
-					transaction.commit();
+					// transaction.commit();
 				})
 				.catch(reject),
 		);
