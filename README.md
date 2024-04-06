@@ -14,7 +14,7 @@
 > [!IMPORTANT]  
 > Make sure you are running this project with the latest `lts` version of NodeJS (GitHub Codespaces is already setup with `lts/*`). Other versions may work but are not guaranteed.
 
-1. Duplicate [`pages/.dev.vars.example`](pages/.dev.vars.example), but without the `.example` ending and fill in the valueS with appropriate values
+1. Duplicate [`pages/.dev.vars.example`](pages/.dev.vars.example), but without the `.example` extention and fill in the values appropriately
 
 > [!NOTE]  
 > On `locahost` turnstile is configured for the [dummy keys](https://developers.cloudflare.com/turnstile/reference/testing/#dummy-sitekeys-and-secret-keys) (`Always passes`/`invisible`). Use the `Always passes` secret key to allow usage.
