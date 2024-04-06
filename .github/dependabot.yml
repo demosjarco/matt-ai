@@ -81,7 +81,6 @@ updates:
       typescript-types:
         patterns:
           - '@types/*'
-          - 'turnstile-types'
           - '@cloudflare/workers-types'
       qwik:
         patterns:
