@@ -6,6 +6,10 @@ import { createTypeScriptJsonValidator } from '../typechat/ts/index.js';
 import type { EnvVars } from './types.js';
 
 export default class extends WorkerEntrypoint<EnvVars> {
+	override async fetch(request: Request) {
+		return new Response('Hello world');
+	}
+
 	async messageAction(message: string, longer: boolean) {
 		// const urlRegex = /https:\/\/(?:[a-z0-9-]+\.)+[a-z0-9-]+(?:\/[^\s]*)?/gi;
 		// console.debug('URLs detected', args.message.match(urlRegex));
@@ -32,9 +36,5 @@ export default class extends WorkerEntrypoint<EnvVars> {
 			console.error(error);
 			throw error;
 		}
-	}
-
-	hello() {
-		return 'Hello World';
 	}
 }
