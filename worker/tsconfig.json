@@ -1,4 +1,4 @@
 {
 	"extends": "../tsconfig.json",
-	"include": ["aiTypes", "rpc", "typechat"]
+	"include": ["aiTypes", "rpc", "typechat", "../do"]
 }

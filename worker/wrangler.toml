@@ -5,6 +5,10 @@ compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
 workers_dev = false
 minify = true
 ai = { binding = "AI" }
+durable_objects.bindings = [
+    { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
+]
+migrations = [{ tag = "v1", new_classes = ["QueueCallbackHandler"] }]
 
 [vars]
 NODE_ENV = "development"
@@ -20,6 +24,10 @@ compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
 workers_dev = false
 minify = true
 ai = { binding = "AI" }
+durable_objects.bindings = [
+    { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
+]
+migrations = [{ tag = "v1", new_classes = ["QueueCallbackHandler"] }]
 
 [env.production.vars]
 NODE_ENV = "production"
