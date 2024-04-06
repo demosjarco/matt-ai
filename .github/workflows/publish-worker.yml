@@ -8,8 +8,12 @@ on:
     paths:
       - '.github/workflows/publish-worker.yml'
       - 'package*.json'
+      - 'worker/package*.json'
+      - 'worker/aiTypes/**'
       - 'worker/src/**'
+      - 'worker/typechat/**'
       - 'tsconfig.json'
+      - 'worker/tsconfig.json'
       - 'worker/wrangler.toml'
   workflow_dispatch:
     inputs:
