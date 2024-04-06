@@ -10,7 +10,7 @@ on:
       - 'package*.json'
       - 'worker/package*.json'
       - 'worker/aiTypes/**'
-      - 'worker/rpc/**'
+      - 'worker/src/**'
       - 'worker/typechat/**'
       - 'tsconfig.json'
       - 'worker/tsconfig.json'
