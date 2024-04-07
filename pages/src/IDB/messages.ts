@@ -14,18 +14,12 @@ export class IDBMessages extends IDBBase {
 	public getMessage(message: InternalMessageGuarantee) {
 		return new Promise<IDBMessage>((resolve, reject) =>
 			this.db
-				.then((db) => {
-					db.get('messages', message.key);
-					const transaction = db.transaction('messages', 'readonly', { durability: 'relaxed' });
-					transaction.done.catch(reject);
-
-					transaction.store
-						.get(message.key)
-						.then((value) => (value ? resolve(value) : reject))
-						.catch(reject);
-
-					// transaction.commit();
-				})
+				.then((db) =>
+					db
+						.get('messages', message.key)
+						.then((value) => (value ? resolve(value) : reject()))
+						.catch(reject),
+				)
 				.catch(reject),
 		);
 	}
