@@ -5,6 +5,7 @@ import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
+import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
 import type { IDBMessage } from '../../IDB/schemas/v2';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
@@ -98,6 +99,11 @@ export default component$((props: { initialConversationId?: number }) => {
 		track(() => conversationId.value);
 
 		if (conversationId.value) {
+			new IDBConversations().updateConversation({
+				key: conversationId.value,
+				atime: new Date(),
+			});
+
 			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
 			console.debug('Found', existingMessages, 'messages for conversation id', conversationId.value);
 			existingMessages.forEach((existingMessage) => {
