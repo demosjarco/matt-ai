@@ -8,7 +8,7 @@ import { Buffer } from 'node:buffer';
 import { IDBMessages } from '../../IDB/messages';
 import type { IDBMessage } from '../../IDB/schemas/v2';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
-import { useConversationId, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
+import { useUserLocale } from '../../routes/layout';
 import type { EnvVars } from '../../types';
 import Message from './Message';
 import InteractionBar from './interactionBar';
@@ -92,8 +92,6 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 export default component$(() => {
 	const userLocale = useUserLocale();
 	const conversationId = useConversationId();
-	const createConversation = useUserUpdateConversation();
-
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
 	useVisibleTask$(async ({ track, cleanup }) => {
