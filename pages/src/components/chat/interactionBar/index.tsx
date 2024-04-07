@@ -5,7 +5,7 @@ import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-export default component$((props: { conversationId: number; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
+export default component$((props: { conversationId?: number; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 

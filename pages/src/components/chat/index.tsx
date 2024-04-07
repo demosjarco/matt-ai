@@ -128,7 +128,7 @@ export default component$(() => {
 						</div>
 					</div>
 				</div>
-				<InteractionBar conversationId={conversationId.value!} messageHistory={messageHistory} />
+				<InteractionBar conversationId={conversationId.value} messageHistory={messageHistory} />
 			</div>
 		</>
 	);
