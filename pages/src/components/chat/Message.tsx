@@ -1,6 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import { FaDownloadSolid } from '@qwikest/icons/font-awesome';
-import type { IDBMessage } from '../../types';
+import type { IDBMessage } from '../../IDB/schemas/v2';
 import Avatar from './Avatar';
 
 export default component$((props: { message: IDBMessage; userLocale?: string }) => {

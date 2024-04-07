@@ -1,7 +1,7 @@
 import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { useNavigate } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
-import type { IDBConversation } from '../../types';
+import type { IDBConversation } from '../../IDB/schemas/v2';
 import Item from './item';
 
 export default component$(() => {
@@ -43,8 +43,8 @@ export default component$(() => {
 					onClick$={(id) => {
 						conversationId.value = id;
 					}}
-					key={conversation.id}
-					id={conversation.id}
+					key={conversation.key}
+					id={conversation.key!}
 					title={conversation.name}
 				/>
 			))}
