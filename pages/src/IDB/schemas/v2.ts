@@ -117,7 +117,9 @@ export class AiLocal {
 		// For speed
 	}
 	private static createMessagesTable(newDatabase: IDBPDatabase<AiLocalSchema>) {
-		const table = newDatabase.createObjectStore('messages', { autoIncrement: true });
+		const table = newDatabase.createObjectStore('messages', {
+			autoIncrement: true,
+		});
 
 		// For search
 		table.createIndex(IDBMessageIndexes.conversationId, IDBMessageIndexes.conversationId, { unique: false, multiEntry: false });
