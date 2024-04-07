@@ -89,7 +89,7 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 	}
 });
 
-export default component$(() => {
+export default component$((props: { initialConversationId?: number }) => {
 	const userLocale = useUserLocale();
 	const conversationId = useConversationId();
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
