@@ -1,4 +1,4 @@
-import { component$, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
 import { server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
@@ -91,7 +91,7 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 
 export default component$((props: { initialConversationId?: number }) => {
 	const userLocale = useUserLocale();
-	const conversationId = useConversationId();
+	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
 	useVisibleTask$(async ({ track, cleanup }) => {
@@ -104,7 +104,7 @@ export default component$((props: { initialConversationId?: number }) => {
 				messageHistory[item.key!] = item;
 			});
 		} else {
-			console.warn('conversationId', conversationId.value);
+			console.warn('conversation id', conversationId.value);
 		}
 
 		cleanup(() => {
@@ -126,7 +126,7 @@ export default component$((props: { initialConversationId?: number }) => {
 						</div>
 					</div>
 				</div>
-				<InteractionBar conversationId={conversationId.value} messageHistory={messageHistory} />
+				<InteractionBar conversationId={conversationId} messageHistory={messageHistory} />
 			</div>
 		</>
 	);

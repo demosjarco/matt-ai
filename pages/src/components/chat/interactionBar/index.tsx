@@ -1,11 +1,11 @@
-import { $, component$, useSignal } from '@builder.io/qwik';
+import { $, component$, useSignal, type Signal } from '@builder.io/qwik';
 import { Form } from '@builder.io/qwik-city';
 import type { IDBMessage } from '../../../IDB/schemas/v2';
 import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-export default component$((props: { conversationId?: number; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
+export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 
@@ -23,6 +23,7 @@ export default component$((props: { conversationId?: number; messageHistory: Rec
 							sendMessage(createConversation.value.sanitizedMessage)
 								.then((message) => {
 									window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
+									props.conversationId.value = message.conversation_id;
 									resolve();
 								})
 								.catch(reject);
@@ -31,7 +32,7 @@ export default component$((props: { conversationId?: number; messageHistory: Rec
 							props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 								key: Number.MAX_SAFE_INTEGER,
 								message_id: Number.MAX_SAFE_INTEGER,
-								conversation_id: props.conversationId,
+								conversation_id: props.conversationId.value,
 								content_version: 1,
 								btime: new Date(),
 								role: 'system',
@@ -52,7 +53,7 @@ export default component$((props: { conversationId?: number; messageHistory: Rec
 						props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 							key: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
-							conversation_id: props.conversationId,
+							conversation_id: props.conversationId.value,
 							content_version: 1,
 							btime: new Date(),
 							role: 'system',
