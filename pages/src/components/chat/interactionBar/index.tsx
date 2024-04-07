@@ -10,7 +10,28 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 
-	const sendMessage = $((message: string) => new Promise<IDBMessage>((resolve, reject) => {}));
+	const sendMessage = $(
+		(message: string) =>
+			new Promise<IDBMessage>((mainResolve, mainReject) =>
+				new IDBMessages()
+					.saveMessage({
+						conversation_id: props.conversationId.value,
+						role: 'user',
+						status: true,
+						content: [
+							{
+								text: message,
+								model_used: null,
+							},
+						],
+					})
+					.then(async (fullMessage) => {
+						props.messageHistory[fullMessage.key!] = fullMessage;
+						mainResolve(fullMessage);
+					})
+					.catch(mainReject),
+			),
+	);
 
 	return (
 		<Form
