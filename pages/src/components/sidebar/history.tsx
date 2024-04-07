@@ -7,18 +7,9 @@ import Item from './item';
 export default component$(() => {
 	const conversations = useSignal<IDBConversation[]>([]);
 
-	useVisibleTask$(
-		() =>
-			new Promise<void>((resolve, reject) =>
-				new IDBConversations().conversations
-					.then((conversationData) => {
-						conversations.value = conversationData;
-
-						resolve();
-					})
-					.catch(reject),
-			),
-	);
+	useVisibleTask$(async () => {
+		conversations.value = await new IDBConversations().conversations;
+	});
 
 	const navigate = useNavigate();
 
