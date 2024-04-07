@@ -37,7 +37,7 @@ export enum IDBConversationIndexes {
 }
 
 export interface IDBConversation {
-	key: number;
+	key?: number;
 	name: string;
 	/**
 	 * `atime` = access time
@@ -66,7 +66,7 @@ export enum IDBMessageIndexes {
 	conversationIdMessageId = `${conversationId}|${messageId}`,
 }
 export interface IDBMessage {
-	key: number;
+	key?: number;
 	message_id: number;
 	conversation_id: number;
 	content_version: number;
