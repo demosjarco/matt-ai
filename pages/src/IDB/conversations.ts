@@ -1,6 +1,5 @@
-import { IDBConversationIndexes } from '../extras';
-import type { IDBConversation } from '../types';
 import { IDBBase } from './base';
+import { IDBConversationIndexes, type IDBConversation } from './schemas/v1';
 
 export class IDBConversations extends IDBBase {
 	public get conversations() {

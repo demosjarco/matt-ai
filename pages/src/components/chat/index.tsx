@@ -6,9 +6,10 @@ import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dis
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import { IDBMessages } from '../../IDB/messages';
+import type { IDBMessage, IDBMessageContent } from '../../IDB/schemas/v1';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
 import { serverConversationId, useConversationId, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
-import type { EnvVars, IDBMessage, IDBMessageContent } from '../../types';
+import type { EnvVars } from '../../types';
 import Message from './Message';
 import ChatBox from './interactionBar/chatBox';
 import Submit from './interactionBar/submit';
