@@ -31,7 +31,7 @@ export default component$((props: { conversationId: number; messageHistory: Reco
 							props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 								key: Number.MAX_SAFE_INTEGER,
 								message_id: Number.MAX_SAFE_INTEGER,
-								conversation_id: props.conversationId.value,
+								conversation_id: props.conversationId,
 								content_version: 1,
 								btime: new Date(),
 								role: 'system',
@@ -52,7 +52,7 @@ export default component$((props: { conversationId: number; messageHistory: Reco
 						props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 							key: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
-							conversation_id: props.conversationId.value,
+							conversation_id: props.conversationId,
 							content_version: 1,
 							btime: new Date(),
 							role: 'system',
