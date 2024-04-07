@@ -96,7 +96,7 @@ export default component$(() => {
 	const createConversation = useUserUpdateConversation();
 	const formRef = useSignal<HTMLFormElement>();
 
-	const newMessageHistory = useStore<Record<IDBMessage['id'], IDBMessage>>({}, { deep: true });
+	const newMessageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
 	useVisibleTask$(async ({ track }) => {
 		track(() => conversationId.value);
@@ -130,7 +130,7 @@ export default component$(() => {
 						],
 					})
 					.then((fullMessage) => {
-						newMessageHistory[fullMessage.id] = fullMessage;
+						newMessageHistory[fullMessage.key!] = fullMessage;
 						mainResolve(fullMessage);
 
 						new IDBMessages()
@@ -144,78 +144,78 @@ export default component$(() => {
 							})
 							.then((fullMessage) => {
 								// Add placeholder
-								newMessageHistory[fullMessage.id] = fullMessage;
+								newMessageHistory[fullMessage.key!] = fullMessage;
 
 								/**
 								 * @todo Update status to
 								 * `status: ['typing', 'deciding'],`
 								 */
-								newMessageHistory[fullMessage.id]!.status = ['typing', 'deciding'];
+								newMessageHistory[fullMessage.key!]!.status = ['typing', 'deciding'];
 
 								Promise.all([
 									aiResponse('@cf/meta/llama-2-7b-chat-fp16', [{ role: 'user', content: message }]).then(async (chatResponse) => {
 										// @ts-expect-error
-										newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'typing'.toLowerCase());
+										newMessageHistory[fullMessage.key!]!.status = newMessageHistory[fullMessage.key!]!.status.filter((str) => str.toLowerCase() !== 'typing'.toLowerCase());
 
 										const composedInsert: IDBMessageContent = {
 											text: '',
 											model_used: '@cf/meta/llama-2-7b-chat-fp16',
 										};
 
-										const previousText = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'text' in record);
+										const previousText = newMessageHistory[fullMessage.key!]!.content.findIndex((record) => 'text' in record);
 										if (previousText >= 0) {
-											newMessageHistory[fullMessage.id]!.content[previousText] = composedInsert;
+											newMessageHistory[fullMessage.key!]!.content[previousText] = composedInsert;
 										} else {
-											newMessageHistory[fullMessage.id]!.content.push(composedInsert);
+											newMessageHistory[fullMessage.key!]!.content.push(composedInsert);
 										}
 
 										for await (const chatResponseChunk of chatResponse) {
 											composedInsert.text += chatResponseChunk ?? '';
-											newMessageHistory[fullMessage.id]!.content[previousText] = composedInsert;
+											newMessageHistory[fullMessage.key!]!.content[previousText] = composedInsert;
 										}
 
-										if (Array.isArray(newMessageHistory[fullMessage.id]!.status)) {
+										if (Array.isArray(newMessageHistory[fullMessage.key!]!.status)) {
 											// @ts-expect-error
-											newMessageHistory[fullMessage.id]!.status.filter((item) => item !== 'typing');
+											newMessageHistory[fullMessage.key!]!.status.filter((item) => item !== 'typing');
 										}
 
 										// Save to local db
 										await new IDBMessages().updateMessage({
-											id: fullMessage.id,
+											key: fullMessage.key!,
 											content: [composedInsert],
 										});
 									}),
 									aiPreProcess(message).then(({ action, modelUsed }) => {
 										// @ts-expect-error
-										newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'deciding'.toLowerCase());
+										newMessageHistory[fullMessage.key!]!.status = newMessageHistory[fullMessage.key!]!.status.filter((str) => str.toLowerCase() !== 'deciding'.toLowerCase());
 
 										const composedInsert: IDBMessageContent = {
 											action,
 											model_used: modelUsed,
 										};
 
-										const previousAction = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'action' in record);
+										const previousAction = newMessageHistory[fullMessage.key!]!.content.findIndex((record) => 'action' in record);
 										if (previousAction >= 0) {
-											newMessageHistory[fullMessage.id]!.content[previousAction] = composedInsert;
+											newMessageHistory[fullMessage.key!]!.content[previousAction] = composedInsert;
 										} else {
-											newMessageHistory[fullMessage.id]!.content.push(composedInsert);
+											newMessageHistory[fullMessage.key!]!.content.push(composedInsert);
 										}
 
-										if (Array.isArray(newMessageHistory[fullMessage.id]!.status)) {
+										if (Array.isArray(newMessageHistory[fullMessage.key!]!.status)) {
 											// @ts-expect-error
-											newMessageHistory[fullMessage.id]!.status.filter((item) => item !== 'deciding');
+											newMessageHistory[fullMessage.key!]!.status.filter((item) => item !== 'deciding');
 										}
 										console.debug(1);
 
 										const actions: Promise<any>[] = [
 											new IDBMessages().updateMessage({
-												id: fullMessage.id,
+												key: fullMessage.key!,
 												content: [composedInsert],
 											}),
 										];
 										if (action.imageGenerate) {
 											// @ts-expect-error
-											newMessageHistory[fullMessage.id]!.status.push('imageGenerating');
+											newMessageHistory[fullMessage.key!]!.status.push('imageGenerating');
 
 											actions.push(
 												aiImageGenerate(action.imageGenerate)
@@ -228,20 +228,20 @@ export default component$(() => {
 															model_used: model as Parameters<Ai['run']>[0],
 														};
 
-														const previousImage = newMessageHistory[fullMessage.id]!.content.findIndex((record) => 'image' in record);
+														const previousImage = newMessageHistory[fullMessage.key!]!.content.findIndex((record) => 'image' in record);
 														if (previousImage >= 0) {
-															newMessageHistory[fullMessage.id]!.content[previousImage] = composedInsert;
+															newMessageHistory[fullMessage.key!]!.content[previousImage] = composedInsert;
 														} else {
-															newMessageHistory[fullMessage.id]!.content.push(composedInsert);
+															newMessageHistory[fullMessage.key!]!.content.push(composedInsert);
 														}
 
 														new IDBMessages().updateMessage({
-															id: fullMessage.id,
+															key: fullMessage.key!,
 															content: [composedInsert],
 														});
 													})
 													// @ts-expect-error
-													.finally(() => (newMessageHistory[fullMessage.id]!.status = newMessageHistory[fullMessage.id]!.status.filter((str) => str.toLowerCase() !== 'imageGenerating'.toLowerCase()))),
+													.finally(() => (newMessageHistory[fullMessage.key!]!.status = newMessageHistory[fullMessage.key!]!.status.filter((str) => str.toLowerCase() !== 'imageGenerating'.toLowerCase()))),
 											);
 										}
 										return Promise.all([actions]).catch(mainReject);

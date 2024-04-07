@@ -43,8 +43,8 @@ export default component$(() => {
 					onClick$={(id) => {
 						conversationId.value = id;
 					}}
-					key={conversation.id}
-					id={conversation.id}
+					key={conversation.key}
+					id={conversation.key}
 					title={conversation.name}
 				/>
 			))}
