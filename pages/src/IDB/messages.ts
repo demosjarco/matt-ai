@@ -1,7 +1,7 @@
 import { deepMerge } from '../extras';
 import { IDBBase } from './base';
 import { IDBConversations } from './conversations';
-import { IDBMessageIndexes, type IDBMessage } from './schemas/v2';
+import { IDBMessageIndexes, type IDBConversation, type IDBMessage } from './schemas/v2';
 
 type MessageSaveGuarantee = 'role';
 type FullMessageGuarantee = Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>;
@@ -36,15 +36,17 @@ export class IDBMessages extends IDBBase {
 					Promise.all([
 						new Promise<IDBMessage['conversation_id']>((resolve, reject) => {
 							// IDB has 1-based autoincrement
-							db.add('conversations', {
-								// Always insert to avoid edge case of being on a conversation page already
-								key: 'conversation_id' in message && !isNaN(message.conversation_id!) && message.conversation_id! > 0 ? message.conversation_id! : undefined,
+							const insertConversation: IDBConversation = {
 								name: crypto.randomUUID(),
 								atime: new Date(),
 								btime: new Date(),
 								ctime: new Date(),
 								mtime: new Date(),
-							})
+							};
+							// Always insert to avoid edge case of being on a conversation page already
+							if ('conversation_id' in message && !isNaN(message.conversation_id!) && message.conversation_id! > 0) insertConversation.key = message.conversation_id;
+
+							db.add('conversations', insertConversation)
 								.then(resolve)
 								.catch((reason) => {
 									if (reason instanceof DOMException) {
