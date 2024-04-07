@@ -1,7 +1,7 @@
 import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { useNavigate } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
-import type { IDBConversation } from '../../IDB/schemas/v1';
+import type { IDBConversation } from '../../IDB/schemas/v2';
 import Item from './item';
 
 export default component$(() => {

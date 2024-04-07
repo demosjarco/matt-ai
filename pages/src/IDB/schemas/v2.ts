@@ -92,7 +92,11 @@ export interface IDBMessageContentCard extends Record<string, any> {}
 export type IDBMessageContentImage = AiTextToImageOutput;
 
 export class AiLocal {
-	public static upgrade(newDatabase: IDBPDatabase<AiLocalSchema>) {
+	public static upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
+		// Just nuke it, whole new ORM and stuff
+		oldDatabase.deleteObjectStore('conversations');
+		oldDatabase.deleteObjectStore('messages');
+
 		this.createConversationsTable(newDatabase);
 		this.createMessagesTable(newDatabase);
 	}

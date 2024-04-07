@@ -1,6 +1,6 @@
 import { deepMerge } from '../extras';
 import { IDBBase } from './base';
-import { IDBMessageIndexes, type IDBMessage } from './schemas/v1';
+import { IDBMessageIndexes, type IDBMessage } from './schemas/v2';
 
 type MessageSaveGuarantee = 'role';
 type FullMessageGuarantee = Pick<IDBMessage, MessageSaveGuarantee> & Omit<Partial<IDBMessage>, MessageSaveGuarantee>;

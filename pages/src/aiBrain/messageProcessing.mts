@@ -1,6 +1,6 @@
 import type { RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
-import type { IDBMessageContent } from '../IDB/schemas/v1';
+import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../helpers/base.mjs';
 
 export class MessageProcessing extends CFBase {

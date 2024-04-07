@@ -1,12 +1,13 @@
-import { openDB } from 'idb';
-import { AiLocal as AiLocalV1, type AiLocalSchema as AiLocalSchemaV1 } from './schemas/v1';
+import { openDB, type IDBPDatabase } from 'idb';
+import { AiLocal as AiLocalV2, type AiLocalSchema as AiLocalSchemaV2 } from './schemas/v2';
 
 export abstract class IDBBase {
 	protected get db() {
-		return openDB<AiLocalSchemaV1>('ailocal', 1, {
+		return openDB<AiLocalSchemaV2>('ailocal', 2, {
 			upgrade(database, oldVersion) {
-				if (oldVersion < 1) {
-					AiLocalV1.upgrade(database);
+				// Ignore v1 as it was before ORM
+				if (oldVersion < 2) {
+					AiLocalV2.upgrade(database as unknown as IDBPDatabase, database);
 				}
 				/**
 				 * @link https://github.com/jakearchibald/idb?tab=readme-ov-file#opting-out-of-types
