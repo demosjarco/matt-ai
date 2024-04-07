@@ -1,63 +1,30 @@
-import { IDBConversationIndexes, IDBMessageIndexes } from '../extras';
+import { openDB, type IDBPDatabase } from 'idb';
+import { AiLocal as AiLocalV2, type AiLocalSchema as AiLocalSchemaV2 } from './schemas/v2';
 
 export abstract class IDBBase {
 	protected get db() {
-		const DBOpenRequest = indexedDB.open('ailocal', 1);
-
-		return new Promise<IDBDatabase>((resolve, reject) => {
-			DBOpenRequest.onerror = reject;
-
-			DBOpenRequest.onupgradeneeded = async (event) => await this.upgradeDB(event);
-
-			DBOpenRequest.onsuccess = () => resolve(DBOpenRequest.result);
+		return openDB<AiLocalSchemaV2>('ailocal', 2, {
+			upgrade(database, oldVersion) {
+				// Ignore v1 as it was before ORM
+				if (oldVersion < 2) {
+					AiLocalV2.upgrade(database as unknown as IDBPDatabase, database);
+				}
+				/**
+				 * @link https://github.com/jakearchibald/idb?tab=readme-ov-file#opting-out-of-types
+				 */
+			},
+			blocked(currentVersion, blockedVersion, event) {
+				const error = new Error('IDBOpenDBRequest: blocked', { cause: `An open connection to v${currentVersion} is blocking a versionchange transaction to v${blockedVersion}` });
+				console.error(error, event);
+			},
+			blocking(currentVersion, blockedVersion, event) {
+				const error = new Error('IDBDatabase: versionchange', { cause: `An attempt to open v${blockedVersion} is blocked while it is upgrading from v${currentVersion}` });
+				console.warn(error, event);
+			},
+			terminated() {
+				const error = new Error('IDBDatabase: close', { cause: 'Browser abnormally terminated connection' });
+				console.error(error);
+			},
 		});
-	}
-
-	protected upgradeDB(event: IDBVersionChangeEvent) {
-		const target = event.target as IDBOpenDBRequest;
-		const db = target.result;
-
-		return new Promise<void>((resolve, reject) => {
-			db.onerror = reject;
-
-			this.createConversationsTable(db);
-			this.createMessagesTable(db);
-
-			resolve();
-		});
-	}
-	private createConversationsTable(db: IDBDatabase) {
-		const table = db.createObjectStore('conversations', {
-			keyPath: 'id',
-			autoIncrement: true,
-		});
-
-		// For search
-		table.createIndex(IDBConversationIndexes.accessTime, IDBConversationIndexes.accessTime, { unique: false, multiEntry: false });
-		table.createIndex(IDBConversationIndexes.birthTime, IDBConversationIndexes.birthTime, { unique: false, multiEntry: false });
-		table.createIndex(IDBConversationIndexes.changeTime, IDBConversationIndexes.changeTime, { unique: false, multiEntry: false });
-		table.createIndex(IDBConversationIndexes.modifiedTime, IDBConversationIndexes.modifiedTime, { unique: false, multiEntry: false });
-
-		// For safety
-
-		// For speed
-	}
-	private createMessagesTable(db: IDBDatabase) {
-		const table = db.createObjectStore('messages', {
-			keyPath: 'id',
-			autoIncrement: true,
-		});
-
-		// For search
-		table.createIndex(IDBMessageIndexes.conversationId, IDBMessageIndexes.conversationId, { unique: false, multiEntry: false });
-		table.createIndex(IDBMessageIndexes.messageId, IDBMessageIndexes.messageId, { unique: false, multiEntry: false });
-		table.createIndex(IDBMessageIndexes.contentVersion, IDBMessageIndexes.contentVersion, { unique: false, multiEntry: false });
-		table.createIndex(IDBMessageIndexes.birthTime, IDBMessageIndexes.birthTime, { unique: false, multiEntry: false });
-
-		// For safety
-		table.createIndex(IDBMessageIndexes.conversationIdMessageIdContentVersion, [IDBMessageIndexes.conversationId, IDBMessageIndexes.messageId, IDBMessageIndexes.contentVersion], { unique: true });
-
-		// For speed
-		table.createIndex(IDBMessageIndexes.conversationIdMessageId, [IDBMessageIndexes.conversationId, IDBMessageIndexes.messageId], { unique: false });
 	}
 }
