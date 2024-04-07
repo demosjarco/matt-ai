@@ -1,11 +1,11 @@
-import { $, component$, useSignal, type Signal } from '@builder.io/qwik';
+import { $, component$, useSignal } from '@builder.io/qwik';
 import { Form } from '@builder.io/qwik-city';
 import type { IDBMessage } from '../../../IDB/schemas/v2';
 import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-export default component$((props: { conversationId: Readonly<Signal<number>>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
+export default component$((props: { conversationId: number; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 
