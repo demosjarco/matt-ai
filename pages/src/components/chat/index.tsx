@@ -1,4 +1,4 @@
-import { component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useStore, useVisibleTask$ } from '@builder.io/qwik';
 import { server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
@@ -93,7 +93,6 @@ export default component$(() => {
 	const userLocale = useUserLocale();
 	const conversationId = useConversationId();
 	const createConversation = useUserUpdateConversation();
-	const formRef = useSignal<HTMLFormElement>();
 
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
