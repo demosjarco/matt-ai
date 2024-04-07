@@ -44,7 +44,7 @@ export default component$(() => {
 						conversationId.value = id;
 					}}
 					key={conversation.key}
-					id={conversation.key}
+					id={conversation.key!}
 					title={conversation.name}
 				/>
 			))}
