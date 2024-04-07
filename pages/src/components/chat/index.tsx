@@ -121,7 +121,6 @@ export default component$(() => {
 				<div class="flex flex-col overflow-x-auto">
 					<div class="flex flex-col">
 						<div id="messageList" class="grid grid-cols-12 gap-y-2">
-							<div class="text-3xl text-white">{conversationId.value}</div>
 							{Object.entries(messageHistory).map(([messageId, message]) => {
 								return <Message key={`message-${messageId}`} message={message} userLocale={userLocale.value ?? undefined} />;
 							})}
