@@ -21,4 +21,27 @@ export class IDBConversations extends IDBBase {
 				.catch(reject),
 		);
 	}
+
+	public updateConversation(conversation: InternalConversationGuarantee) {
+		return new Promise<IDBConversation>((resolve, reject) =>
+			this.getConversation({
+				key: conversation.key!,
+			})
+				.then((originalConversation) =>
+					this.db.then((db) => {
+						const updatedConversation: IDBConversation = {
+							...originalConversation,
+							...conversation,
+							// Make sure it doesn't accidentally get overwritten
+							key: originalConversation.key,
+						};
+
+						db.put('conversations', updatedConversation)
+							.then(() => resolve(updatedConversation))
+							.catch(reject);
+					}),
+				)
+				.catch(reject),
+		);
+	}
 }
