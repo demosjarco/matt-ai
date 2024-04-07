@@ -10,12 +10,12 @@ export default component$(() => (
 			<FaXmarkSolid />
 			<span class="sr-only">Close menu</span>
 		</button>
-		<div class="flex h-full flex-col justify-between overflow-y-auto bg-gray-50 px-3 py-4 dark:bg-slate-800">
-			<History />
-			<div>
+		<div class="flex h-full flex-col justify-between bg-gray-50 px-3 py-4 dark:bg-slate-800">
+			<div class="flex h-full flex-col justify-between overflow-y-auto">
+				<History />
 				<Banner />
-				<Controls />
 			</div>
+			<Controls />
 		</div>
 	</aside>
 ));

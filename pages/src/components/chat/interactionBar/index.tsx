@@ -1,15 +1,37 @@
 import { $, component$, useSignal, type Signal } from '@builder.io/qwik';
 import { Form } from '@builder.io/qwik-city';
+import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage } from '../../../IDB/schemas/v2';
 import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-export default component$((props: { conversationId: Readonly<Signal<number>>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
+export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 
-	const sendMessage = $((message: string) => new Promise<IDBMessage>((resolve, reject) => {}));
+	const sendMessage = $(
+		(message: string) =>
+			new Promise<IDBMessage>((mainResolve, mainReject) =>
+				new IDBMessages()
+					.saveMessage({
+						conversation_id: props.conversationId.value,
+						role: 'user',
+						status: true,
+						content: [
+							{
+								text: message,
+								model_used: null,
+							},
+						],
+					})
+					.then(async (fullMessage) => {
+						props.messageHistory[fullMessage.key!] = fullMessage;
+						mainResolve(fullMessage);
+					})
+					.catch(mainReject),
+			),
+	);
 
 	return (
 		<Form
@@ -23,6 +45,7 @@ export default component$((props: { conversationId: Readonly<Signal<number>>; me
 							sendMessage(createConversation.value.sanitizedMessage)
 								.then((message) => {
 									window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
+									props.conversationId.value = message.conversation_id;
 									resolve();
 								})
 								.catch(reject);
@@ -31,7 +54,7 @@ export default component$((props: { conversationId: Readonly<Signal<number>>; me
 							props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 								key: Number.MAX_SAFE_INTEGER,
 								message_id: Number.MAX_SAFE_INTEGER,
-								conversation_id: props.conversationId.value,
+								conversation_id: props.conversationId.value ?? 0,
 								content_version: 1,
 								btime: new Date(),
 								role: 'system',
@@ -52,7 +75,7 @@ export default component$((props: { conversationId: Readonly<Signal<number>>; me
 						props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 							key: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
-							conversation_id: props.conversationId.value,
+							conversation_id: props.conversationId.value ?? 0,
 							content_version: 1,
 							btime: new Date(),
 							role: 'system',
