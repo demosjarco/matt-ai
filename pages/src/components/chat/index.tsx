@@ -99,7 +99,6 @@ export default component$(() => {
 	useVisibleTask$(async ({ track, cleanup }) => {
 		track(() => conversationId.value);
 
-		console.debug('useVisibleTask', 'conversationId', conversationId.value);
 		if (!conversationId.value) {
 			return;
 		}
