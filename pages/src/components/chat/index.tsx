@@ -1,18 +1,18 @@
-import { $, component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
-import { Form, server$ } from '@builder.io/qwik-city';
+import { component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { server$ } from '@builder.io/qwik-city';
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
+import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
-import type { IDBMessage, IDBMessageContent } from '../../IDB/schemas/v2';
+import type { IDBMessage } from '../../IDB/schemas/v2';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
-import { serverConversationId, useConversationId, useUserLocale, useUserUpdateConversation } from '../../routes/layout';
+import { useUserLocale } from '../../routes/layout';
 import type { EnvVars } from '../../types';
 import Message from './Message';
-import ChatBox from './interactionBar/chatBox';
-import Submit from './interactionBar/submit';
+import InteractionBar from './interactionBar';
 
 const aiResponse = server$(async function* (model: Parameters<Ai['run']>[0], messages: RoleScopedChatInput[]) {
 	const stream = await (new Ai((this.platform.env as EnvVars).AI).run(model, { messages, stream: true }) as Promise<ReadableStream>);
@@ -90,169 +90,35 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 	}
 });
 
-export default component$(() => {
+export default component$((props: { initialConversationId?: number }) => {
 	const userLocale = useUserLocale();
-	const conversationId = useConversationId();
-	const createConversation = useUserUpdateConversation();
-	const formRef = useSignal<HTMLFormElement>();
+	const conversationId = useSignal<number | undefined>(props.initialConversationId);
+	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
-	const newMessageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
-
-	useVisibleTask$(async ({ track }) => {
+	useVisibleTask$(async ({ track, cleanup }) => {
 		track(() => conversationId.value);
 
-		if (!conversationId.value) {
-			return;
+		if (conversationId.value) {
+			new IDBConversations().updateConversation({
+				key: conversationId.value,
+				atime: new Date(),
+			});
+
+			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
+			console.debug('Found', existingMessages, 'messages for conversation id', conversationId.value);
+			existingMessages.forEach((existingMessage) => {
+				messageHistory[existingMessage.key!] = existingMessage;
+			});
+		} else {
+			console.warn('conversation id', conversationId.value);
 		}
+
+		cleanup(() => {
+			Object.keys(messageHistory).forEach((message) => {
+				delete messageHistory[parseInt(message)];
+			});
+		});
 	});
-
-	const sendMessage = $(
-		(message: string) =>
-			// eslint-disable-next-line no-async-promise-executor
-			new Promise<IDBMessage>(async (mainResolve, mainReject) => {
-				let convId = conversationId.value ?? (await serverConversationId());
-				if (convId && convId < 1) convId++;
-
-				// Run it in a `.all()` so that the promise chain stays alive until all finish, but don't wait to return promise
-				new IDBMessages()
-					.saveMessage({
-						/**
-						 * @todo fall back to server$ conversation id because signal isn't being updated
-						 */
-						conversation_id: convId,
-						role: 'user',
-						status: true,
-						content: [
-							{
-								text: message,
-								model_used: null,
-							},
-						],
-					})
-					.then((fullMessage) => {
-						newMessageHistory[fullMessage.key!] = fullMessage;
-						mainResolve(fullMessage);
-
-						new IDBMessages()
-							.saveMessage({
-								/**
-								 * @todo fall back to server$ conversation id because signal isn't being updated
-								 */
-								conversation_id: convId,
-								role: 'assistant',
-								status: false,
-							})
-							.then((fullMessage) => {
-								// Add placeholder
-								newMessageHistory[fullMessage.key!] = fullMessage;
-
-								/**
-								 * @todo Update status to
-								 * `status: ['typing', 'deciding'],`
-								 */
-								newMessageHistory[fullMessage.key!]!.status = ['typing', 'deciding'];
-
-								Promise.all([
-									aiResponse('@cf/meta/llama-2-7b-chat-fp16', [{ role: 'user', content: message }]).then(async (chatResponse) => {
-										// @ts-expect-error
-										newMessageHistory[fullMessage.key!]!.status = newMessageHistory[fullMessage.key!]!.status.filter((str) => str.toLowerCase() !== 'typing'.toLowerCase());
-
-										const composedInsert: IDBMessageContent = {
-											text: '',
-											model_used: '@cf/meta/llama-2-7b-chat-fp16',
-										};
-
-										const previousText = newMessageHistory[fullMessage.key!]!.content.findIndex((record) => 'text' in record);
-										if (previousText >= 0) {
-											newMessageHistory[fullMessage.key!]!.content[previousText] = composedInsert;
-										} else {
-											newMessageHistory[fullMessage.key!]!.content.push(composedInsert);
-										}
-
-										for await (const chatResponseChunk of chatResponse) {
-											composedInsert.text += chatResponseChunk ?? '';
-											newMessageHistory[fullMessage.key!]!.content[previousText] = composedInsert;
-										}
-
-										if (Array.isArray(newMessageHistory[fullMessage.key!]!.status)) {
-											// @ts-expect-error
-											newMessageHistory[fullMessage.key!]!.status.filter((item) => item !== 'typing');
-										}
-
-										// Save to local db
-										await new IDBMessages().updateMessage({
-											key: fullMessage.key!,
-											content: [composedInsert],
-										});
-									}),
-									aiPreProcess(message).then(({ action, modelUsed }) => {
-										// @ts-expect-error
-										newMessageHistory[fullMessage.key!]!.status = newMessageHistory[fullMessage.key!]!.status.filter((str) => str.toLowerCase() !== 'deciding'.toLowerCase());
-
-										const composedInsert: IDBMessageContent = {
-											action,
-											model_used: modelUsed,
-										};
-
-										const previousAction = newMessageHistory[fullMessage.key!]!.content.findIndex((record) => 'action' in record);
-										if (previousAction >= 0) {
-											newMessageHistory[fullMessage.key!]!.content[previousAction] = composedInsert;
-										} else {
-											newMessageHistory[fullMessage.key!]!.content.push(composedInsert);
-										}
-
-										if (Array.isArray(newMessageHistory[fullMessage.key!]!.status)) {
-											// @ts-expect-error
-											newMessageHistory[fullMessage.key!]!.status.filter((item) => item !== 'deciding');
-										}
-										console.debug(1);
-
-										const actions: Promise<any>[] = [
-											new IDBMessages().updateMessage({
-												key: fullMessage.key!,
-												content: [composedInsert],
-											}),
-										];
-										if (action.imageGenerate) {
-											// @ts-expect-error
-											newMessageHistory[fullMessage.key!]!.status.push('imageGenerating');
-
-											actions.push(
-												aiImageGenerate(action.imageGenerate)
-													.then(({ raw, model }) => {
-														const image = Uint8Array.from(atob(raw), (char) => char.charCodeAt(0));
-														console.debug(2, raw, image);
-
-														const composedInsert: IDBMessageContent = {
-															image,
-															model_used: model as Parameters<Ai['run']>[0],
-														};
-
-														const previousImage = newMessageHistory[fullMessage.key!]!.content.findIndex((record) => 'image' in record);
-														if (previousImage >= 0) {
-															newMessageHistory[fullMessage.key!]!.content[previousImage] = composedInsert;
-														} else {
-															newMessageHistory[fullMessage.key!]!.content.push(composedInsert);
-														}
-
-														new IDBMessages().updateMessage({
-															key: fullMessage.key!,
-															content: [composedInsert],
-														});
-													})
-													// @ts-expect-error
-													.finally(() => (newMessageHistory[fullMessage.key!]!.status = newMessageHistory[fullMessage.key!]!.status.filter((str) => str.toLowerCase() !== 'imageGenerating'.toLowerCase()))),
-											);
-										}
-										return Promise.all([actions]).catch(mainReject);
-									}),
-								]).catch(mainReject);
-							})
-							.catch(mainReject);
-					})
-					.catch(mainReject);
-			}),
-	);
 
 	return (
 		<>
@@ -260,41 +126,13 @@ export default component$(() => {
 				<div class="flex flex-col overflow-x-auto">
 					<div class="flex flex-col">
 						<div id="messageList" class="grid grid-cols-12 gap-y-2">
-							<div class="text-3xl text-white">{conversationId.value}</div>
-							{Object.entries(newMessageHistory).map(([messageId, message]) => {
+							{Object.entries(messageHistory).map(([messageId, message]) => {
 								return <Message key={`message-${messageId}`} message={message} userLocale={userLocale.value ?? undefined} />;
 							})}
 						</div>
 					</div>
 				</div>
-				<Form
-					action={createConversation}
-					ref={formRef}
-					spaReset={true}
-					onSubmitCompleted$={() =>
-						new Promise<void>((resolve, reject) => {
-							if (createConversation.status && createConversation.status >= 200 && createConversation.status < 300) {
-								if (createConversation.value && createConversation.value.sanitizedMessage) {
-									sendMessage(createConversation.value.sanitizedMessage)
-										.then((message) => {
-											window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
-											resolve();
-										})
-										.catch(reject);
-								} else {
-									reject();
-									// Bad form
-								}
-							} else {
-								// Failed turnstile
-								reject();
-							}
-						})
-					}
-					class="flex h-16 w-full flex-row items-center bg-gray-50 p-2 dark:bg-slate-800">
-					<ChatBox />
-					<Submit />
-				</Form>
+				<InteractionBar conversationId={conversationId} messageHistory={messageHistory} />
 			</div>
 		</>
 	);
