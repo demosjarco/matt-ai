@@ -1,5 +1,6 @@
 import { $, component$, useSignal, type Signal } from '@builder.io/qwik';
 import { Form } from '@builder.io/qwik-city';
+import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage } from '../../../IDB/schemas/v2';
 import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
