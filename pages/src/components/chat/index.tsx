@@ -103,8 +103,8 @@ export default component$(() => {
 			return;
 		}
 
-		const initialConversation = await new IDBMessages().getMessagesForConversation(conversationId.value);
-		initialConversation.forEach((item) => {
+		const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
+		existingMessages.forEach((item) => {
 			messageHistory[item.key!] = item;
 		});
 
