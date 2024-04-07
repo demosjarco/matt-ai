@@ -99,15 +99,15 @@ export default component$(() => {
 	useVisibleTask$(async ({ track, cleanup }) => {
 		track(() => conversationId.value);
 
-		if (!conversationId.value) {
-			return;
+		if (conversationId.value) {
+			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
+			console.debug('Found', existingMessages, 'messages for conversation id', conversationId.value);
+			existingMessages.forEach((item) => {
+				messageHistory[item.key!] = item;
+			});
+		} else {
+			console.warn('conversationId', conversationId.value);
 		}
-
-		const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
-		console.debug('Found', existingMessages.length, 'messages for conversation id', conversationId.value);
-		existingMessages.forEach((item) => {
-			messageHistory[item.key!] = item;
-		});
 
 		cleanup(() => {
 			Object.keys(messageHistory).forEach((key) => {
