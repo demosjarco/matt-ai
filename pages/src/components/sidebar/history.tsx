@@ -18,13 +18,11 @@ export default component$(() => {
 	useVisibleTask$(({ track }) => {
 		track(() => conversationId.value);
 
-		if (!conversationId.value) {
-			return;
+		if (conversationId.value) {
+			navigate(`/c/${conversationId.value}`, {
+				type: 'link',
+			});
 		}
-
-		navigate(`/c/${conversationId.value}`, {
-			type: 'link',
-		});
 	});
 
 	return (
