@@ -94,8 +94,8 @@ export type IDBMessageContentImage = AiTextToImageOutput;
 export class AiLocal {
 	public static upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
 		// Just nuke it, whole new ORM and stuff
-		oldDatabase.deleteObjectStore('conversations');
-		oldDatabase.deleteObjectStore('messages');
+		if (oldDatabase.objectStoreNames.contains('conversations')) oldDatabase.deleteObjectStore('conversations');
+		if (oldDatabase.objectStoreNames.contains('messages')) oldDatabase.deleteObjectStore('messages');
 
 		this.createConversationsTable(newDatabase);
 		this.createMessagesTable(newDatabase);
