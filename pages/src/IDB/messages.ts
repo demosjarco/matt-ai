@@ -8,27 +8,7 @@ type InternalMessageGuarantee = Pick<IDBMessage, 'key'> & Omit<Partial<IDBMessag
 
 export class IDBMessages extends IDBBase {
 	public getMessagesForConversation(cid: number) {
-		return new Promise<IDBMessage[]>((resolve, reject) =>
-			this.db
-				.then(async (db) => {
-					const latestMessages: Record<number, IDBMessage> = {};
-
-					const transaction = db.transaction('messages', 'readonly', { durability: 'relaxed' });
-					transaction.done.then(() => resolve(Object.values(latestMessages))).catch(reject);
-
-					const index = transaction.store.index(IDBMessageIndexes.conversationIdMessageIdContentVersion);
-					for await (const cursor of index.iterate(IDBKeyRange.bound([cid], [cid, [], []]), 'next')) {
-						if (!latestMessages[cursor.value.message_id] || (latestMessages[cursor.value.message_id] && latestMessages[cursor.value.message_id]!.content_version < cursor.value.content_version)) {
-							latestMessages[cursor.value.message_id] = cursor.value;
-						}
-
-						// cursor.continue();
-					}
-
-					// transaction.commit();
-				})
-				.catch(reject),
-		);
+		return this.db.then((db) => db.getAllFromIndex('messages', IDBMessageIndexes.conversationIdMessageIdContentVersion, IDBKeyRange.bound([cid], [cid, [], []])));
 	}
 
 	public getMessage(message: InternalMessageGuarantee) {
