@@ -94,8 +94,8 @@ export type IDBMessageContentImage = AiTextToImageOutput;
 export class AiLocal {
 	public static upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
 		// Just nuke it, whole new ORM and stuff
-		oldDatabase.deleteObjectStore('conversations');
-		oldDatabase.deleteObjectStore('messages');
+		if (oldDatabase.objectStoreNames.contains('conversations')) oldDatabase.deleteObjectStore('conversations');
+		if (oldDatabase.objectStoreNames.contains('messages')) oldDatabase.deleteObjectStore('messages');
 
 		this.createConversationsTable(newDatabase);
 		this.createMessagesTable(newDatabase);
@@ -103,6 +103,7 @@ export class AiLocal {
 
 	private static createConversationsTable(newDatabase: IDBPDatabase<AiLocalSchema>) {
 		const table = newDatabase.createObjectStore('conversations', {
+			keyPath: 'key',
 			autoIncrement: true,
 		});
 
@@ -117,7 +118,10 @@ export class AiLocal {
 		// For speed
 	}
 	private static createMessagesTable(newDatabase: IDBPDatabase<AiLocalSchema>) {
-		const table = newDatabase.createObjectStore('messages', { autoIncrement: true });
+		const table = newDatabase.createObjectStore('messages', {
+			keyPath: 'key',
+			autoIncrement: true,
+		});
 
 		// For search
 		table.createIndex(IDBMessageIndexes.conversationId, IDBMessageIndexes.conversationId, { unique: false, multiEntry: false });

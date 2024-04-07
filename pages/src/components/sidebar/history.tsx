@@ -7,18 +7,9 @@ import Item from './item';
 export default component$(() => {
 	const conversations = useSignal<IDBConversation[]>([]);
 
-	useVisibleTask$(
-		() =>
-			new Promise<void>((resolve, reject) =>
-				new IDBConversations().conversations
-					.then((conversationData) => {
-						conversations.value = conversationData;
-
-						resolve();
-					})
-					.catch(reject),
-			),
-	);
+	useVisibleTask$(async () => {
+		conversations.value = await new IDBConversations().conversations;
+	});
 
 	const navigate = useNavigate();
 
@@ -27,23 +18,21 @@ export default component$(() => {
 	useVisibleTask$(({ track }) => {
 		track(() => conversationId.value);
 
-		if (!conversationId.value) {
-			return;
+		if (conversationId.value) {
+			navigate(`/c/${conversationId.value}`, {
+				type: 'link',
+			});
 		}
-
-		navigate(`/c/${conversationId.value}`, {
-			type: 'link',
-		});
 	});
 
 	return (
-		<ul class="h-full space-y-2 overflow-y-auto font-medium">
+		<ul class="space-y-2 font-medium">
 			{conversations.value.map((conversation) => (
 				<Item
 					onClick$={(id) => {
 						conversationId.value = id;
 					}}
-					key={conversation.key}
+					key={`conversation-${conversation.key}`}
 					id={conversation.key!}
 					title={conversation.name}
 				/>

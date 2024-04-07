@@ -1,5 +1,6 @@
 import { deepMerge } from '../extras';
 import { IDBBase } from './base';
+import { IDBConversations } from './conversations';
 import { IDBMessageIndexes, type IDBMessage } from './schemas/v2';
 
 type MessageSaveGuarantee = 'role';
@@ -35,19 +36,37 @@ export class IDBMessages extends IDBBase {
 					Promise.all([
 						new Promise<IDBMessage['conversation_id']>((resolve, reject) => {
 							// IDB has 1-based autoincrement
-							if ('conversation_id' in message && !isNaN(message.conversation_id!) && message.conversation_id! > 0) {
-								resolve(message.conversation_id!);
-							} else {
-								db.add('conversations', {
-									name: crypto.randomUUID(),
-									atime: new Date(),
-									btime: new Date(),
-									ctime: new Date(),
-									mtime: new Date(),
-								})
-									.then(resolve)
-									.catch(reject);
-							}
+							db.add('conversations', {
+								// Always insert to avoid edge case of being on a conversation page already
+								key: 'conversation_id' in message && !isNaN(message.conversation_id!) && message.conversation_id! > 0 ? message.conversation_id! : undefined,
+								name: crypto.randomUUID(),
+								atime: new Date(),
+								btime: new Date(),
+								ctime: new Date(),
+								mtime: new Date(),
+							})
+								.then(resolve)
+								.catch((reason) => {
+									if (reason instanceof DOMException) {
+										switch (reason.name) {
+											case 'ConstraintError':
+												new IDBConversations()
+													.updateConversation({
+														key: message.conversation_id!,
+														mtime: new Date(),
+													})
+													.then((newConversation) => resolve(newConversation.key!))
+													.catch(reject);
+												break;
+
+											default:
+												reject(reason);
+												break;
+										}
+									} else {
+										reject(reason);
+									}
+								});
 						}),
 						// eslint-disable-next-line no-async-promise-executor
 						new Promise<IDBMessage['message_id']>(async (resolve, reject) => {

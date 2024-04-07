@@ -1,6 +1,6 @@
 import { Slot, component$ } from '@builder.io/qwik';
-import type { RequestHandler } from '@builder.io/qwik-city';
-import { routeAction$, routeLoader$, server$, z, zod$, type DocumentHead } from '@builder.io/qwik-city';
+import type { DocumentHead, RequestHandler } from '@builder.io/qwik-city';
+import { routeAction$, routeLoader$, z, zod$ } from '@builder.io/qwik-city';
 import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
@@ -19,11 +19,6 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 export const useConversationId = routeLoader$(({ params }) => {
 	const conversationId = Number(params['conversationId']);
 	return isNaN(conversationId) ? undefined : conversationId;
-});
-
-export const serverConversationId = server$(function () {
-	const id = Number(this.params['conversationId']);
-	return isNaN(id) ? undefined : id;
 });
 
 export const useUserUpdateConversation = routeAction$(
