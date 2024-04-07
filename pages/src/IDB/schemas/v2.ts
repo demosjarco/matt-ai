@@ -103,6 +103,7 @@ export class AiLocal {
 
 	private static createConversationsTable(newDatabase: IDBPDatabase<AiLocalSchema>) {
 		const table = newDatabase.createObjectStore('conversations', {
+			keyPath: 'key',
 			autoIncrement: true,
 		});
 
@@ -118,6 +119,7 @@ export class AiLocal {
 	}
 	private static createMessagesTable(newDatabase: IDBPDatabase<AiLocalSchema>) {
 		const table = newDatabase.createObjectStore('messages', {
+			keyPath: 'key',
 			autoIncrement: true,
 		});
 
