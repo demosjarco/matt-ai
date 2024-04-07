@@ -267,34 +267,7 @@ export default component$(() => {
 						</div>
 					</div>
 				</div>
-				<Form
-					action={createConversation}
-					ref={formRef}
-					spaReset={true}
-					onSubmitCompleted$={() =>
-						new Promise<void>((resolve, reject) => {
-							if (createConversation.status && createConversation.status >= 200 && createConversation.status < 300) {
-								if (createConversation.value && createConversation.value.sanitizedMessage) {
-									sendMessage(createConversation.value.sanitizedMessage)
-										.then((message) => {
-											window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
-											resolve();
-										})
-										.catch(reject);
-								} else {
-									reject();
-									// Bad form
-								}
-							} else {
-								// Failed turnstile
-								reject();
-							}
-						})
-					}
-					class="flex h-16 w-full flex-row items-center bg-gray-50 p-2 dark:bg-slate-800">
-					<ChatBox />
-					<Submit />
-				</Form>
+				<InteractionBar conversationId={conversationId.value!} />
 			</div>
 		</>
 	);
