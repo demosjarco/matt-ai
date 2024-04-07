@@ -25,26 +25,7 @@ export class IDBMessages extends IDBBase {
 	}
 
 	public updateMessage(message: InternalMessageGuarantee) {
-		return new Promise<IDBMessage>((mainResolve, mainReject) =>
-			this.db
-				.then((db) =>
-					this.getMessage(message)
-						.then((originalMessage) => {
-							const transaction = db.transaction('messages', 'readwrite');
-							transaction.done.catch(mainReject);
-
-							const insertMessage = deepMerge(originalMessage, message);
-
-							const insert = transaction.objectStore(transaction.objectStoreNames[0]!).put(insertMessage);
-							insert.onerror = mainReject;
-							insert.onsuccess = () => mainResolve(insertMessage);
-
-							transaction.commit();
-						})
-						.catch(mainReject),
-				)
-				.catch(mainReject),
-		);
+		return this.getMessage(message).then((originalMessage) => this.db.then((db) => db.put('messages', deepMerge(originalMessage, message))));
 	}
 
 	public saveMessage(message: FullMessageGuarantee) {
