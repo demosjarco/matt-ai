@@ -100,16 +100,16 @@ export default component$((props: { initialConversationId?: number }) => {
 		if (conversationId.value) {
 			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
 			console.debug('Found', existingMessages, 'messages for conversation id', conversationId.value);
-			existingMessages.forEach((item) => {
-				messageHistory[item.key!] = item;
+			existingMessages.forEach((existingMessage) => {
+				messageHistory[existingMessage.key!] = existingMessage;
 			});
 		} else {
 			console.warn('conversation id', conversationId.value);
 		}
 
 		cleanup(() => {
-			Object.keys(messageHistory).forEach((key) => {
-				delete messageHistory[parseInt(key)];
+			Object.keys(messageHistory).forEach((message) => {
+				delete messageHistory[parseInt(message)];
 			});
 		});
 	});
