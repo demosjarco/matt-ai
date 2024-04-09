@@ -19,13 +19,7 @@
 		"url": "https://github.com/demosjarco/matt-ai/issues"
 	},
 	"homepage": "https://github.com/demosjarco/matt-ai#readme",
-	"dependencies": {
-		"@graphql-yoga/plugin-defer-stream": "^3.3.0",
-		"graphql": "^16.8.1",
-		"graphql-scalars": "^1.23.0",
-		"graphql-yoga": "^5.1.1",
-		"hono": "^4.2.2"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@swc/core": "^1.4.12",
 		"@types/node": "^20.12.6",
