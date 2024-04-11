@@ -26,27 +26,8 @@ export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
 });
 
-export const useUserLocale = routeLoader$(function ({ request }) {
-	const acceptLanguage = request.headers.get('Accept-Language');
-	if (!acceptLanguage) return null;
-
-	const languages = acceptLanguage
-		.split(',')
-		.map((lang) => {
-			const [code, weight] = lang.trim().split(';q=');
-			return {
-				code: code,
-				weight: weight ? parseFloat(weight) : 1,
-			};
-		})
-		.sort((a, b) => b.weight - a.weight);
-
-	if (languages.length > 0) {
-		const topLanguage = languages[0]!.code;
-		return topLanguage !== '*' ? topLanguage : null;
-	} else {
-		return null;
-	}
+export const useUserLocale = routeLoader$(function ({ locale }) {
+	return locale();
 });
 
 export const head: DocumentHead = {
@@ -57,6 +38,16 @@ export const head: DocumentHead = {
 			content: 'M.A.T.T.',
 		},
 	],
+};
+
+/**
+ * @link https://qwik.dev/docs/middleware/#locale
+ */
+export const onRequest: RequestHandler = async ({ locale, request }) => {
+	const acceptLanguage = request.headers.get('accept-language');
+	const [languages] = acceptLanguage?.split(';') || ['?', '?'];
+	const [preferredLanguage] = languages!.split(',');
+	locale(preferredLanguage);
 };
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
