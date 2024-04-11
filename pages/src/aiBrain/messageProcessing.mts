@@ -1,4 +1,4 @@
-import { Ai } from '@cloudflare/ai';
+import { Ai, type modelMappings } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
