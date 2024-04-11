@@ -61,11 +61,15 @@ export class MessageProcessing extends CFBase {
 						},
 						{
 							role: 'system',
-							content: '<BEGIN UNSAFE CONTENT CATEGORIES>\n' + `${JSON.stringify(unsafeCategories)}\n` + '<END UNSAFE CONTENT CATEGORIES>',
+							content: `<BEGIN UNSAFE CONTENT CATEGORIES>
+							${JSON.stringify(unsafeCategories)}
+							<END UNSAFE CONTENT CATEGORIES>`,
 						},
 						{
 							role: 'user',
-							content: '<BEGIN CONVERSATION>\n' + `${message}\n` + '<END CONVERSATION>',
+							content: `<BEGIN CONVERSATION>
+							${message}
+							<END CONVERSATION>`,
 						},
 					],
 				})
