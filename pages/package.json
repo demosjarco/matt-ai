@@ -38,7 +38,8 @@
 		"@qwikest/icons": "^0.0.13",
 		"flowbite": "^2.3.0",
 		"idb": "^8.0.0",
-		"meta-png": "^1.0.6"
+		"meta-png": "^1.0.6",
+		"p-queue": "^8.0.1"
 	},
 	"devDependencies": {
 		"@builder.io/qwik": "^1.5.2",
