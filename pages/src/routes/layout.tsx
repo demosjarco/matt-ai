@@ -5,17 +5,6 @@ import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
 
-export const onGet: RequestHandler = async ({ cacheControl }) => {
-	// Control caching for this request for best performance and to reduce hosting costs:
-	// https://qwik.builder.io/docs/caching/
-	cacheControl({
-		// Always serve a cached response by default, up to a week stale
-		staleWhileRevalidate: 60 * 60 * 24 * 7,
-		// Max once every 5 seconds, revalidate on the server to get a fresh version of this page
-		maxAge: 5,
-	});
-};
-
 export const useConversationId = routeLoader$(({ params }) => {
 	const conversationId = Number(params['conversationId']);
 	return isNaN(conversationId) ? undefined : conversationId;
@@ -37,28 +26,40 @@ export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
 });
 
-export const useUserLocale = routeLoader$(function ({ request }) {
-	const acceptLanguage = request.headers.get('Accept-Language');
-	if (!acceptLanguage) return null;
-
-	const languages = acceptLanguage
-		.split(',')
-		.map((lang) => {
-			const [code, weight] = lang.trim().split(';q=');
-			return {
-				code: code,
-				weight: weight ? parseFloat(weight) : 1,
-			};
-		})
-		.sort((a, b) => b.weight - a.weight);
-
-	if (languages.length > 0) {
-		const topLanguage = languages[0]!.code;
-		return topLanguage !== '*' ? topLanguage : null;
-	} else {
-		return null;
-	}
+export const useUserLocale = routeLoader$(function ({ locale }) {
+	return locale();
 });
+
+export const head: DocumentHead = {
+	title: 'M.A.T.T. AI',
+	meta: [
+		{
+			name: 'description',
+			content: 'M.A.T.T.',
+		},
+	],
+};
+
+/**
+ * @link https://qwik.dev/docs/middleware/#locale
+ */
+export const onRequest: RequestHandler = async ({ locale, request }) => {
+	const acceptLanguage = request.headers.get('accept-language');
+	const [languages] = acceptLanguage?.split(';') || ['?', '?'];
+	const [preferredLanguage] = languages!.split(',');
+	locale(preferredLanguage);
+};
+
+export const onGet: RequestHandler = async ({ cacheControl }) => {
+	// Control caching for this request for best performance and to reduce hosting costs:
+	// https://qwik.builder.io/docs/caching/
+	cacheControl({
+		// Always serve a cached response by default, up to a week stale
+		staleWhileRevalidate: 60 * 60 * 24 * 7,
+		// Max once every 5 seconds, revalidate on the server to get a fresh version of this page
+		maxAge: 5,
+	});
+};
 
 export default component$(() => {
 	return (
@@ -78,13 +79,3 @@ export default component$(() => {
 		</>
 	);
 });
-
-export const head: DocumentHead = {
-	title: 'M.A.T.T. AI',
-	meta: [
-		{
-			name: 'description',
-			content: 'M.A.T.T.',
-		},
-	],
-};
