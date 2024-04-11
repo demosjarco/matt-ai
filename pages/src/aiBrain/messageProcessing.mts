@@ -9,7 +9,7 @@ export class MessageProcessing extends CFBase {
 		return !(output instanceof ReadableStream);
 	}
 
-	public async preProcess(message: RoleScopedChatInput['content']): Promise<{
+	private async typechatActionDecide(message: RoleScopedChatInput['content']): Promise<{
 		action: MessageAction;
 		modelUsed: IDBMessageContent['model_used'];
 	}> {
@@ -99,7 +99,7 @@ export class MessageProcessing extends CFBase {
 		return new Promise((resolve, reject) => {
 			uiMessage.status = ['filtering'];
 
-			Promise.all([this.guard(message)])
+			Promise.all([this.guard(message), this.typechatActionDecide(message)])
 				.then(resolve)
 				.catch(reject);
 		});
