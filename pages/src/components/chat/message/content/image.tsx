@@ -18,7 +18,7 @@ export default component$((props: { imageAction?: NonNullable<MessageAction['ima
 	} else {
 		return (
 			<div role="status" class="animate-pulse space-y-8 md:flex md:items-center md:space-x-8 md:space-y-0 rtl:space-x-reverse">
-				<div class="flex h-48 w-full items-center justify-center rounded bg-gray-300 sm:w-96 dark:bg-gray-700">
+				<div class="flex h-48 w-full items-center justify-center rounded bg-gray-300 sm:w-96 dark:bg-gray-600">
 					<FaImageSolid />
 				</div>
 				<span class="sr-only">Loading...</span>
