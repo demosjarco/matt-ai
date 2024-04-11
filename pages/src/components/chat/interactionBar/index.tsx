@@ -48,23 +48,44 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 								// Add placeholder to UI
 								props.messageHistory[aiMessage.key!] = aiMessage;
 
+								let continueHumanMessage: boolean = false;
 								// Check human message
 								messageGuard(message)
-									.then((userMessageGuard) => {
+									.then(async (userMessageGuard) => {
+										// For process chain
+										continueHumanMessage = userMessageGuard;
+										// For UI
 										props.messageHistory[userMessage.key!]!.safe = userMessageGuard;
-										new IDBMessages().updateMessage({
+										// Save to db
+										await new IDBMessages().updateMessage({
 											key: userMessage.key,
 											safe: userMessageGuard,
 										});
-										console.debug('llamaguard', userMessageGuard);
 									})
-									.catch((reason) => {
+									.catch(async (reason) => {
+										// For process chain
+										continueHumanMessage = true;
+										// For UI
 										props.messageHistory[userMessage.key!]!.safe = null;
-										new IDBMessages().updateMessage({
+										// Save to db
+										await new IDBMessages().updateMessage({
 											key: userMessage.key,
 											safe: null,
 										});
 										console.warn('llamaguard', null, reason);
+									})
+									.finally(() => {
+										if (continueHumanMessage) {
+											/**
+											 * @todo
+											 */
+										} else {
+											props.messageHistory[aiMessage.key!]!.status = true;
+											new IDBMessages().updateMessage({
+												key: aiMessage.key,
+												status: true,
+											});
+										}
 									});
 							})
 							.catch(mainReject);
