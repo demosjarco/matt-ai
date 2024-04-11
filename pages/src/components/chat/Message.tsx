@@ -1,10 +1,14 @@
 import { component$ } from '@builder.io/qwik';
 import { FaDownloadSolid } from '@qwikest/icons/font-awesome';
 import type { IDBMessage } from '../../IDB/schemas/v2';
+import { useUserLocale } from '../../routes/layout';
 import Avatar from './Avatar';
 
-export default component$((props: { message: IDBMessage; userLocale?: string }) => {
+export default component$((props: { message: IDBMessage }) => {
+	const userLocale = useUserLocale();
+
 	const isMe = props.message.role === 'user' ? true : false;
+
 	const imageContentIndex = props.message.content.findIndex((record) => 'image' in record);
 	const imageContent = props.message.content[imageContentIndex]?.image;
 	const imageActionIndex = props.message.content.findIndex((record) => 'action' in record);
@@ -21,7 +25,7 @@ export default component$((props: { message: IDBMessage; userLocale?: string }) 
 					<div class="flex w-full flex-col gap-1">
 						<div class={`flex items-center space-x-2 rtl:space-x-reverse ${isMe ? 'justify-end' : ''}`}>
 							<span class="text-sm font-semibold text-gray-900 dark:text-white">{props.message.role}</span>
-							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(props.userLocale)}</span>
+							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(userLocale.value)}</span>
 						</div>
 						<div class={`leading-1.5 flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
 							<p class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white">
