@@ -1,8 +1,8 @@
 import { component$ } from '@builder.io/qwik';
 import { FaDownloadSolid } from '@qwikest/icons/font-awesome';
-import type { IDBMessage } from '../../IDB/schemas/v2';
-import { useUserLocale } from '../../routes/layout';
-import Avatar from './Avatar';
+import type { IDBMessage } from '../../../IDB/schemas/v2';
+import { useUserLocale } from '../../../routes/layout';
+import Avatar from '../Avatar';
 
 export default component$((props: { message: IDBMessage }) => {
 	const userLocale = useUserLocale();
