@@ -9,7 +9,6 @@ import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
 import type { IDBMessage } from '../../IDB/schemas/v2';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
-import { useUserLocale } from '../../routes/layout';
 import type { EnvVars } from '../../types';
 import Message from './Message';
 import InteractionBar from './interactionBar';
@@ -91,7 +90,6 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 });
 
 export default component$((props: { initialConversationId?: number }) => {
-	const userLocale = useUserLocale();
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
@@ -127,7 +125,7 @@ export default component$((props: { initialConversationId?: number }) => {
 					<div class="flex flex-col">
 						<div id="messageList" class="grid grid-cols-12 gap-y-2">
 							{Object.entries(messageHistory).map(([messageId, message]) => {
-								return <Message key={`message-${messageId}`} message={message} userLocale={userLocale.value ?? undefined} />;
+								return <Message key={`message-${messageId}`} message={message} />;
 							})}
 						</div>
 					</div>
