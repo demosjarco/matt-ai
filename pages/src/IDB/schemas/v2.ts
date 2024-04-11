@@ -72,7 +72,7 @@ export interface IDBMessage {
 	content_version: number;
 	btime: Date;
 	role: 'system' | 'user' | 'assistant';
-	status: boolean | ('filtering' | 'typing' | 'deciding' | 'imageGenerating' | 'translating' | 'historySearching' | 'webSearching' | 'webBrowsing')[];
+	status: boolean | ('filtering' | 'deciding' | 'imageGenerating' | 'translating' | 'historySearching' | 'webSearching' | 'webBrowsing' | 'typing')[];
 	/**
 	 * @param undefined Not yet checked
 	 * @param boolean Result
