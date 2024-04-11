@@ -23,7 +23,6 @@ export default component$((props: { message: IDBMessage }) => {
 							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(userLocale.value)}</span>
 						</div>
 						<Content message={props.message} />
-
 						{isMe ? undefined : <span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400`}>{Array.isArray(props.message.status) ? props.message.status.join(', ') : props.message.status ? 'Delivered' : 'Sent'}</span>}
 					</div>
 				</div>
