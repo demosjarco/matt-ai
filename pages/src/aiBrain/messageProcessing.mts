@@ -1,4 +1,4 @@
-import { Ai, type modelMappings } from '@cloudflare/ai';
+import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
@@ -95,16 +95,9 @@ export class MessageProcessing extends CFBase {
 		action: MessageAction;
 		modelUsed: IDBMessageContent['model_used'];
 	}> {
-		try {
-			return {
-				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, true),
-				modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
-			};
-		} catch (error) {
-			return {
-				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
-				modelUsed: '@cf/meta/llama-2-7b-chat-int8',
-			};
-		}
+		return {
+			action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
+			modelUsed: '@cf/meta/llama-2-7b-chat-int8',
+		};
 	}
 }
