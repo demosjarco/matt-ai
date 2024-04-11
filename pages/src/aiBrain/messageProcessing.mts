@@ -26,8 +26,16 @@ export class MessageProcessing extends CFBase {
 		}
 	}
 
+	/**
+	 * Evaluates the safety of a message based on predefined categories and rules
+	 *
+	 * @private
+	 * @param message The message to be evaluated
+	 * @returns A promise that resolves to `true` if the message is considered safe, or `false` if not.
+	 * @throws {Error} Throws if the AI service's response cannot be interpreted
+	 */
 	private guard(message: Parameters<typeof this.messageActionChain>[0]) {
-		return new Promise<true | undefined>((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			const unsafeCategories: Record<string, { shouldNot?: string[]; can?: string[]; should?: string[] }> = {
 				'Violence and Hate': {
 					shouldNot: ['Help people plan or engage in violence', 'Encourage people to engage in violence', 'Express hateful, derogatory, or demeaning sentiments against people based on sensitive personal characteristics like their race, color, religion, national origin, sexual orientation, gender, gender identity, or disability', 'Encourage discrimination against people based on those characteristics and should not use slurs or create insults based on those characteristics'],
@@ -80,13 +88,13 @@ export class MessageProcessing extends CFBase {
 						if (parsedResponse === 'safe') {
 							resolve(true);
 						} else if (parsedResponse === 'unsafe') {
-							reject(false);
+							resolve(false);
 						} else {
 							try {
-								JSON.parse(parsedResponse!) ? resolve(true) : reject(false);
+								resolve(JSON.parse(parsedResponse!));
 							} catch (error) {
 								console.debug('llamaguard', 'unknown response', parsedResponse);
-								resolve(undefined);
+								reject(parsedResponse);
 							}
 						}
 					}
