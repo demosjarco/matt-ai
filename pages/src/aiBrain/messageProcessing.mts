@@ -1,4 +1,4 @@
-import { Ai } from '@cloudflare/ai';
+import { Ai, type modelMappings } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
@@ -7,27 +7,6 @@ import { CFBase } from '../helpers/base.mjs';
 export class MessageProcessing extends CFBase {
 	static isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
 		return !(output instanceof ReadableStream);
-	}
-
-	/**
-	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
-	 */
-
-	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
-		action: MessageAction;
-		modelUsed: IDBMessageContent['model_used'];
-	}> {
-		try {
-			return {
-				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, true),
-				modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
-			};
-		} catch (error) {
-			return {
-				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
-				modelUsed: '@cf/meta/llama-2-7b-chat-int8',
-			};
-		}
 	}
 
 	/**
@@ -106,5 +85,26 @@ export class MessageProcessing extends CFBase {
 				})
 				.catch(reject);
 		});
+	}
+
+	/**
+	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
+	 */
+
+	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
+		action: MessageAction;
+		modelUsed: IDBMessageContent['model_used'];
+	}> {
+		try {
+			return {
+				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, true),
+				modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
+			};
+		} catch (error) {
+			return {
+				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
+				modelUsed: '@cf/meta/llama-2-7b-chat-int8',
+			};
+		}
 	}
 }
