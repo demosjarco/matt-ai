@@ -91,6 +91,10 @@ export class MessageProcessing extends CFBase {
 		});
 	}
 
+	/**
+	 *
+	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
+	 */
 	public messageActionChain(message: RoleScopedChatInput['content'], uiMessage: IDBMessage) {
 		return new Promise((resolve, reject) => {
 			uiMessage.status = ['filtering'];
