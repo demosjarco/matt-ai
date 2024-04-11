@@ -1,10 +1,18 @@
 import { $, component$, useSignal, type Signal } from '@builder.io/qwik';
-import { Form } from '@builder.io/qwik-city';
+import { Form, server$ } from '@builder.io/qwik-city';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage } from '../../../IDB/schemas/v2';
+import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
 import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
 import Submit from './submit';
+
+const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
+	return new MessageProcessing(this.platform).actionDecide(...args);
+});
+const messageGuard = server$(function (...args: Parameters<MessageProcessing['guard']>) {
+	return new MessageProcessing(this.platform).guard(...args);
+});
 
 export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
@@ -13,6 +21,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 	const sendMessage = $(
 		(message: string) =>
 			new Promise<IDBMessage>((mainResolve, mainReject) =>
+				// Can't `Promise.all()` `saveMessage()` because race condition on auto increment key
 				new IDBMessages()
 					.saveMessage({
 						conversation_id: props.conversationId.value,
@@ -25,9 +34,40 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 							},
 						],
 					})
-					.then(async (fullMessage) => {
-						props.messageHistory[fullMessage.key!] = fullMessage;
-						mainResolve(fullMessage);
+					.then((userMessage) => {
+						props.messageHistory[userMessage.key!] = userMessage;
+						mainResolve(userMessage);
+
+						new IDBMessages()
+							.saveMessage({
+								conversation_id: props.conversationId.value,
+								role: 'assistant',
+								status: false,
+							})
+							.then((aiMessage) => {
+								// Add placeholder to UI
+								props.messageHistory[aiMessage.key!] = aiMessage;
+
+								// Check human message
+								messageGuard(message)
+									.then((userMessageGuard) => {
+										props.messageHistory[userMessage.key!]!.safe = userMessageGuard;
+										new IDBMessages().updateMessage({
+											key: userMessage.key,
+											safe: userMessageGuard,
+										});
+										console.debug('llamaguard', userMessageGuard);
+									})
+									.catch((reason) => {
+										props.messageHistory[userMessage.key!]!.safe = null;
+										new IDBMessages().updateMessage({
+											key: userMessage.key,
+											safe: null,
+										});
+										console.warn('llamaguard', null, reason);
+									});
+							})
+							.catch(mainReject);
 					})
 					.catch(mainReject),
 			),
