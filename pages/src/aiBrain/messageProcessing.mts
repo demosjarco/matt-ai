@@ -10,27 +10,6 @@ export class MessageProcessing extends CFBase {
 	}
 
 	/**
-	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
-	 */
-
-	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
-		action: MessageAction;
-		modelUsed: IDBMessageContent['model_used'];
-	}> {
-		try {
-			return {
-				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, true),
-				modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
-			};
-		} catch (error) {
-			return {
-				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
-				modelUsed: '@cf/meta/llama-2-7b-chat-int8',
-			};
-		}
-	}
-
-	/**
 	 * Evaluates the safety of a message based on predefined categories and rules
 	 *
 	 * @private
@@ -106,5 +85,26 @@ export class MessageProcessing extends CFBase {
 				})
 				.catch(reject);
 		});
+	}
+
+	/**
+	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
+	 */
+
+	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
+		action: MessageAction;
+		modelUsed: IDBMessageContent['model_used'];
+	}> {
+		try {
+			return {
+				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, true),
+				modelUsed: '@cf/meta/llama-2-7b-chat-fp16',
+			};
+		} catch (error) {
+			return {
+				action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
+				modelUsed: '@cf/meta/llama-2-7b-chat-int8',
+			};
+		}
 	}
 }
