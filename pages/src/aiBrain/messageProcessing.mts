@@ -9,6 +9,10 @@ export class MessageProcessing extends CFBase {
 		return !(output instanceof ReadableStream);
 	}
 
+	/**
+	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
+	 */
+
 	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
 		action: MessageAction;
 		modelUsed: IDBMessageContent['model_used'];
@@ -103,8 +107,4 @@ export class MessageProcessing extends CFBase {
 				.catch(reject);
 		});
 	}
-
-	/**
-	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
-	 */
 }
