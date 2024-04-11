@@ -62,7 +62,7 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 	});
 };
 
-export const onPost: RequestHandler = async ({ platform, request, parseBody, send }) => {
+export const onPost: RequestHandler = async ({ platform, request, parseBody, status }) => {
 	const incomingFormData = (await parseBody()) as ChatFormSubmit | null;
 
 	if (incomingFormData) {
@@ -81,25 +81,27 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sen
 					method: 'POST',
 					body: formData,
 				});
-				const outcome: { success: boolean } = await result.json();
-				turnstileSuccess = outcome.success;
+				if (result.ok) {
+					const outcome: { success: boolean } = await result.json();
+					turnstileSuccess = outcome.success;
+				} else {
+					status(result.status);
+				}
 			} catch (error) {
 				console.error('Turnstile verify fail', error);
-				throw send(500, 'Internal Server Error');
+				status(500);
 			}
 
-			if (!turnstileSuccess) {
-				throw send(403, 'Forbidden');
-			}
+			status(turnstileSuccess ? 200 : 403);
 		} else {
 			// Turnstile not present
 			console.error('No turnstile present', incomingFormData['cf-turnstile-response']);
-			throw send(403, 'Forbidden');
+			status(401);
 		}
 	} else {
 		// Not valid form
 		console.error('Bad form data', incomingFormData);
-		throw send(400, 'Bad Request');
+		status(400);
 	}
 };
 
