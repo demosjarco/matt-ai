@@ -1,93 +1,9 @@
 import { component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
-import { server$ } from '@builder.io/qwik-city';
-import { Ai } from '@cloudflare/ai';
-import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
-import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
-import { addMetadata } from 'meta-png';
-import { Buffer } from 'node:buffer';
 import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
 import type { IDBMessage } from '../../IDB/schemas/v2';
-import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
-import type { EnvVars } from '../../types';
 import InteractionBar from './interactionBar';
 import Message from './message';
-
-const aiResponse = server$(async function* (model: Parameters<Ai['run']>[0], messages: RoleScopedChatInput[]) {
-	const stream = await (new Ai((this.platform.env as EnvVars).AI).run(model, { messages, stream: true }) as Promise<ReadableStream>);
-
-	const eventField = 'data';
-	const contentPrefix = `${eventField}: `;
-
-	let accumulatedData = '';
-	// @ts-expect-error
-	for await (const chunk of stream) {
-		const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
-		accumulatedData += decodedChunk;
-
-		let newlineIndex;
-		while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
-			// Found a newline
-			const line = accumulatedData.slice(0, newlineIndex);
-			accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
-
-			if (line.startsWith(contentPrefix)) {
-				const decodedString = line.substring(contentPrefix.length);
-				try {
-					// See if it's JSON
-					const decodedJson: Exclude<AiTextGenerationOutput, ReadableStream> = JSON.parse(decodedString);
-					// Return JSON
-					yield decodedJson.response;
-				} catch (error) {
-					// Not valid JSON - just ignore and move on
-				}
-			}
-		}
-	}
-});
-const aiPreProcess = server$(function (message: Parameters<MessageProcessing['preProcess']>[0]) {
-	return new MessageProcessing(this.platform).preProcess(message);
-});
-const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prompt']) {
-	try {
-		let imageGeneration: AiTextToImageOutput | Awaited<ReturnType<typeof fetch>>['body'] = await new Ai((this.platform.env as EnvVars).AI).run('@cf/stabilityai/stable-diffusion-xl-base-1.0', { prompt, num_steps: 20 });
-		if (imageGeneration instanceof ReadableStream) {
-			imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
-		}
-
-		return {
-			raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'stabilityai/stable-diffusion-xl-base-1.0').buffer).toString('base64'),
-			model: '@cf/stabilityai/stable-diffusion-xl-base-1.0',
-		};
-	} catch (error) {
-		try {
-			let imageGeneration: AiTextToImageOutput | Awaited<ReturnType<typeof fetch>>['body'] = await new Ai((this.platform.env as EnvVars).AI).run('@cf/bytedance/stable-diffusion-xl-lightning', { prompt, num_steps: 20 });
-			if (imageGeneration instanceof ReadableStream) {
-				imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
-			}
-
-			return {
-				raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'bytedance/stable-diffusion-xl-lightning').buffer).toString('base64'),
-				model: '@cf/bytedance/stable-diffusion-xl-lightning',
-			};
-		} catch (error) {
-			try {
-				let imageGeneration: AiTextToImageOutput | Awaited<ReturnType<typeof fetch>>['body'] = await new Ai((this.platform.env as EnvVars).AI).run('@cf/lykon/dreamshaper-8-lcm', { prompt, num_steps: 20 });
-				if (imageGeneration instanceof ReadableStream) {
-					imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
-				}
-
-				return {
-					raw: Buffer.from(addMetadata(imageGeneration, 'Software', 'lykon/dreamshaper-8-lcm').buffer).toString('base64'),
-					model: '@cf/lykon/dreamshaper-8-lcm',
-				};
-			} catch (error) {
-				console.error(error);
-				throw error;
-			}
-		}
-	}
-});
 
 export default component$((props: { userLocale: string; initialConversationId?: number }) => {
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
