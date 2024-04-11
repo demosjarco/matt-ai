@@ -32,9 +32,9 @@ export class MessageProcessing extends CFBase {
 	 * @private
 	 * @param message The message to be evaluated
 	 * @returns A promise that resolves to `true` if the message is considered safe, or `false` if not.
-	 * @throws {Error} Throws if the AI service's response cannot be interpreted
+	 * @throws {Error || string} Throws if the AI evaluation response cannot be interpreted
 	 */
-	private guard(message: Parameters<typeof this.messageActionChain>[0]) {
+	private guard(message: RoleScopedChatInput['content']) {
 		return new Promise<boolean>((resolve, reject) => {
 			const unsafeCategories: Record<string, { shouldNot?: string[]; can?: string[]; should?: string[] }> = {
 				'Violence and Hate': {

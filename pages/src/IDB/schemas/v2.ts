@@ -73,6 +73,12 @@ export interface IDBMessage {
 	btime: Date;
 	role: 'system' | 'user' | 'assistant';
 	status: boolean | ('filtering' | 'typing' | 'deciding' | 'imageGenerating' | 'translating' | 'historySearching' | 'webSearching' | 'webBrowsing')[];
+	/**
+	 * @param undefined Not yet checked
+	 * @param boolean Result
+	 * @param null Error checking
+	 */
+	safe?: boolean | null;
 	content: IDBMessageContent[];
 	content_chips: IDBMessageContentChips[];
 	content_references: IDBMessageContentReferences[];
