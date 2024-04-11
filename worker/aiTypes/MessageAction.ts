@@ -9,6 +9,6 @@ export interface MessageAction {
 		preferredResponseLanguage: LanguagesSupported | null;
 	} | null;
 	previousMessageSearch: string[] | null;
-	webSearch: string[] | null;
+	webSearchTerms: string[] | null;
 	imageGenerate: string | null;
 }
