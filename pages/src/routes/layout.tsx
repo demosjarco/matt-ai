@@ -12,11 +12,17 @@ export const useConversationId = routeLoader$(({ params }) => {
 });
 
 export const useUserUpdateConversation = routeAction$(
-	(data, { params }) => {
-		return {
-			cid: params['conversationId'] ? parseInt(params['conversationId']) : undefined,
-			sanitizedMessage: z.string().trim().parse(data.message),
-		};
+	(data, { params, fail, status }) => {
+		if (status() >= 200 && status() < 300) {
+			return {
+				cid: params['conversationId'] ? parseInt(params['conversationId']) : undefined,
+				sanitizedMessage: z.string().trim().parse(data.message),
+			};
+		} else {
+			return fail(status(), {
+				cid: params['conversationId'] ? parseInt(params['conversationId']) : undefined,
+			});
+		}
 	},
 	zod$({
 		message: z.string(),
