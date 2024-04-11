@@ -105,7 +105,7 @@ export default component$((props: { initialConversationId?: number }) => {
 			});
 
 			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
-			console.debug('Found', existingMessages, 'messages for conversation id', conversationId.value);
+			console.debug('Found', existingMessages.length, 'messages for conversation id', conversationId.value);
 			existingMessages.forEach((existingMessage) => {
 				messageHistory[existingMessage.key!] = existingMessage;
 			});
