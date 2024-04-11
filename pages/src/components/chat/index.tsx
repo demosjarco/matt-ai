@@ -89,7 +89,7 @@ const aiImageGenerate = server$(async function (prompt: AiTextToImageInput['prom
 	}
 });
 
-export default component$((props: { initialConversationId?: number }) => {
+export default component$((props: { userLocale: string; initialConversationId?: number }) => {
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
@@ -125,7 +125,7 @@ export default component$((props: { initialConversationId?: number }) => {
 					<div class="flex flex-col">
 						<div id="messageList" class="grid grid-cols-12 gap-y-2">
 							{Object.entries(messageHistory).map(([messageId, message]) => {
-								return <Message key={`message-${messageId}`} message={message} />;
+								return <Message userLocale={props.userLocale} key={`message-${messageId}`} message={message} />;
 							})}
 						</div>
 					</div>
