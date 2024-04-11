@@ -3,9 +3,7 @@ import type { IDBMessage } from '../../../IDB/schemas/v2';
 import Avatar from '../Avatar';
 import Content from './content';
 
-export default component$((props: { message: IDBMessage }) => {
-	// const userLocale = useUserLocale();
-
+export default component$((props: { userLocale: string; message: IDBMessage }) => {
 	const isMe = props.message.role === 'user' ? true : false;
 
 	return (
@@ -19,8 +17,7 @@ export default component$((props: { message: IDBMessage }) => {
 					<div class="flex w-full flex-col gap-1">
 						<div class={`flex items-center space-x-2 rtl:space-x-reverse ${isMe ? 'justify-end' : ''}`}>
 							<span class="text-sm font-semibold text-gray-900 dark:text-white">{props.message.role}</span>
-							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toString()}</span>
-							{/* <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(userLocale.value)}</span> */}
+							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(props.userLocale)}</span>
 						</div>
 						<Content message={props.message} />
 						{isMe ? undefined : <span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400`}>{Array.isArray(props.message.status) ? props.message.status.join(', ') : props.message.status ? 'Delivered' : 'Sent'}</span>}
