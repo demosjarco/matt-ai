@@ -1,7 +1,7 @@
 import { Ai } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
-import type { IDBMessage, IDBMessageContent } from '../IDB/schemas/v2';
+import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../helpers/base.mjs';
 
 export class MessageProcessing extends CFBase {
@@ -9,7 +9,7 @@ export class MessageProcessing extends CFBase {
 		return !(output instanceof ReadableStream);
 	}
 
-	private async typechatActionDecide(message: RoleScopedChatInput['content']): Promise<{
+	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
 		action: MessageAction;
 		modelUsed: IDBMessageContent['model_used'];
 	}> {
@@ -34,7 +34,7 @@ export class MessageProcessing extends CFBase {
 	 * @returns A promise that resolves to `true` if the message is considered safe, or `false` if not.
 	 * @throws {Error || string} Throws if the AI evaluation response cannot be interpreted
 	 */
-	private guard(message: RoleScopedChatInput['content']) {
+	public guard(message: RoleScopedChatInput['content']) {
 		return new Promise<boolean>((resolve, reject) => {
 			const unsafeCategories: Record<string, { shouldNot?: string[]; can?: string[]; should?: string[] }> = {
 				'Violence and Hate': {
@@ -83,12 +83,13 @@ export class MessageProcessing extends CFBase {
 				})
 				.then((response: AiTextGenerationOutput) => {
 					if (MessageProcessing.isNotReadableStream(response)) {
-						const parsedResponse = response.response?.trim().toLowerCase();
+						const parsedResponseRaw = response.response!.trim().toLowerCase();
+						const [parsedResponse] = parsedResponseRaw.split(/\s+/, 2);
 
-						if (parsedResponse === 'safe') {
-							resolve(true);
-						} else if (parsedResponse === 'unsafe') {
+						if (parsedResponse === 'unsafe') {
 							resolve(false);
+						} else if (parsedResponse === 'safe') {
+							resolve(true);
 						} else {
 							try {
 								resolve(JSON.parse(parsedResponse!));
@@ -106,13 +107,4 @@ export class MessageProcessing extends CFBase {
 	/**
 	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
 	 */
-	public messageActionChain(message: RoleScopedChatInput['content'], uiMessage: IDBMessage) {
-		return new Promise((resolve, reject) => {
-			uiMessage.status = ['filtering'];
-
-			Promise.all([this.guard(message), this.typechatActionDecide(message)])
-				.then(resolve)
-				.catch(reject);
-		});
-	}
 }
