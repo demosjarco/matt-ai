@@ -1,5 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import type { IDBMessage } from '../../../../IDB/schemas/v2';
+import Card from './card';
 import Image from './image';
 import Text from './text';
 
@@ -15,6 +16,7 @@ export default component$((props: { message: IDBMessage }) => {
 			<Text />
 			{/* {imageContentIndex >= 0 ? <Image /> : undefined} */}
 			<Image />
+			<Card />
 		</div>
 	);
 });
