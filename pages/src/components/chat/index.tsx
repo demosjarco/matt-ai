@@ -10,8 +10,8 @@ import { IDBMessages } from '../../IDB/messages';
 import type { IDBMessage } from '../../IDB/schemas/v2';
 import { MessageProcessing } from '../../aiBrain/messageProcessing.mjs';
 import type { EnvVars } from '../../types';
-import Message from './Message';
 import InteractionBar from './interactionBar';
+import Message from './message';
 
 const aiResponse = server$(async function* (model: Parameters<Ai['run']>[0], messages: RoleScopedChatInput[]) {
 	const stream = await (new Ai((this.platform.env as EnvVars).AI).run(model, { messages, stream: true }) as Promise<ReadableStream>);
