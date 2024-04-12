@@ -4,7 +4,7 @@ import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
 import { useUserUpdateConversation } from '../../../routes/layout';
-import type { MessageContext } from '../../../types';
+import type { MessageContext, MessageContextValue } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
@@ -141,7 +141,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 														ddgApi.searchParams.set('q', userMessageAction.action.webSearchTerms.join(' '));
 														console.debug('Searching', 'DuckDuckGo', ddgApi.toString());
 
-														actions.push(fetch(ddgApi).then((response) => response.json<Record<string, any>>().then((json) => (messageContext[aiMessage.key!]!.webSearchInfo = json))));
+														actions.push(fetch(ddgApi).then((response) => response.json<NonNullable<MessageContextValue['webSearchInfo']>>().then((json) => (messageContext[aiMessage.key!]!.webSearchInfo = json))));
 													}
 
 													Promise.all(actions)

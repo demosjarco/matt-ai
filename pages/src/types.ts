@@ -24,10 +24,9 @@ export interface ChatFormSubmit {
 	'cf-turnstile-response': string;
 }
 
-export type MessageContext = Record<
-	NonNullable<IDBMessage['key']>,
-	{
-		previousMessages?: IDBMessage[];
-		webSearchInfo?: Record<string, any>;
-	}
->;
+export type MessageContext = Record<NonNullable<IDBMessage['key']>, MessageContextValue>;
+
+export interface MessageContextValue {
+	previousMessages?: IDBMessage[];
+	webSearchInfo?: Record<string, any>;
+}
