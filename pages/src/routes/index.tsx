@@ -1,16 +1,14 @@
 import { component$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import Chat from '../components/chat';
-import { useConversationId, useUserLocale } from './layout';
+import { useConversationId } from './layout';
 
 export default component$(() => {
 	const conversationId = useConversationId();
-	const userLocale = useUserLocale();
-	console.debug('GETTING LOCALE', 0, userLocale.value);
 
 	return (
 		<>
-			<Chat userLocale={JSON.stringify(userLocale.value)} initialConversationId={conversationId.value} />
+			<Chat initialConversationId={conversationId.value} />
 		</>
 	);
 });
