@@ -6,6 +6,7 @@ import { useConversationId, useUserLocale } from './layout';
 export default component$(() => {
 	const conversationId = useConversationId();
 	const userLocale = useUserLocale();
+	console.debug('GETTING LOCALE', 0, userLocale.value);
 
 	return (
 		<>

@@ -7,6 +7,8 @@ export default component$(() => {
 	const conversationId = useConversationId();
 	const userLocale = useUserLocale();
 
+	console.debug('GETTING LOCALE', 1, userLocale.value);
+
 	return (
 		<>
 			<Chat userLocale={userLocale.value} initialConversationId={conversationId.value} />
