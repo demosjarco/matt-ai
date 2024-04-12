@@ -140,7 +140,6 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 														ddgApi.searchParams.set('no_redirect', Number(true).toString());
 														ddgApi.searchParams.set('skip_disambig', Number(true).toString());
 														ddgApi.searchParams.set('q', userMessageAction.action.webSearchTerms.join(' '));
-														console.debug('Searching', 'DuckDuckGo', ddgApi.toString());
 
 														actions.push(fetch(ddgApi).then((response) => response.json<NonNullable<MessageContextValue['webSearchInfo']>>().then((json) => (messageContext[aiMessage.key!]!.webSearchInfo = json))));
 													}
