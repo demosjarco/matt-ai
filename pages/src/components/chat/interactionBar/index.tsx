@@ -4,7 +4,7 @@ import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
 import { useUserUpdateConversation } from '../../../routes/layout';
-import type { MessageContext } from '../../../types';
+import type { MessageContext, MessageContextValue } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
@@ -131,6 +131,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 													 * @todo typechat actions
 													 */
 													if (userMessageAction.action.webSearchTerms) {
+														// Add web search status
 														(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
 
 														const ddgApi = new URL('https://api.duckduckgo.com');
@@ -139,17 +140,26 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 														ddgApi.searchParams.set('no_redirect', Number(true).toString());
 														ddgApi.searchParams.set('skip_disambig', Number(true).toString());
 														ddgApi.searchParams.set('q', userMessageAction.action.webSearchTerms.join(' '));
-														console.debug('Searching', 'DuckDuckGo', ddgApi.toString());
 
-														actions.push(fetch(ddgApi).then((response) => response.json<Record<string, any>>().then((json) => (messageContext[aiMessage.key!]!.webSearchInfo = json))));
+														actions.push(
+															fetch(ddgApi).then((response) =>
+																response.json<NonNullable<MessageContextValue['webSearchInfo']>>().then((json) => {
+																	// Remove web search status
+																	if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
+																		props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'webSearching'.toLowerCase());
+																	}
+
+																	messageContext[aiMessage.key!]!.webSearchInfo = json;
+
+																	return;
+																}),
+															),
+														);
 													}
 
 													Promise.all(actions)
 														.catch(mainReject)
 														.finally(() => {
-															/**
-															 * @todo text generate
-															 */
 															console.debug('Starting text generate with context', messageContext[aiMessage.key!]);
 														});
 												})
