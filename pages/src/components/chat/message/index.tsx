@@ -6,6 +6,8 @@ import Content from './content';
 export default component$((props: { userLocale: string; message: IDBMessage }) => {
 	const isMe = props.message.role === 'user' ? true : false;
 
+	console.debug('props.userLocale', props.userLocale);
+
 	return (
 		<>
 			<div class={`${isMe ? 'col-start-1 col-end-13 sm:col-start-6' : 'col-start-1 col-end-13 sm:col-end-8'} rounded-lg p-3`}>
