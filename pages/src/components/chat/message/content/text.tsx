@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useSignal, useTask$ } from '@builder.io/qwik';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
@@ -7,7 +7,7 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 	const divRef = useSignal<HTMLDivElement>();
 	const pRef = useSignal<HTMLParagraphElement>();
 
-	useVisibleTask$(async ({ track, cleanup }) => {
+	useTask$(async ({ track, cleanup }) => {
 		track(() => divRef.value);
 		track(() => pRef.value);
 
