@@ -1,8 +1,9 @@
-import { Ai } from '@cloudflare/ai';
+import { Ai, type modelMappings } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../helpers/base.mjs';
+import type { MessageContextValue } from '../types';
 
 export class MessageProcessing extends CFBase {
 	static isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
@@ -90,6 +91,45 @@ export class MessageProcessing extends CFBase {
 	/**
 	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
 	 */
+
+	public async *textResponse(model: (typeof modelMappings)['text-generation']['models'][number], message: RoleScopedChatInput['content'], context?: MessageContextValue) {
+		const messages: RoleScopedChatInput[] = [{ role: 'system', content: 'You are an assistant. You and the user have markdown capabilities. Use it to enhance the experience where it makes sense.' }];
+		if (context) messages.push({ role: 'system', content: `Use the following additional information to respond to the user with: ${JSON.stringify(context)}` });
+
+		const stream = await new Ai(this.helpers.c.env.AI).run(model, {
+			messages: [...messages, { role: 'user', content: message }],
+			stream: true,
+		});
+
+		const eventField = 'data';
+		const contentPrefix = `${eventField}: `;
+
+		let accumulatedData = '';
+		// @ts-expect-error
+		for await (const chunk of stream) {
+			const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
+			accumulatedData += decodedChunk;
+
+			let newlineIndex;
+			while ((newlineIndex = accumulatedData.indexOf('\n')) >= 0) {
+				// Found a newline
+				const line = accumulatedData.slice(0, newlineIndex);
+				accumulatedData = accumulatedData.slice(newlineIndex + 1); // Remove the processed line from the accumulated data
+
+				if (line.startsWith(contentPrefix)) {
+					const decodedString = line.substring(contentPrefix.length);
+					try {
+						// See if it's JSON
+						const decodedJson: Exclude<AiTextGenerationOutput, ReadableStream> = JSON.parse(decodedString);
+						// Return JSON
+						yield decodedJson.response;
+					} catch (error) {
+						// Not valid JSON - just ignore and move on
+					}
+				}
+			}
+		}
+	}
 
 	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
 		action: MessageAction;
