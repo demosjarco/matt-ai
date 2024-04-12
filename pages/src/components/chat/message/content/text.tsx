@@ -5,12 +5,28 @@ import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
 
 export default component$((props: { text?: IDBMessageContentText }) => {
 	const divRef = useSignal<HTMLDivElement>();
+	const pRef = useSignal<HTMLParagraphElement>();
 
 	useVisibleTask$(async ({ track, cleanup }) => {
 		track(() => divRef.value);
+		track(() => pRef.value);
 
-		if (props.text && divRef.value) {
-			divRef.value.innerHTML = DOMPurify.sanitize(await marked.parse(props.text.trim(), { async: true }));
+		if (props.text) {
+			if (divRef.value) {
+				try {
+					const markdownHtml = await marked.parse(props.text.trim(), { async: true });
+					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
+				} catch (error) {
+					divRef.value.hidden = true;
+					if (pRef.value) {
+						pRef.value.hidden = false;
+						pRef.value.innerText = props.text.trim();
+					}
+				}
+			} else if (pRef.value) {
+				pRef.value.hidden = false;
+				pRef.value.innerText = props.text.trim();
+			}
 		}
 
 		cleanup(() => {
@@ -19,7 +35,12 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 	});
 
 	if (props.text) {
-		return <div ref={divRef} class="whitespace-pre-wrap text-balance text-gray-900 dark:text-white"></div>;
+		return (
+			<>
+				<div ref={divRef} class="text-balance text-gray-900 dark:text-white"></div>
+				<p ref={pRef} hidden={true} class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white"></p>
+			</>
+		);
 	} else {
 		return (
 			<div role="status" class="w-full animate-pulse space-y-2.5 pb-4">
