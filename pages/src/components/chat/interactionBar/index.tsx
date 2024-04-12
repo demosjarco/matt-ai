@@ -93,7 +93,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 										});
 										console.warn('llamaguard', null, reason);
 									})
-									.finally(() => {
+									.finally(async () => {
 										// Remove guard status
 										if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
 											props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'filtering'.toLowerCase());
@@ -200,7 +200,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 												.catch(mainReject);
 										} else {
 											props.messageHistory[aiMessage.key!]!.status = true;
-											new IDBMessages().updateMessage({
+											await new IDBMessages().updateMessage({
 												key: aiMessage.key,
 												status: true,
 											});
