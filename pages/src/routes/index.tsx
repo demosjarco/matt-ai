@@ -10,7 +10,7 @@ export default component$(() => {
 
 	return (
 		<>
-			<Chat userLocale={userLocale.value} initialConversationId={conversationId.value} />
+			<Chat userLocale={JSON.stringify(userLocale.value)} initialConversationId={conversationId.value} />
 		</>
 	);
 });
