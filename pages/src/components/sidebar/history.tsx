@@ -1,5 +1,5 @@
 import { component$, useSignal, useTask$, useVisibleTask$ } from '@builder.io/qwik';
-import { useNavigate } from '@builder.io/qwik-city';
+import { useLocation, useNavigate } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import type { IDBConversation } from '../../IDB/schemas/v2';
 import Item from './item';
@@ -11,9 +11,15 @@ export default component$(() => {
 		conversations.value = await new IDBConversations().conversations;
 	});
 
+	const loc = useLocation();
 	const navigate = useNavigate();
-
 	const conversationId = useSignal<number>();
+
+	useTask$(({ track }) => {
+		track(() => loc.params['conversationId']);
+
+		conversationId.value = loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined;
+	});
 
 	useTask$(({ track }) => {
 		track(() => conversationId.value);
