@@ -7,11 +7,11 @@ import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
-	return new MessageProcessing(this.platform).actionDecide(...args);
-});
 const messageGuard = server$(function (...args: Parameters<MessageProcessing['guard']>) {
 	return new MessageProcessing(this.platform).guard(...args);
+});
+const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
+	return new MessageProcessing(this.platform).actionDecide(...args);
 });
 
 export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
