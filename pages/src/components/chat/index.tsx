@@ -7,7 +7,7 @@ import InteractionBar from './interactionBar';
 import Message from './message';
 
 export default component$((props: { userLocale: string; initialConversationId?: number }) => {
-	console.debug('GETTING LOCALE', props.userLocale);
+	console.debug('GETTING LOCALE', 2, props.userLocale);
 
 	const loc = useLocation();
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
