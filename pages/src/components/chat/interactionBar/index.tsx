@@ -93,7 +93,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 										});
 										console.warn('llamaguard', null, reason);
 									})
-									.finally(() => {
+									.finally(async () => {
 										// Remove guard status
 										if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
 											props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'filtering'.toLowerCase());
@@ -176,7 +176,12 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 																		model_used: '@cf/meta/llama-2-7b-chat-fp16',
 																	};
 																	// Add to UI
-																	props.messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																	const previousText = props.messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
+																	if (previousText >= 0) {
+																		props.messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+																	} else {
+																		props.messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																	}
 
 																	for await (const chatResponseChunk of chatResponse) {
 																		composedInsert.text += chatResponseChunk ?? '';
@@ -200,7 +205,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 												.catch(mainReject);
 										} else {
 											props.messageHistory[aiMessage.key!]!.status = true;
-											new IDBMessages().updateMessage({
+											await new IDBMessages().updateMessage({
 												key: aiMessage.key,
 												status: true,
 											});
