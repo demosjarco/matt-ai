@@ -4,6 +4,7 @@ import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
 import { useUserUpdateConversation } from '../../../routes/layout';
+import type { MessageContext } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
@@ -17,15 +18,7 @@ const messageActionDecide = server$(function (...args: Parameters<MessageProcess
 export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
-	const messageContext = useStore<
-		Record<
-			NonNullable<IDBMessage['key']>,
-			{
-				previousMessages?: IDBMessage[];
-				ddgSearchInfo?: Record<string, any>;
-			}
-		>
-	>({}, { deep: true });
+	const messageContext = useStore<MessageContext>({}, { deep: true });
 
 	useVisibleTask$(({ track, cleanup }) => {
 		track(() => formRef.value);
