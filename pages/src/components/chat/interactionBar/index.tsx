@@ -4,7 +4,7 @@ import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
 import { useUserUpdateConversation } from '../../../routes/layout';
-import type { MessageContext, MessageContextValue } from '../../../types';
+import type { MessageContext } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
@@ -13,6 +13,9 @@ const messageGuard = server$(function (...args: Parameters<MessageProcessing['gu
 });
 const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
 	return new MessageProcessing(this.platform).actionDecide(...args);
+});
+const messageActionDdg = server$(function (...args: Parameters<MessageProcessing['ddg']>) {
+	return new MessageProcessing(this.platform).ddg(...args);
 });
 const messageText = server$(async function* (...args: Parameters<MessageProcessing['textResponse']>) {
 	for await (const chunk of new MessageProcessing(this.platform).textResponse(...args)) {
@@ -139,24 +142,15 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 														// Add web search status
 														(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
 
-														const ddgApi = new URL('https://api.duckduckgo.com');
-														ddgApi.searchParams.set('format', 'json');
-														ddgApi.searchParams.set('no_html', Number(true).toString());
-														ddgApi.searchParams.set('no_redirect', Number(true).toString());
-														ddgApi.searchParams.set('skip_disambig', Number(true).toString());
-														ddgApi.searchParams.set('q', userMessageAction.action.webSearchTerms.join(' '));
-
 														actions.push(
-															fetch(ddgApi).then((response) =>
-																response.json<NonNullable<MessageContextValue['webSearchInfo']>>().then((json) => {
-																	// Remove web search status
-																	if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
-																		props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'webSearching'.toLowerCase());
-																	}
+															messageActionDdg(userMessageAction.action.webSearchTerms).then((ddg) => {
+																// Remove web search status
+																if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
+																	props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'webSearching'.toLowerCase());
+																}
 
-																	messageContext[aiMessage.key!]!.webSearchInfo = json;
-																}),
-															),
+																messageContext[aiMessage.key!]!.webSearchInfo = ddg;
+															}),
 														);
 													}
 
