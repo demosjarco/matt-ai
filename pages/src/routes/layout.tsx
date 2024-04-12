@@ -33,10 +33,6 @@ export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
 });
 
-export const useUserLocale = routeLoader$(function ({ locale }) {
-	return locale();
-});
-
 export const head: DocumentHead = {
 	title: 'M.A.T.T. AI',
 	meta: [
