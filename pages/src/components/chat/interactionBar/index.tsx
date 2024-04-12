@@ -141,7 +141,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 														ddgApi.searchParams.set('q', userMessageAction.action.webSearchTerms.join(' '));
 														console.debug('Searching', 'DuckDuckGo', ddgApi.toString());
 
-														actions.push(fetch(ddgApi).then((response) => response.json<Record<string, any>>().then((json) => (messageContext[aiMessage.key!]!.ddgSearchInfo = json))));
+														actions.push(fetch(ddgApi).then((response) => response.json<Record<string, any>>().then((json) => (messageContext[aiMessage.key!]!.webSearchInfo = json))));
 													}
 
 													Promise.all(actions)
