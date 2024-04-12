@@ -6,9 +6,7 @@ import type { IDBMessage } from '../../IDB/schemas/v2';
 import InteractionBar from './interactionBar';
 import Message from './message';
 
-export default component$((props: { userLocale: string; initialConversationId?: number }) => {
-	console.debug('GETTING LOCALE', 2, props.userLocale);
-
+export default component$((props: { initialConversationId?: number }) => {
 	const loc = useLocation();
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
@@ -51,7 +49,7 @@ export default component$((props: { userLocale: string; initialConversationId?: 
 					<div class="flex flex-col">
 						<div id="messageList" class="grid grid-cols-12 gap-y-2">
 							{Object.entries(messageHistory).map(([messageId, message]) => {
-								return <Message userLocale={props.userLocale} key={`message-${messageId}`} message={message} />;
+								return <Message key={`message-${messageId}`} message={message} />;
 							})}
 						</div>
 					</div>
