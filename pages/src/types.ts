@@ -1,4 +1,5 @@
 import type Helper from '../../worker/src/index';
+import type { IDBMessage } from './IDB/schemas/v2';
 
 export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
@@ -22,3 +23,11 @@ export interface ChatFormSubmit {
 	message: string;
 	'cf-turnstile-response': string;
 }
+
+export type MessageContext = Record<
+	NonNullable<IDBMessage['key']>,
+	{
+		previousMessages?: IDBMessage[];
+		ddgSearchInfo?: Record<string, any>;
+	}
+>;
