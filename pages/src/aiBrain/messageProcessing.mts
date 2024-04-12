@@ -100,6 +100,7 @@ export class MessageProcessing extends CFBase {
 			messages: [...messages, { role: 'user', content: message }],
 			stream: true,
 		});
+		const decoder = new TextDecoder('utf-8');
 
 		const eventField = 'data';
 		const contentPrefix = `${eventField}: `;
@@ -107,7 +108,7 @@ export class MessageProcessing extends CFBase {
 		let accumulatedData = '';
 		// @ts-expect-error
 		for await (const chunk of stream) {
-			const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
+			const decodedChunk = decoder.decode(chunk, { stream: true });
 			accumulatedData += decodedChunk;
 
 			let newlineIndex;
