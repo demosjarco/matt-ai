@@ -88,6 +88,17 @@ export class MessageProcessing extends CFBase {
 		});
 	}
 
+	public ddg(searchTerms: NonNullable<MessageAction['webSearchTerms']>) {
+		const ddgApi = new URL('https://api.duckduckgo.com');
+		ddgApi.searchParams.set('format', 'json');
+		ddgApi.searchParams.set('no_html', Number(true).toString());
+		ddgApi.searchParams.set('no_redirect', Number(true).toString());
+		ddgApi.searchParams.set('skip_disambig', Number(true).toString());
+		ddgApi.searchParams.set('q', searchTerms.join(' '));
+
+		return fetch(ddgApi).then((response) => response.json<NonNullable<MessageContextValue['webSearchInfo']>>());
+	}
+
 	/**
 	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
 	 */
