@@ -176,7 +176,12 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 																		model_used: '@cf/meta/llama-2-7b-chat-fp16',
 																	};
 																	// Add to UI
-																	props.messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																	const previousText = props.messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
+																	if (previousText >= 0) {
+																		props.messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+																	} else {
+																		props.messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																	}
 
 																	for await (const chatResponseChunk of chatResponse) {
 																		composedInsert.text += chatResponseChunk ?? '';
