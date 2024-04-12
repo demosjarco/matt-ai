@@ -113,7 +113,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 													 * @todo typechat actions
 													 */
 
-													await Promise.all([actions]).catch(mainReject);
+													await Promise.all(actions).catch(mainReject);
 												})
 												.catch(mainReject);
 										} else {
