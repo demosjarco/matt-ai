@@ -1,4 +1,4 @@
-import { $, component$, useSignal, useStore, useVisibleTask$, type Signal } from '@builder.io/qwik';
+import { $, component$, useSignal, useStore, useTask$, type Signal } from '@builder.io/qwik';
 import { Form, server$ } from '@builder.io/qwik-city';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
@@ -25,7 +25,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 	const createConversation = useUserUpdateConversation();
 	const messageContext = useStore<MessageContext>({}, { deep: true });
 
-	useVisibleTask$(({ track, cleanup }) => {
+	useTask$(({ track, cleanup }) => {
 		track(() => formRef.value);
 
 		// Prevent memory leak

@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useSignal, useTask$, useVisibleTask$ } from '@builder.io/qwik';
 import { useNavigate } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import type { IDBConversation } from '../../IDB/schemas/v2';
@@ -15,7 +15,7 @@ export default component$(() => {
 
 	const conversationId = useSignal<number>();
 
-	useVisibleTask$(({ track }) => {
+	useTask$(({ track }) => {
 		track(() => conversationId.value);
 
 		if (conversationId.value) {

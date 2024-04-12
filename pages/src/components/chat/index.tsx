@@ -1,4 +1,4 @@
-import { component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useSignal, useStore, useTask$, useVisibleTask$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
@@ -11,7 +11,7 @@ export default component$((props: { userLocale: string; initialConversationId?: 
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
-	useVisibleTask$(({ track }) => {
+	useTask$(({ track }) => {
 		track(() => loc.params['conversationId']);
 
 		conversationId.value = parseInt(loc.params['conversationId']!);
