@@ -141,7 +141,20 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 														ddgApi.searchParams.set('skip_disambig', Number(true).toString());
 														ddgApi.searchParams.set('q', userMessageAction.action.webSearchTerms.join(' '));
 
-														actions.push(fetch(ddgApi).then((response) => response.json<NonNullable<MessageContextValue['webSearchInfo']>>().then((json) => (messageContext[aiMessage.key!]!.webSearchInfo = json))));
+														actions.push(
+															fetch(ddgApi).then((response) =>
+																response.json<NonNullable<MessageContextValue['webSearchInfo']>>().then((json) => {
+																	// Remove web search status
+																	if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
+																		props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'webSearching'.toLowerCase());
+																	}
+
+																	messageContext[aiMessage.key!]!.webSearchInfo = json;
+
+																	return;
+																}),
+															),
+														);
 													}
 
 													Promise.all(actions)
