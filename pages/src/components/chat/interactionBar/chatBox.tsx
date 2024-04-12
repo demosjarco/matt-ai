@@ -1,9 +1,9 @@
-import { component$, useSignal, useTask$ } from '@builder.io/qwik';
+import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 
 export default component$(() => {
 	const chatBoxRef = useSignal<HTMLTextAreaElement>();
 
-	useTask$(({ cleanup }) => {
+	useVisibleTask$(({ cleanup }) => {
 		if (chatBoxRef.value) {
 			// Use the DOM API to add an event listener.
 			const keydown = (event: KeyboardEvent) => {
