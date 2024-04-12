@@ -4,9 +4,9 @@ import Avatar from '../Avatar';
 import Content from './content';
 
 export default component$((props: { userLocale: string; message: IDBMessage }) => {
-	const isMe = props.message.role === 'user' ? true : false;
-
 	console.debug('props.userLocale', props.userLocale);
+
+	const isMe = props.message.role === 'user' ? true : false;
 
 	return (
 		<>

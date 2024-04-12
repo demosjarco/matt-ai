@@ -7,6 +7,8 @@ import InteractionBar from './interactionBar';
 import Message from './message';
 
 export default component$((props: { userLocale: string; initialConversationId?: number }) => {
+	console.debug('GETTING LOCALE', props.userLocale);
+
 	const loc = useLocation();
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });

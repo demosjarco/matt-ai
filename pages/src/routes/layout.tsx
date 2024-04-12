@@ -34,7 +34,6 @@ export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 });
 
 export const useUserLocale = routeLoader$(function ({ locale }) {
-	console.debug('GETTING LOCALE', locale());
 	return locale();
 });
 
