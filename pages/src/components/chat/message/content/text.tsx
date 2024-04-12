@@ -19,7 +19,7 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 	});
 
 	if (props.text) {
-		return <div ref={divRef} class="whitespace-pre-wrap text-balance text-gray-900 dark:text-white"></div>;
+		return <div ref={divRef} class="text-balance text-gray-900 dark:text-white"></div>;
 	} else {
 		return (
 			<div role="status" class="w-full animate-pulse space-y-2.5 pb-4">
