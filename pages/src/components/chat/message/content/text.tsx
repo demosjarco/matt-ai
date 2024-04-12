@@ -14,7 +14,7 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 		if (props.text) {
 			if (divRef.value) {
 				try {
-					const markdownHtml = await marked.parse(props.text.trim(), { async: true });
+					const markdownHtml = await marked.parse(props.text.trim(), { async: true, breaks: true });
 					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
 				} catch (error) {
 					divRef.value.hidden = true;
