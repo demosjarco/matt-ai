@@ -1,4 +1,5 @@
 import { component$, useSignal, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
 import type { IDBMessage } from '../../IDB/schemas/v2';
@@ -8,9 +9,13 @@ import Message from './message';
 export default component$((props: { userLocale: string; initialConversationId?: number }) => {
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
+	const loc = useLocation();
 
 	useVisibleTask$(async ({ track, cleanup }) => {
 		track(() => conversationId.value);
+		track(() => loc.params['conversationId']);
+
+		conversationId.value = parseInt(loc.params['conversationId']!);
 
 		if (conversationId.value) {
 			new IDBConversations().updateConversation({
