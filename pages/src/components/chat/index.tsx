@@ -7,15 +7,18 @@ import InteractionBar from './interactionBar';
 import Message from './message';
 
 export default component$((props: { userLocale: string; initialConversationId?: number }) => {
+	const loc = useLocation();
 	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
-	const loc = useLocation();
 
-	useVisibleTask$(async ({ track, cleanup }) => {
-		track(() => conversationId.value);
+	useVisibleTask$(({ track }) => {
 		track(() => loc.params['conversationId']);
 
 		conversationId.value = parseInt(loc.params['conversationId']!);
+	});
+
+	useVisibleTask$(async ({ track, cleanup }) => {
+		track(() => conversationId.value);
 
 		if (conversationId.value) {
 			new IDBConversations().updateConversation({
