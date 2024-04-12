@@ -131,6 +131,7 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 													 * @todo typechat actions
 													 */
 													if (userMessageAction.action.webSearchTerms) {
+														// Add web search status
 														(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
 
 														const ddgApi = new URL('https://api.duckduckgo.com');
@@ -147,9 +148,6 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 													Promise.all(actions)
 														.catch(mainReject)
 														.finally(() => {
-															/**
-															 * @todo text generate
-															 */
 															console.debug('Starting text generate with context', messageContext[aiMessage.key!]);
 														});
 												})
