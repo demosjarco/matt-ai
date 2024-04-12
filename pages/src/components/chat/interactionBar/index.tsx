@@ -14,6 +14,11 @@ const messageGuard = server$(function (...args: Parameters<MessageProcessing['gu
 const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
 	return new MessageProcessing(this.platform).actionDecide(...args);
 });
+const messageText = server$(async function* (...args: Parameters<MessageProcessing['textResponse']>) {
+	for await (const chunk of new MessageProcessing(this.platform).textResponse(...args)) {
+		yield chunk;
+	}
+});
 
 export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
@@ -150,8 +155,6 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 																	}
 
 																	messageContext[aiMessage.key!]!.webSearchInfo = json;
-
-																	return;
 																}),
 															),
 														);
@@ -160,7 +163,38 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 													Promise.all(actions)
 														.catch(mainReject)
 														.finally(() => {
-															console.debug('Starting text generate with context', messageContext[aiMessage.key!]);
+															// Add typing status
+															(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
+
+															messageText('@cf/meta/llama-2-7b-chat-fp16', message, messageContext[aiMessage.key!])
+																.then(async (chatResponse) => {
+																	/**
+																	 * @todo text generate
+																	 */
+																	const composedInsert: IDBMessageContent = {
+																		text: '',
+																		model_used: '@cf/meta/llama-2-7b-chat-fp16',
+																	};
+																	// Add to UI
+																	props.messageHistory[aiMessage.key!]!.content.push(composedInsert);
+
+																	for await (const chatResponseChunk of chatResponse) {
+																		composedInsert.text += chatResponseChunk ?? '';
+																		// Add to UI
+																		props.messageHistory[aiMessage.key!]!.content[props.messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record)] = composedInsert;
+																	}
+
+																	// Remove typing status
+																	props.messageHistory[aiMessage.key!]!.status = true;
+
+																	// Add to storage
+																	await new IDBMessages().updateMessage({
+																		key: aiMessage.key!,
+																		content: [composedInsert],
+																		status: true,
+																	});
+																})
+																.catch(mainReject);
 														});
 												})
 												.catch(mainReject);
