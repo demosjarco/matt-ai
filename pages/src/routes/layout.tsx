@@ -54,6 +54,7 @@ export const onRequest: RequestHandler = async ({ locale, request }) => {
 	const acceptLanguage = request.headers.get('accept-language');
 	const [languages] = acceptLanguage?.split(';') || ['?', '?'];
 	const [preferredLanguage] = languages!.split(',');
+	console.debug('SETTING LOCALE', preferredLanguage);
 	locale(preferredLanguage);
 };
 
