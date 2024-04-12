@@ -1,4 +1,4 @@
-import { $, component$, useSignal, type Signal } from '@builder.io/qwik';
+import { $, component$, useSignal, useStore, useVisibleTask$, type Signal } from '@builder.io/qwik';
 import { Form, server$ } from '@builder.io/qwik-city';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
@@ -7,16 +7,36 @@ import { useUserUpdateConversation } from '../../../routes/layout';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
-	return new MessageProcessing(this.platform).actionDecide(...args);
-});
 const messageGuard = server$(function (...args: Parameters<MessageProcessing['guard']>) {
 	return new MessageProcessing(this.platform).guard(...args);
+});
+const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
+	return new MessageProcessing(this.platform).actionDecide(...args);
 });
 
 export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
+	const messageContext = useStore<
+		Record<
+			NonNullable<IDBMessage['key']>,
+			{
+				previousMessages?: IDBMessage[];
+				ddgSearchInfo?: Record<string, any>;
+			}
+		>
+	>({}, { deep: true });
+
+	useVisibleTask$(({ track, cleanup }) => {
+		track(() => formRef.value);
+
+		// Prevent memory leak
+		cleanup(() => {
+			Object.keys(messageContext).forEach((message) => {
+				delete messageContext[parseInt(message)];
+			});
+		});
+	});
 
 	const sendMessage = $(
 		(message: string) =>
@@ -109,11 +129,36 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 														}),
 													);
 
+													// Setup message context
+													if (userMessageAction.action.previousMessageSearch || userMessageAction.action.webSearchTerms) {
+														messageContext[aiMessage.key!] = {};
+													}
+
 													/**
 													 * @todo typechat actions
 													 */
+													if (userMessageAction.action.webSearchTerms) {
+														(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
 
-													await Promise.all(actions).catch(mainReject);
+														const ddgApi = new URL('https://api.duckduckgo.com');
+														ddgApi.searchParams.set('format', 'json');
+														ddgApi.searchParams.set('no_html', Number(true).toString());
+														ddgApi.searchParams.set('no_redirect', Number(true).toString());
+														ddgApi.searchParams.set('skip_disambig', Number(true).toString());
+														ddgApi.searchParams.set('q', userMessageAction.action.webSearchTerms.join(' '));
+														console.debug('Searching', 'DuckDuckGo', ddgApi.toString());
+
+														actions.push(fetch(ddgApi).then((response) => response.json<Record<string, any>>().then((json) => (messageContext[aiMessage.key!]!.ddgSearchInfo = json))));
+													}
+
+													Promise.all(actions)
+														.catch(mainReject)
+														.finally(() => {
+															/**
+															 * @todo text generate
+															 */
+															console.debug('Starting text generate with context', messageContext[aiMessage.key!]);
+														});
 												})
 												.catch(mainReject);
 										} else {
