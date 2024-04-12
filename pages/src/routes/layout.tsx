@@ -34,6 +34,7 @@ export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 });
 
 export const useUserLocale = routeLoader$(function ({ locale }) {
+	console.debug('GETTING LOCALE', locale());
 	return locale();
 });
 
@@ -54,7 +55,6 @@ export const onRequest: RequestHandler = async ({ locale, request }) => {
 	const acceptLanguage = request.headers.get('accept-language');
 	const [languages] = acceptLanguage?.split(';') || ['?', '?'];
 	const [preferredLanguage] = languages!.split(',');
-	console.debug('SETTING LOCALE', preferredLanguage);
 	locale(preferredLanguage);
 };
 
