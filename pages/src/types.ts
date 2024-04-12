@@ -28,6 +28,6 @@ export type MessageContext = Record<
 	NonNullable<IDBMessage['key']>,
 	{
 		previousMessages?: IDBMessage[];
-		ddgSearchInfo?: Record<string, any>;
+		webSearchInfo?: Record<string, any>;
 	}
 >;
