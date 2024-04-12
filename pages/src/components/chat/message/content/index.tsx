@@ -13,7 +13,7 @@ export default component$((props: { message: IDBMessage }) => {
 	const imageContentIndex = props.message.content.findIndex((record) => 'image' in record);
 	const cardContentIndex = props.message.content.findIndex((record) => 'card' in record);
 
-	if (props.message.status === false) {
+	if (props.message.status === false || (Array.isArray(props.message.status) && ((props.message.status as Exclude<IDBMessage['status'], boolean>).indexOf('filtering') > -1 || (props.message.status as Exclude<IDBMessage['status'], boolean>).indexOf('deciding') > -1))) {
 		return (
 			<div class={`leading-1.5 relative flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
 				<div role="status" class="w-full animate-pulse">
