@@ -1,9 +1,25 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
 import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
 
 export default component$((props: { text?: IDBMessageContentText }) => {
+	const divRef = useSignal<HTMLDivElement>();
+
+	useVisibleTask$(async ({ track, cleanup }) => {
+		track(() => divRef.value);
+
+		if (props.text && divRef.value) {
+			divRef.value.innerHTML = DOMPurify.sanitize(await marked.parse(props.text.trim(), { async: true }));
+		}
+
+		cleanup(() => {
+			if (divRef.value) divRef.value.childNodes.forEach((child) => divRef.value?.removeChild(child));
+		});
+	});
+
 	if (props.text) {
-		return <p class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white">{props.text.trim()}</p>;
+		return <div ref={divRef} class="whitespace-pre-wrap text-balance text-gray-900 dark:text-white"></div>;
 	} else {
 		return (
 			<div role="status" class="w-full animate-pulse space-y-2.5 pb-4">
