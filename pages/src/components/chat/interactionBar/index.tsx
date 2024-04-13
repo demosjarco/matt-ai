@@ -194,7 +194,7 @@ export default component$(() => {
 																	console.debug('composedInsert.text', composedInsert.text);
 																	// Add to UI
 																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-																	console.debug('composedInsert.text', messageHistory[aiMessage.key!]?.content[previousText]?.text);
+																	console.debug('ui message', messageHistory[aiMessage.key!]?.content[previousText]);
 																}
 																console.debug('ui message', 'after', messageHistory[aiMessage.key!]!.content[previousText]);
 
