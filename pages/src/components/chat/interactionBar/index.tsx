@@ -148,7 +148,7 @@ export default component$(() => {
 												}
 
 												/**
-												 * @todo typechat actions
+												 * @todo Previous message search
 												 */
 												if (userMessageAction.action.webSearchTerms) {
 													// Add web search status
@@ -165,53 +165,86 @@ export default component$(() => {
 														}),
 													);
 												}
+												/**
+												 * @todo url browsing
+												 * @link https://developers.cloudflare.com/durable-objects/examples/websocket-hibernation-server/
+												 * @link https://developers.cloudflare.com/workers/examples/websockets/#write-a-websocket-client
+												 * @link https://github.com/cloudflare/workers-chat-demo/blob/master/src/chat.mjs
+												 */
+												/**
+												 * @todo typechat translation
+												 */
 
 												Promise.all(actions)
 													.catch(mainReject)
 													.finally(() => {
-														// Add typing status
-														(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
+														const finalActions: Promise<any>[] = [
+															// Text write
+															new Promise<void>((resolve, reject) => {
+																// Add typing status
+																(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
 
-														const model: Parameters<typeof messageText>[0] = '@cf/meta/llama-2-7b-chat-fp16';
+																const model: Parameters<typeof messageText>[0] = '@cf/meta/llama-2-7b-chat-fp16';
 
-														messageText(model, message, messageContext[aiMessage.key!])
-															.then(async (chatResponse) => {
-																/**
-																 * @todo text generate
-																 */
-																const composedInsert: IDBMessageContent = {
-																	text: '',
-																	model_used: model,
-																};
+																messageText(model, message, messageContext[aiMessage.key!])
+																	.then(async (chatResponse) => {
+																		/**
+																		 * @todo text generate
+																		 */
+																		const composedInsert: IDBMessageContent = {
+																			text: '',
+																			model_used: model,
+																		};
 
-																// Add to UI
-																// push() returns new length and since it's the last item, just subtract 1
-																const previousText = messageHistory[aiMessage.key!]!.content.push(composedInsert) - 1;
+																		// Add to UI
+																		// push() returns new length and since it's the last item, just subtract 1
+																		const previousText = messageHistory[aiMessage.key!]!.content.push(composedInsert) - 1;
 
-																for await (const chatResponseChunk of chatResponse) {
-																	composedInsert.text += chatResponseChunk ?? '';
-																	// Add to UI
-																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-																}
+																		for await (const chatResponseChunk of chatResponse) {
+																			composedInsert.text += chatResponseChunk ?? '';
+																			// Add to UI
+																			messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+																		}
 
-																// Cleanup whitespace
-																composedInsert.text = composedInsert.text?.trim();
-																messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+																		// Cleanup whitespace
+																		composedInsert.text = composedInsert.text?.trim();
+																		messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
 
-																// Remove typing status
+																		// Remove typing status
+																		if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
+																			messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'typing');
+																		}
+
+																		// Add to storage
+																		new IDBMessages()
+																			.updateMessage({
+																				key: aiMessage.key!,
+																				content: [composedInsert],
+																				status: true,
+																			})
+																			.then(() => resolve())
+																			.catch(reject);
+																	})
+																	.catch(reject);
+															}),
+														];
+
+														// Finally done with everything
+														Promise.all(finalActions)
+															.catch(mainReject)
+															.finally(() => {
+																// Remove all status
 																messageHistory[aiMessage.key!]!.status = true;
 
-																// Add to storage
+																// Final save
 																new IDBMessages()
 																	.updateMessage({
 																		key: aiMessage.key!,
-																		content: [composedInsert],
 																		status: true,
 																	})
 																	.then(() => mainResolve())
 																	.catch(mainReject);
-															})
-															.catch(mainReject);
+															});
 													});
 											})
 											.catch(mainReject);
