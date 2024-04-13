@@ -1,9 +1,31 @@
 import { IDBBase } from './base';
 import type { IDBConversation } from './schemas/v2';
 
+type FullConversationGuarantee = Partial<IDBConversation>;
 type InternalConversationGuarantee = Pick<IDBConversation, 'key'> & Omit<Partial<IDBConversation>, 'key'>;
 
 export class IDBConversations extends IDBBase {
+	public addConversation(conversation: FullConversationGuarantee = {}) {
+		return new Promise<IDBConversation>((resolve, reject) =>
+			this.db
+				.then((db) => {
+					const insertConversation: IDBConversation = {
+						...conversation,
+						name: IDBConversations.randomText(16),
+						atime: new Date(),
+						btime: new Date(),
+						ctime: new Date(),
+						mtime: new Date(),
+					};
+
+					db.add('conversations', insertConversation)
+						.then((key) => resolve({ ...insertConversation, key }))
+						.catch(reject);
+				})
+				.catch(reject),
+		);
+	}
+
 	public get conversations() {
 		// Get all conversations, but sorted newest to oldest
 		return this.db.then((db) => db.getAll('conversations').then((conversations) => conversations.sort((a, b) => b.mtime.getTime() - a.mtime.getTime())));
