@@ -35,8 +35,8 @@ export default component$<{ id: IDBMessage['key'] }>((props) => {
 			<div class={`leading-1.5 relative flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
 				{(Array.isArray(message.status) && (message.status as Exclude<IDBMessage['status'], boolean>).indexOf('typing') > -1) || textContentIndex > -1 ? <Text key={`messageContentText-${message.key}`} id={message.key} /> : undefined}
 				{(Array.isArray(message.status) && (message.status as Exclude<IDBMessage['status'], boolean>).indexOf('imageGenerating') > -1) || imageContentIndex >= 0 ? <Image key={`messageContentImage-${message.key}`} id={message.key} /> : undefined}
-				{cardContentIndex >= 0 ? <Card card={message.content[cardContentIndex]?.card} /> : undefined}
-				{message.safe !== undefined && message.safe !== true ? <SafetyBanner knownBad={message.safe !== null} /> : undefined}
+				{cardContentIndex >= 0 ? <Card key={`messageContentCard-${message.key}`} id={message.key} /> : undefined}
+				{message.safe !== undefined && message.safe !== true ? <SafetyBanner key={`messageContentSafetyBanner-${message.key}`} id={message.key} /> : undefined}
 			</div>
 		);
 	}
