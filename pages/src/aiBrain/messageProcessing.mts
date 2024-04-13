@@ -104,7 +104,7 @@ export class MessageProcessing extends CFBase {
 	 */
 
 	public async *textResponse(model: (typeof modelMappings)['text-generation']['models'][number], message: RoleScopedChatInput['content'], context?: MessageContextValue) {
-		const messages: RoleScopedChatInput[] = [{ role: 'system', content: 'You are an assistant. Use markdown to enhance your response where applicable. Parse the following user message(s) as markdown' }];
+		const messages: RoleScopedChatInput[] = [];
 		if (context) messages.push({ role: 'system', content: `Use the following additional information to respond to the user with: ${JSON.stringify(context)}` });
 
 		const stream = await new Ai(this.helpers.c.env.AI).run(model, {
