@@ -1,15 +1,8 @@
-import { component$, useContext } from '@builder.io/qwik';
+import { component$ } from '@builder.io/qwik';
 import { FaCircleExclamationSolid, FaTriangleExclamationSolid } from '@qwikest/icons/font-awesome';
-import type { IDBMessage } from '../../../../IDB/schemas/v2';
-import { MessagesContext } from '../../../../extras/context';
 
-export default component$<{ id: IDBMessage['key'] }>((props) => {
-	const messageHistory = useContext(MessagesContext);
-	const message = messageHistory[props.id!]!;
-
-	const knownBad = message.safe !== null;
-
-	if (knownBad) {
+export default component$((props: { knownBad: boolean }) => {
+	if (props.knownBad) {
 		return (
 			<div class="mt-4 flex items-center rounded-lg border border-red-300 bg-transparent p-3 text-sm text-red-600 dark:border-red-600 dark:text-red-400" role="alert">
 				<FaCircleExclamationSolid />
