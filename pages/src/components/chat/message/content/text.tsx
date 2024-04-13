@@ -10,6 +10,8 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 	useTask$(async ({ track, cleanup }) => {
 		track(() => divRef.value);
 		track(() => pRef.value);
+		// Needs to be retracked
+		track(() => props.text);
 
 		console.debug('TextElement', props.text);
 
