@@ -182,11 +182,12 @@ export default component$(() => {
 																	model_used: '@cf/meta/llama-2-7b-chat-fp16',
 																};
 
-																const previousText = messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
+																let previousText = messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
 																if (previousText >= 0) {
 																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
 																} else {
-																	messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																	const length = messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																	previousText = length - 1;
 																}
 
 																// Add to UI
