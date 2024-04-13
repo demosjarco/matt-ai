@@ -83,7 +83,7 @@ export default component$(() => {
 	return (
 		<div id="messageList" class="grid grid-cols-12 gap-y-2">
 			{Object.entries(messageHistory).map(([messageId, message]) => {
-				return <Message key={`message-${messageId}`} message={message} />;
+				return <Message key={`message-${messageId}`} id={message.key} />;
 			})}
 		</div>
 	);
