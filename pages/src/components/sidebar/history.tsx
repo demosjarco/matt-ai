@@ -34,14 +34,7 @@ export default component$(() => {
 	return (
 		<ul class="space-y-2 font-medium">
 			{conversations.value.map((conversation) => (
-				<Item
-					onClick$={(id) => {
-						conversationId.value = id;
-					}}
-					key={`conversation-${conversation.key}`}
-					id={conversation.key!}
-					title={conversation.name}
-				/>
+				<Item onClick$={(id) => (conversationId.value = id)} key={`conversation-${conversation.key}`} id={conversation.key!} title={conversation.name} />
 			))}
 		</ul>
 	);
