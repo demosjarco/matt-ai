@@ -1,8 +1,10 @@
-import { $, component$, useSignal, useStore, useTask$ } from '@builder.io/qwik';
+import { $, component$, useContext, useSignal, useStore, useTask$ } from '@builder.io/qwik';
 import { Form, server$, useLocation } from '@builder.io/qwik-city';
+import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
+import { ConversationsContext } from '../../../extras/context';
 import { useUserUpdateConversation } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
 import ChatBox from './chatBox';
@@ -25,6 +27,7 @@ const messageText = server$(async function* (...args: Parameters<MessageProcessi
 
 export default component$((props: { messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
 	const loc = useLocation();
+	const conversations = useContext(ConversationsContext);
 
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
@@ -62,14 +65,19 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 						props.messageHistory[userMessage.key!] = userMessage;
 						mainResolve(userMessage);
 
-						new IDBMessages()
-							.saveMessage({
+						Promise.all([
+							new IDBConversations().getConversation({ key: userMessage.conversation_id }),
+							new IDBMessages().saveMessage({
 								// Can't compute to a variable otherwise it will return original conv id, not current one
 								conversation_id: userMessage.conversation_id,
 								role: 'assistant',
 								status: false,
-							})
-							.then((aiMessage) => {
+							}),
+						])
+							.then(([newConversation, aiMessage]) => {
+								// Add new conversation to UI
+								if (conversations.value.indexOf(newConversation) < 0) conversations.value.unshift(newConversation);
+
 								// Add placeholder to UI
 								props.messageHistory[aiMessage.key!] = aiMessage;
 								props.messageHistory[aiMessage.key!]!.status = ['filtering'];
