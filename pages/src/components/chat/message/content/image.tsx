@@ -1,9 +1,15 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useTask$ } from '@builder.io/qwik';
 import { FaDownloadSolid, FaImageSolid } from '@qwikest/icons/font-awesome';
 import type { MessageAction } from '../../../../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContentImage } from '../../../../IDB/schemas/v2';
 
 export default component$((props: { imageAction?: NonNullable<MessageAction['imageGenerate']>; image?: IDBMessageContentImage }) => {
+	useTask$(({ track }) => {
+		// Needs to be retracked
+		track(() => props.imageAction);
+		track(() => props.image);
+	});
+
 	if (props.image) {
 		return (
 			<div class="group relative my-2.5">
