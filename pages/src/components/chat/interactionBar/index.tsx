@@ -237,7 +237,7 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 								key: Number.MAX_SAFE_INTEGER,
 								message_id: Number.MAX_SAFE_INTEGER,
 								// Can't compute to a variable otherwise it will return original conv id, not current one
-								conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined ?? 0,
+								conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : 0,
 								content_version: 1,
 								btime: new Date(),
 								role: 'system',
@@ -259,7 +259,7 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 							key: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
 							// Can't compute to a variable otherwise it will return original conv id, not current one
-							conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined ?? 0,
+							conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : 0,
 							content_version: 1,
 							btime: new Date(),
 							role: 'system',
