@@ -1,3 +1,4 @@
+import type { randomUUID } from 'node:crypto';
 import type Helper from '../../worker/src/index';
 import type { IDBMessage } from './IDB/schemas/v2';
 
@@ -17,6 +18,20 @@ interface PagesEnvironmentvariables {
 	CF_PAGES_COMMIT_SHA: string;
 	CF_PAGES_BRANCH: string;
 	CF_PAGES_URL: string;
+}
+
+export interface CustomContext {
+	req: {
+		raw: Parameters<ExportedHandlerFetchHandler<EnvVars, unknown>>[0];
+	};
+	env: EnvVars;
+	executionCtx: ExecutionContext;
+}
+
+export interface UuidExport {
+	utf8: ReturnType<typeof randomUUID>;
+	hex: string;
+	blob: Buffer;
 }
 
 export interface ChatFormSubmit {
