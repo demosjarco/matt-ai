@@ -65,7 +65,7 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 						new IDBMessages()
 							.saveMessage({
 								// Can't compute to a variable otherwise it will return original conv id, not current one
-								conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined,
+								conversation_id: userMessage.conversation_id,
 								role: 'assistant',
 								status: false,
 							})
