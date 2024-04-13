@@ -1,5 +1,6 @@
 import { $, component$, useContext, useStore, useTask$ } from '@builder.io/qwik';
 import { Form, server$, useLocation } from '@builder.io/qwik-city';
+import type { Ai } from '@cloudflare/ai';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
@@ -23,6 +24,9 @@ const messageText = server$(async function* (...args: Parameters<MessageProcessi
 	for await (const chunk of new MessageProcessing(this.platform).textResponse(...args)) {
 		yield chunk;
 	}
+});
+const messageActionImage = server$(function (...args: Parameters<MessageProcessing['imageGenerate']>) {
+	return new MessageProcessing(this.platform).imageGenerate(...args);
 });
 
 export default component$(() => {
@@ -228,6 +232,41 @@ export default component$(() => {
 																	.catch(reject);
 															}),
 														];
+
+														if (userMessageAction.action.imageGenerate) {
+															finalActions.push(
+																new Promise<void>((resolve, reject) => {
+																	// Add image generating status
+																	(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('imageGenerating');
+
+																	messageActionImage(userMessageAction.action.imageGenerate!).then(({ raw, model }) => {
+																		// Remove image generating status
+																		if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
+																			messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'imageGenerating');
+																		}
+
+																		// Parse back from `base64` (required as part of server <-serialization-> client)
+																		const image = Uint8Array.from(atob(raw), (char) => char.charCodeAt(0));
+
+																		const imageInsert: IDBMessageContent = {
+																			image,
+																			model_used: model as Parameters<Ai['run']>[0],
+																		};
+																		// Add to UI
+																		messageHistory[aiMessage.key!]!.content.push(imageInsert);
+																		// Add to storage
+																		new IDBMessages()
+																			.updateMessage({
+																				key: aiMessage.key!,
+																				content: [imageInsert],
+																				status: messageHistory[aiMessage.key!]!.status,
+																			})
+																			.then(() => resolve())
+																			.catch(reject);
+																	});
+																}),
+															);
+														}
 
 														// Finally done with everything
 														Promise.all(finalActions)
