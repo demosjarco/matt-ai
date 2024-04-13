@@ -2,7 +2,7 @@ import { Ai, type modelMappings } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
-import { CFBase } from '../helpers/base.mjs';
+import { CFBase } from '../extras/base.mjs';
 import type { MessageContextValue } from '../types';
 
 export class MessageProcessing extends CFBase {
