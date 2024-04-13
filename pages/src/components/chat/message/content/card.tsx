@@ -1,7 +1,12 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useTask$ } from '@builder.io/qwik';
 import type { IDBMessageContentCard } from '../../../../IDB/schemas/v2';
 
 export default component$((props: { card?: IDBMessageContentCard }) => {
+	useTask$(({ track }) => {
+		// Needs to be retracked
+		track(() => props.card);
+	});
+
 	if (props.card) {
 		return <></>;
 	} else {
