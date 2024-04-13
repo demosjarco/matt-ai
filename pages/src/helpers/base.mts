@@ -1,6 +1,5 @@
-import type { EnvVars } from '../types';
+import type { CustomContext, EnvVars } from '../types';
 import { Helpers } from './helpers.mjs';
-import type { CustomContext } from './types.mjs';
 
 export interface BaseHelpers {
 	c: CustomContext;
