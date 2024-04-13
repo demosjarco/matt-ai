@@ -117,6 +117,8 @@ export class MessageProcessing extends CFBase {
 		const contentPrefix = `${eventField}: `;
 
 		let accumulatedData = '';
+		let newlineCounter = 0;
+		let streamError = false;
 		// @ts-expect-error
 		for await (const chunk of stream) {
 			const decodedChunk = decoder.decode(chunk, { stream: true });
@@ -133,6 +135,18 @@ export class MessageProcessing extends CFBase {
 					try {
 						// See if it's JSON
 						const decodedJson: Exclude<AiTextGenerationOutput, ReadableStream> = JSON.parse(decodedString);
+						// Sometimes the models just dump whitespace forever
+						if (decodedJson.response === '\n') {
+							newlineCounter++; // Increment for each newline found
+							if (newlineCounter >= 5) {
+								// Stop processing line
+								streamError = true;
+								break;
+							}
+						} else {
+							newlineCounter = 0;
+						}
+
 						// Return JSON
 						yield decodedJson.response;
 					} catch (error) {
@@ -140,6 +154,9 @@ export class MessageProcessing extends CFBase {
 					}
 				}
 			}
+
+			// Stop processing response all together
+			if (streamError) break;
 		}
 	}
 
