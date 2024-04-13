@@ -2,6 +2,22 @@ import { openDB, type IDBPDatabase } from 'idb';
 import { AiLocal as AiLocalV2, type AiLocalSchema as AiLocalSchemaV2 } from './schemas/v2';
 
 export abstract class IDBBase {
+	private static readonly LOWER_CHAR_SET = 'abcdefghijklmnopqrstuvwxyz';
+	private static readonly NUMBER_CHAR_SET = '0123456789';
+	private static readonly CHAR_SET = `${IDBBase.LOWER_CHAR_SET.toUpperCase()}${IDBBase.LOWER_CHAR_SET}${IDBBase.NUMBER_CHAR_SET}`;
+
+	protected static randomText(length: number) {
+		const randomBytes = new Uint8Array(length);
+		crypto.getRandomValues(randomBytes);
+		let randomText = '';
+		for (const byte of randomBytes) {
+			// Map each byte to a character in the character set
+			const charIndex = byte % this.CHAR_SET.length;
+			randomText += this.CHAR_SET.charAt(charIndex);
+		}
+		return randomText;
+	}
+
 	protected get db() {
 		return openDB<AiLocalSchemaV2>('ailocal', 2, {
 			upgrade(database, oldVersion) {
