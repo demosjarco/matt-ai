@@ -30,7 +30,7 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 	const conversations = useContext(ConversationsContext);
 
 	const formRef = useSignal<HTMLFormElement>();
-	const createConversation = useUserUpdateConversation();
+	const submitMessageWithTurnstile = useUserUpdateConversation();
 	const messageContext = useStore<MessageContext>({}, { deep: true });
 
 	useTask$(({ track, cleanup }) => {
@@ -226,14 +226,14 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 
 	return (
 		<Form
-			action={createConversation}
+			action={submitMessageWithTurnstile}
 			ref={formRef}
 			spaReset={true}
 			onSubmitCompleted$={() =>
 				new Promise<void>((resolve, reject) => {
-					if (createConversation.status && createConversation.status >= 200 && createConversation.status < 300) {
-						if (createConversation.value && createConversation.value.sanitizedMessage) {
-							sendMessage(createConversation.value.sanitizedMessage)
+					if (submitMessageWithTurnstile.status && submitMessageWithTurnstile.status >= 200 && submitMessageWithTurnstile.status < 300) {
+						if (submitMessageWithTurnstile.value && submitMessageWithTurnstile.value.sanitizedMessage) {
+							sendMessage(submitMessageWithTurnstile.value.sanitizedMessage)
 								.then((message) => {
 									window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
 									resolve();
