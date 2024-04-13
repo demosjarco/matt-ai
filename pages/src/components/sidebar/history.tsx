@@ -8,14 +8,12 @@ export default component$(() => {
 	const conversations = useContext(ConversationsContext);
 
 	// Initial load
-	useVisibleTask$(async () => {
+	useVisibleTask$(async ({ track }) => {
+		// Track for UI updates
+		track(() => conversations.value);
+
 		if (conversations.value.length === 0) conversations.value = await new IDBConversations().conversations;
 	});
-
-	// Track for UI updates
-	/*useTask$(({ track }) => {
-		track(() => conversations.value);
-	});*/
 
 	const navigate = useNavigate();
 	const conversationId = useSignal<number>();
