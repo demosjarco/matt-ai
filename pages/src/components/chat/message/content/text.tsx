@@ -1,16 +1,9 @@
-import { component$, useContext, useSignal, useTask$ } from '@builder.io/qwik';
+import { component$, useSignal, useTask$ } from '@builder.io/qwik';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-import type { IDBMessage } from '../../../../IDB/schemas/v2';
-import { MessagesContext } from '../../../../extras/context';
+import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
 
-export default component$<{ id: IDBMessage['key'] }>((props) => {
-	const messageHistory = useContext(MessagesContext);
-	const message = messageHistory[props.id!]!;
-	const textContentIndex = message.content.findIndex((record) => 'text' in record);
-
-	const text = message.content[textContentIndex]?.text;
-
+export default component$((props: { text?: IDBMessageContentText }) => {
 	const divRef = useSignal<HTMLDivElement>();
 	const pRef = useSignal<HTMLParagraphElement>();
 
@@ -18,21 +11,21 @@ export default component$<{ id: IDBMessage['key'] }>((props) => {
 		track(() => divRef.value);
 		track(() => pRef.value);
 
-		if (text) {
+		if (props.text) {
 			if (divRef.value) {
 				try {
-					const markdownHtml = await marked.parse(text.trim(), { async: true, breaks: true });
+					const markdownHtml = await marked.parse(props.text.trim(), { async: true, breaks: true });
 					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
 				} catch (error) {
 					divRef.value.hidden = true;
 					if (pRef.value) {
 						pRef.value.hidden = false;
-						pRef.value.innerText = text.trim();
+						pRef.value.innerText = props.text.trim();
 					}
 				}
 			} else if (pRef.value) {
 				pRef.value.hidden = false;
-				pRef.value.innerText = text.trim();
+				pRef.value.innerText = props.text.trim();
 			}
 		}
 
@@ -41,7 +34,7 @@ export default component$<{ id: IDBMessage['key'] }>((props) => {
 		});
 	});
 
-	if (text) {
+	if (props.text) {
 		return (
 			<>
 				<div ref={divRef} class="text-balance text-gray-900 dark:text-white"></div>

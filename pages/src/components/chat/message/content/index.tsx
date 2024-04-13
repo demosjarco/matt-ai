@@ -1,23 +1,19 @@
-import { component$, useContext } from '@builder.io/qwik';
+import { component$ } from '@builder.io/qwik';
 import type { IDBMessage } from '../../../../IDB/schemas/v2';
-import { MessagesContext } from '../../../../extras/context';
 import Card from './card';
 import Image from './image';
 import SafetyBanner from './safetyBanner';
 import Text from './text';
 
-export default component$<{ id: IDBMessage['key'] }>((props) => {
-	const messageHistory = useContext(MessagesContext);
-	const message = messageHistory[props.id!]!;
+export default component$((props: { message: IDBMessage }) => {
+	const isMe = props.message.role === 'user' ? true : false;
 
-	const isMe = message.role === 'user' ? true : false;
+	const actionIndex = props.message.content.findIndex((record) => 'action' in record);
+	const textContentIndex = props.message.content.findIndex((record) => 'text' in record);
+	const imageContentIndex = props.message.content.findIndex((record) => 'image' in record);
+	const cardContentIndex = props.message.content.findIndex((record) => 'card' in record);
 
-	const actionIndex = message.content.findIndex((record) => 'action' in record);
-	const textContentIndex = message.content.findIndex((record) => 'text' in record);
-	const imageContentIndex = message.content.findIndex((record) => 'image' in record);
-	const cardContentIndex = message.content.findIndex((record) => 'card' in record);
-
-	if (message.status === false || (Array.isArray(message.status) && ((message.status as Exclude<IDBMessage['status'], boolean>).indexOf('filtering') > -1 || (message.status as Exclude<IDBMessage['status'], boolean>).indexOf('deciding') > -1 || (message.status as Exclude<IDBMessage['status'], boolean>).indexOf('webSearching') > -1))) {
+	if (props.message.status === false || (Array.isArray(props.message.status) && ((props.message.status as Exclude<IDBMessage['status'], boolean>).indexOf('filtering') > -1 || (props.message.status as Exclude<IDBMessage['status'], boolean>).indexOf('deciding') > -1 || (props.message.status as Exclude<IDBMessage['status'], boolean>).indexOf('webSearching') > -1))) {
 		return (
 			<div class={`leading-1.5 relative flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
 				<div role="status" class="w-full animate-pulse">
@@ -34,10 +30,10 @@ export default component$<{ id: IDBMessage['key'] }>((props) => {
 	} else {
 		return (
 			<div class={`leading-1.5 relative flex flex-col border-gray-200 bg-gray-100 p-4 dark:bg-gray-700 ${isMe ? 'rounded-xl rounded-se-none' : 'rounded-e-xl rounded-es-xl'}`}>
-				{(Array.isArray(message.status) && (message.status as Exclude<IDBMessage['status'], boolean>).indexOf('typing') > -1) || textContentIndex > -1 ? <Text key={`messageContentText-${message.key}`} id={message.key} /> : undefined}
-				{(Array.isArray(message.status) && (message.status as Exclude<IDBMessage['status'], boolean>).indexOf('imageGenerating') > -1) || imageContentIndex >= 0 ? <Image key={`messageContentImage-${message.key}`} id={message.key} /> : undefined}
-				{cardContentIndex >= 0 ? <Card card={message.content[cardContentIndex]?.card} /> : undefined}
-				{message.safe !== undefined && message.safe !== true ? <SafetyBanner knownBad={message.safe !== null} /> : undefined}
+				{(Array.isArray(props.message.status) && (props.message.status as Exclude<IDBMessage['status'], boolean>).indexOf('typing') > -1) || textContentIndex > -1 ? <Text text={props.message.content[textContentIndex]?.text} /> : undefined}
+				{(Array.isArray(props.message.status) && (props.message.status as Exclude<IDBMessage['status'], boolean>).indexOf('imageGenerating') > -1) || imageContentIndex >= 0 ? <Image imageAction={props.message.content[actionIndex]?.action?.imageGenerate ?? undefined} image={props.message.content[imageContentIndex]?.image} /> : undefined}
+				{cardContentIndex >= 0 ? <Card card={props.message.content[cardContentIndex]?.card} /> : undefined}
+				{props.message.safe !== undefined && props.message.safe !== true ? <SafetyBanner knownBad={props.message.safe !== null} /> : undefined}
 			</div>
 		);
 	}
