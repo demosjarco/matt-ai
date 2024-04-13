@@ -6,12 +6,6 @@ export interface BaseHelpers {
 	c: CustomContext;
 }
 
-export interface GraphQlBody {
-	query?: string;
-	mutation?: string;
-	variables?: Record<string, any>;
-}
-
 export abstract class CFBase<T extends BaseHelpers = BaseHelpers> extends Helpers {
 	// @ts-ignore
 	protected helpers: T = {};
