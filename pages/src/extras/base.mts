@@ -1,15 +1,8 @@
-import type { EnvVars } from '../types';
+import type { CustomContext, EnvVars } from '../types';
 import { Helpers } from './helpers.mjs';
-import type { CustomContext } from './types.mjs';
 
 export interface BaseHelpers {
 	c: CustomContext;
-}
-
-export interface GraphQlBody {
-	query?: string;
-	mutation?: string;
-	variables?: Record<string, any>;
 }
 
 export abstract class CFBase<T extends BaseHelpers = BaseHelpers> extends Helpers {

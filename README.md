@@ -23,7 +23,7 @@
     ```bash
     npm ci --include-workspace-root --workspaces
     ```
-3. Build everything (If you are running in GitHub Codespaces, you can simply do `ctrl`/`cmd` + `shift` + `b`):
+3. Build everything (If you are running in GitHub Codespaces/vscode, you can simply do `ctrl`/`cmd` + `shift` + `b`):
     ```bash
     npm run build:local
     ```

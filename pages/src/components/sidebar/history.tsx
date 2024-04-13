@@ -1,52 +1,40 @@
-import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useContext, useSignal, useTask$, useVisibleTask$ } from '@builder.io/qwik';
 import { useNavigate } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
-import type { IDBConversation } from '../../types';
+import { ConversationsContext } from '../../extras/context';
 import Item from './item';
 
 export default component$(() => {
-	const conversations = useSignal<IDBConversation[]>([]);
+	const conversations = useContext(ConversationsContext);
 
-	useVisibleTask$(
-		() =>
-			new Promise<void>((resolve, reject) =>
-				new IDBConversations().conversations
-					.then((conversationData) => {
-						conversations.value = conversationData;
+	// Initial load
+	useVisibleTask$(async () => {
+		if (conversations.value.length === 0) conversations.value = await new IDBConversations().conversations;
+	});
 
-						resolve();
-					})
-					.catch(reject),
-			),
-	);
+	useTask$(({ track }) => {
+		// Track for UI updates
+		track(() => conversations.value);
+	});
 
 	const navigate = useNavigate();
-
 	const conversationId = useSignal<number>();
 
-	useVisibleTask$(({ track }) => {
+	// Fake navigation
+	useTask$(({ track }) => {
 		track(() => conversationId.value);
 
-		if (!conversationId.value) {
-			return;
+		if (conversationId.value) {
+			navigate(`/c/${conversationId.value}`, {
+				type: 'link',
+			});
 		}
-
-		navigate(`/c/${conversationId.value}`, {
-			type: 'link',
-		});
 	});
 
 	return (
-		<ul class="h-full space-y-2 overflow-y-auto font-medium">
+		<ul class="space-y-2 font-medium">
 			{conversations.value.map((conversation) => (
-				<Item
-					onClick$={(id) => {
-						conversationId.value = id;
-					}}
-					key={conversation.id}
-					id={conversation.id}
-					title={conversation.name}
-				/>
+				<Item onClick$={(id) => (conversationId.value = id)} key={`conversation-${conversation.key}`} id={conversation.key!} title={conversation.name} />
 			))}
 		</ul>
 	);

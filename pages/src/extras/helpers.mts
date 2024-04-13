@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer';
 import { randomUUID } from 'node:crypto';
-import type { UuidExport } from './types.mjs';
+import type { UuidExport } from '../types';
 
 export class Helpers {
 	public static get uuidGenerate(): UuidExport {

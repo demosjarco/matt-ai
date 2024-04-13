@@ -1,9 +1,57 @@
-import { Slot, component$ } from '@builder.io/qwik';
-import type { RequestHandler } from '@builder.io/qwik-city';
-import { routeAction$, routeLoader$, server$, z, zod$, type DocumentHead } from '@builder.io/qwik-city';
+import { Slot, component$, useContextProvider, useSignal, useStore } from '@builder.io/qwik';
+import type { DocumentHead, RequestHandler } from '@builder.io/qwik-city';
+import { routeAction$, routeLoader$, server$, z, zod$ } from '@builder.io/qwik-city';
 import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
+import { ConversationsContext, MessagesContext } from '../extras/context';
+import type { ChatFormSubmit, EnvVars } from '../types';
+
+export const useFormSubmissionWithTurnstile = routeAction$(
+	(data, { params, fail, status }) => {
+		if (status() >= 200 && status() < 300) {
+			return {
+				cid: params['conversationId'] ? parseInt(params['conversationId']) : undefined,
+				sanitizedMessage: z.string().trim().parse(data.message),
+			};
+		} else {
+			return fail(status(), {
+				cid: params['conversationId'] ? parseInt(params['conversationId']) : undefined,
+			});
+		}
+	},
+	zod$({
+		message: z.string(),
+	}),
+);
+
+export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
+	return runningLocally(platform.request);
+});
+
+export const serverParams = server$(function () {
+	return this.params;
+});
+
+export const head: DocumentHead = {
+	title: 'M.A.T.T. AI',
+	meta: [
+		{
+			name: 'description',
+			content: 'M.A.T.T.',
+		},
+	],
+};
+
+/**
+ * @link https://qwik.dev/docs/middleware/#locale
+ */
+export const onRequest: RequestHandler = async ({ locale, request }) => {
+	const acceptLanguage = request.headers.get('accept-language');
+	const [languages] = acceptLanguage?.split(';') || ['?', '?'];
+	const [preferredLanguage] = languages!.split(',');
+	locale(preferredLanguage);
+};
 
 export const onGet: RequestHandler = async ({ cacheControl }) => {
 	// Control caching for this request for best performance and to reduce hosting costs:
@@ -16,56 +64,55 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 	});
 };
 
-export const useConversationId = routeLoader$(({ params }) => {
-	const conversationId = Number(params['conversationId']);
-	return isNaN(conversationId) ? undefined : conversationId;
-});
+export const onPost: RequestHandler = async ({ platform, request, parseBody, status }) => {
+	const incomingFormData = (await parseBody()) as ChatFormSubmit | null;
 
-export const serverConversationId = server$(function () {
-	const id = Number(this.params['conversationId']);
-	return isNaN(id) ? undefined : id;
-});
+	if (incomingFormData) {
+		if (incomingFormData['cf-turnstile-response']) {
+			const ip = request.headers.get('CF-Connecting-IP');
 
-export const useUserUpdateConversation = routeAction$(
-	(data, { params }) => {
-		return {
-			cid: params['conversationId'] ? parseInt(params['conversationId']) : undefined,
-			sanitizedMessage: z.string().trim().parse(data.message),
-		};
-	},
-	zod$({
-		message: z.string(),
-	}),
-);
+			const formData = new FormData();
+			formData.append('secret', (platform.env as EnvVars).TURNSTILE_SECRET_KEY);
+			formData.append('response', incomingFormData['cf-turnstile-response']);
+			if (ip) formData.append('remoteip', ip);
 
-export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
-	return runningLocally(platform.request);
-});
+			let turnstileSuccess: boolean = false;
 
-export const useUserLocale = routeLoader$(function ({ request }) {
-	const acceptLanguage = request.headers.get('Accept-Language');
-	if (!acceptLanguage) return null;
+			try {
+				const result = await fetch(new URL('https://challenges.cloudflare.com/turnstile/v0/siteverify'), {
+					method: 'POST',
+					body: formData,
+				});
+				if (result.ok) {
+					const outcome: { success: boolean } = await result.json();
+					turnstileSuccess = outcome.success;
+				} else {
+					status(result.status);
+				}
+			} catch (error) {
+				console.error('Turnstile verify fail', error);
+				status(500);
+			}
 
-	const languages = acceptLanguage
-		.split(',')
-		.map((lang) => {
-			const [code, weight] = lang.trim().split(';q=');
-			return {
-				code: code,
-				weight: weight ? parseFloat(weight) : 1,
-			};
-		})
-		.sort((a, b) => b.weight - a.weight);
-
-	if (languages.length > 0) {
-		const topLanguage = languages[0]!.code;
-		return topLanguage !== '*' ? topLanguage : null;
+			status(turnstileSuccess ? 200 : 403);
+		} else {
+			// Turnstile not present
+			console.error('No turnstile present', incomingFormData['cf-turnstile-response']);
+			status(401);
+		}
 	} else {
-		return null;
+		// Not valid form
+		console.error('Bad form data', incomingFormData);
+		status(400);
 	}
-});
+};
 
 export default component$(() => {
+	// Setup contexts
+	useContextProvider(ConversationsContext, useSignal([]));
+	useContextProvider(MessagesContext, useStore({}, { deep: true }));
+
+	// UI
 	return (
 		<>
 			<div class="absolute top-0 w-full">
@@ -83,13 +130,3 @@ export default component$(() => {
 		</>
 	);
 });
-
-export const head: DocumentHead = {
-	title: 'M.A.T.T. AI',
-	meta: [
-		{
-			name: 'description',
-			content: 'M.A.T.T.',
-		},
-	],
-};

@@ -1,7 +1,6 @@
-import type { Ai } from '@cloudflare/ai';
-import type { AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
-import type { MessageAction } from '../../worker/aiTypes/MessageAction';
+import type { randomUUID } from 'node:crypto';
 import type Helper from '../../worker/src/index';
+import type { IDBMessage } from './IDB/schemas/v2';
 
 export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
@@ -21,54 +20,28 @@ interface PagesEnvironmentvariables {
 	CF_PAGES_URL: string;
 }
 
+export interface CustomContext {
+	req: {
+		raw: Parameters<ExportedHandlerFetchHandler<EnvVars, unknown>>[0];
+	};
+	env: EnvVars;
+	executionCtx: ExecutionContext;
+}
+
+export interface UuidExport {
+	utf8: ReturnType<typeof randomUUID>;
+	hex: string;
+	blob: Buffer;
+}
+
 export interface ChatFormSubmit {
 	message: string;
 	'cf-turnstile-response': string;
 }
 
-export interface IDBConversation {
-	id: number;
-	name: string;
-	/**
-	 * `atime` = access time
-	 */
-	atime: Date;
-	/**
-	 * `btime` = birth time
-	 */
-	btime: Date;
-	/**
-	 * `ctime` = changed time (metadata)
-	 */
-	ctime: Date;
-	/**
-	 * `mtime` = modified time (content)
-	 */
-	mtime: Date;
-}
+export type MessageContext = Record<NonNullable<IDBMessage['key']>, MessageContextValue>;
 
-export interface IDBMessage {
-	id: number;
-	message_id: number;
-	conversation_id: number;
-	content_version: number;
-	btime: Date;
-	role: 'system' | 'user' | 'assistant';
-	status: boolean | ('typing' | 'deciding' | 'translating' | 'historySearching' | 'webSearching' | 'imageGenerating')[];
-	content: IDBMessageContent[];
-	content_chips: IDBMessageContentChips[];
-	content_references: IDBMessageContentReferences[];
+export interface MessageContextValue {
+	previousMessages?: IDBMessage[];
+	webSearchInfo?: Record<string, any>;
 }
-export interface IDBMessageContentChips extends Record<string, any> {}
-export interface IDBMessageContentReferences extends Record<string, any> {}
-
-export interface IDBMessageContent {
-	action?: MessageAction;
-	text?: IDBMessageContentText;
-	image?: IDBMessageContentImage;
-	card?: IDBMessageContentCard;
-	model_used: Parameters<Ai['run']>[0] | null;
-}
-export type IDBMessageContentText = string;
-export interface IDBMessageContentCard extends Record<string, any> {}
-export type IDBMessageContentImage = AiTextToImageOutput;
