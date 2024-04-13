@@ -1,8 +1,15 @@
-import { component$ } from '@builder.io/qwik';
-import type { IDBMessageContentCard } from '../../../../IDB/schemas/v2';
+import { component$, useContext } from '@builder.io/qwik';
+import type { IDBMessage } from '../../../../IDB/schemas/v2';
+import { MessagesContext } from '../../../../extras/context';
 
-export default component$((props: { card?: IDBMessageContentCard }) => {
-	if (props.card) {
+export default component$<{ id: IDBMessage['key'] }>((props) => {
+	const messageHistory = useContext(MessagesContext);
+	const message = messageHistory[props.id!]!;
+	const cardContentIndex = message.content.findIndex((record) => 'card' in record);
+
+	const card = message.content[cardContentIndex]?.card;
+
+	if (card) {
 		return <></>;
 	} else {
 		return (
