@@ -187,21 +187,16 @@ export default component$(() => {
 																// Add to UI
 																// push() returns new length and since it's the last item, just subtract 1
 																const previousText = messageHistory[aiMessage.key!]!.content.push(composedInsert) - 1;
-																console.debug('ui message', 'before', messageHistory[aiMessage.key!]!.content[previousText]);
 
 																for await (const chatResponseChunk of chatResponse) {
 																	composedInsert.text += chatResponseChunk ?? '';
 																	// Add to UI
 																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-																	console.debug('ui message', messageHistory[aiMessage.key!]?.content[previousText]);
 																}
-																console.debug('ui message', 'after', messageHistory[aiMessage.key!]!.content[previousText]);
 
 																// Cleanup whitespace
 																composedInsert.text = composedInsert.text?.trim();
 																messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-
-																console.debug('ui message', 'trim', messageHistory[aiMessage.key!]!.content[previousText]);
 
 																// Remove typing status
 																messageHistory[aiMessage.key!]!.status = true;
