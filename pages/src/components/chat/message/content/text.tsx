@@ -13,8 +13,6 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 		// Needs to be retracked
 		track(() => props.text);
 
-		console.debug('TextElement', props.text);
-
 		if (props.text) {
 			if (divRef.value) {
 				try {
