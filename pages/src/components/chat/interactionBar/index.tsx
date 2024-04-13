@@ -191,7 +191,6 @@ export default component$(() => {
 
 																for await (const chatResponseChunk of chatResponse) {
 																	composedInsert.text += chatResponseChunk ?? '';
-																	console.debug('composedInsert.text', composedInsert.text);
 																	// Add to UI
 																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
 																	console.debug('ui message', messageHistory[aiMessage.key!]?.content[previousText]);
