@@ -1,5 +1,7 @@
 import { Ai, type modelMappings } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
+import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
+import { addMetadata } from 'meta-png';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../extras/base.mjs';
@@ -168,5 +170,27 @@ export class MessageProcessing extends CFBase {
 			// Stop processing response all together
 			if (streamError) break;
 		}
+	}
+
+	private image(prompt: AiTextToImageInput['prompt'], model: (typeof modelMappings)['text-to-image']['models'][number], num_steps: AiTextToImageInput['num_steps'] = 20) {
+		return new Promise<{ raw: ReturnType<Buffer['toString']>; model: typeof model }>((resolve, reject) => {
+			new Ai(this.helpers.c.env.AI)
+				.run(model, { prompt, num_steps })
+				.then(async (imageGeneration: AiTextToImageOutput | NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
+					if (imageGeneration instanceof ReadableStream) {
+						imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
+					}
+
+					const imageGenerationWithmetadata1 = addMetadata(imageGeneration, 'Title', prompt);
+					const imageGenerationWithmetadata2 = addMetadata(imageGenerationWithmetadata1, 'Software', model.split('/').slice(1).join('/'));
+					const imageGenerationWithmetadata3 = addMetadata(imageGenerationWithmetadata2, 'Author', `M.A.T.T. AI${this.helpers.c.env.CF_PAGES_COMMIT_SHA ? ` v${this.helpers.c.env.CF_PAGES_COMMIT_SHA}` : ''}`);
+
+					resolve({
+						raw: Buffer.from(imageGenerationWithmetadata3.buffer).toString('base64'),
+						model,
+					});
+				})
+				.catch(reject);
+		});
 	}
 }
