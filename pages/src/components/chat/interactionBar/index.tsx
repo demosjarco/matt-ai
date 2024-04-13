@@ -220,7 +220,7 @@ export default component$(() => {
 																			.updateMessage({
 																				key: aiMessage.key!,
 																				content: [composedInsert],
-																				status: true,
+																				status: messageHistory[aiMessage.key!]!.status,
 																			})
 																			.then(() => resolve())
 																			.catch(reject);
