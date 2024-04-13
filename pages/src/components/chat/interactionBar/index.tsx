@@ -191,15 +191,18 @@ export default component$(() => {
 
 																for await (const chatResponseChunk of chatResponse) {
 																	composedInsert.text += chatResponseChunk ?? '';
-																	console.debug('chatResponseChunk', composedInsert.text);
+																	console.debug('composedInsert.text', composedInsert.text);
 																	// Add to UI
 																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+																	console.debug('composedInsert.text', messageHistory[aiMessage.key!]?.content[previousText]?.text);
 																}
 																console.debug('ui message', 'after', messageHistory[aiMessage.key!]!.content[previousText]);
 
 																// Cleanup whitespace
 																composedInsert.text = composedInsert.text?.trim();
 																messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+
+																console.debug('ui message', 'trim', messageHistory[aiMessage.key!]!.content[previousText]);
 
 																// Remove typing status
 																messageHistory[aiMessage.key!]!.status = true;
@@ -250,7 +253,7 @@ export default component$(() => {
 			onSubmitCompleted$={async () => {
 				if (submitMessageWithTurnstile.status && submitMessageWithTurnstile.status >= 200 && submitMessageWithTurnstile.status < 300) {
 					if (submitMessageWithTurnstile.value && submitMessageWithTurnstile.value.sanitizedMessage) {
-						await sendMessage(submitMessageWithTurnstile.value.sanitizedMessage, (conversation_id) => {
+						sendMessage(submitMessageWithTurnstile.value.sanitizedMessage, (conversation_id) => {
 							window.history.replaceState({}, '', `/${['c', conversation_id].join('/')}`);
 						});
 					} else {
