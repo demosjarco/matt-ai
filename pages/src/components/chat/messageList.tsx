@@ -1,4 +1,4 @@
-import { component$, useContext, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useContext, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
@@ -80,8 +80,43 @@ export default component$(() => {
 		});
 	});
 
+	const messageList = useSignal<HTMLDivElement>();
+	const messageListShouldScroll = useSignal<boolean>(true);
+	const messageListWasProgramaticScroll = useSignal<boolean>(true);
+	// Auto scroll to bottom
+	useVisibleTask$(({ track }) => {
+		track(() => messageList.value);
+		track(() => messageListShouldScroll.value);
+
+		if (messageList.value && messageListShouldScroll.value === true) {
+			const { scrollHeight } = messageList.value;
+
+			messageListWasProgramaticScroll.value = true;
+			messageList.value.scrollTop = scrollHeight;
+			messageListWasProgramaticScroll.value = false;
+		}
+	});
+
 	return (
-		<div id="messageList" class="grid grid-cols-12 gap-y-2">
+		<div
+			id="messageList"
+			class="grid grid-cols-12 gap-y-2"
+			// Stop auto scrolling if user scrolls
+			onScroll$={() => {
+				if (messageListWasProgramaticScroll.value === false) {
+					messageListShouldScroll.value = false;
+				}
+			}}
+			// If the user has scrolled all the way to the bottom, then enable it again
+			onScrollend$={() => {
+				if (messageList.value) {
+					const { scrollTop, scrollHeight, clientHeight } = messageList.value;
+
+					if (messageListShouldScroll.value === false && scrollHeight === scrollTop + clientHeight) {
+						messageListShouldScroll.value = true;
+					}
+				}
+			}}>
 			{Object.entries(messageHistory).map(([messageId, message]) => {
 				return <Message key={`message-${messageId}`} message={message} />;
 			})}
