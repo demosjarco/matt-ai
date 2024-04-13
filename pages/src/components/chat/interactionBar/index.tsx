@@ -250,14 +250,38 @@ export default component$(() => {
 		<Form
 			action={submitMessageWithTurnstile}
 			spaReset={true}
-			onSubmitCompleted$={async () => {
-				if (submitMessageWithTurnstile.status && submitMessageWithTurnstile.status >= 200 && submitMessageWithTurnstile.status < 300) {
-					if (submitMessageWithTurnstile.value && submitMessageWithTurnstile.value.sanitizedMessage) {
-						sendMessage(submitMessageWithTurnstile.value.sanitizedMessage, (conversation_id) => {
-							window.history.replaceState({}, '', `/${['c', conversation_id].join('/')}`);
-						});
+			onSubmitCompleted$={() =>
+				new Promise<void>((resolve, reject) => {
+					if (submitMessageWithTurnstile.status && submitMessageWithTurnstile.status >= 200 && submitMessageWithTurnstile.status < 300) {
+						if (submitMessageWithTurnstile.value && submitMessageWithTurnstile.value.sanitizedMessage) {
+							sendMessage(submitMessageWithTurnstile.value.sanitizedMessage, (conversation_id) => {
+								window.history.replaceState({}, '', `/${['c', conversation_id].join('/')}`);
+							})
+								.then(resolve)
+								.catch(reject);
+						} else {
+							// Bad form
+							messageHistory[Number.MAX_SAFE_INTEGER] = {
+								key: Number.MAX_SAFE_INTEGER,
+								message_id: Number.MAX_SAFE_INTEGER,
+								// Can't compute to a variable otherwise it will return original conv id, not current one
+								conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : 0,
+								content_version: 1,
+								btime: new Date(),
+								role: 'system',
+								status: true,
+								content: [
+									{
+										text: 'Something went wrong with the bot verification. Humans, please refresh page. Bots, please go away',
+										model_used: null,
+									},
+								],
+								content_chips: [],
+								content_references: [],
+							};
+						}
 					} else {
-						// Bad form
+						// Failed turnstile
 						messageHistory[Number.MAX_SAFE_INTEGER] = {
 							key: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
@@ -269,7 +293,7 @@ export default component$(() => {
 							status: true,
 							content: [
 								{
-									text: 'Something went wrong with the bot verification. Humans, please refresh page. Bots, please go away',
+									text: 'Bot verifcation failed. Humans, please refresh page. Bots, please go away',
 									model_used: null,
 								},
 							],
@@ -277,28 +301,8 @@ export default component$(() => {
 							content_references: [],
 						};
 					}
-				} else {
-					// Failed turnstile
-					messageHistory[Number.MAX_SAFE_INTEGER] = {
-						key: Number.MAX_SAFE_INTEGER,
-						message_id: Number.MAX_SAFE_INTEGER,
-						// Can't compute to a variable otherwise it will return original conv id, not current one
-						conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : 0,
-						content_version: 1,
-						btime: new Date(),
-						role: 'system',
-						status: true,
-						content: [
-							{
-								text: 'Bot verifcation failed. Humans, please refresh page. Bots, please go away',
-								model_used: null,
-							},
-						],
-						content_chips: [],
-						content_references: [],
-					};
-				}
-			}}
+				})
+			}
 			class="flex h-16 w-full flex-row items-center bg-gray-50 p-2 dark:bg-slate-800">
 			<ChatBox />
 			<Submit />
