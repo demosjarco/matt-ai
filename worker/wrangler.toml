@@ -11,9 +11,9 @@ queues.producers = [
 # https://developers.cloudflare.com/queues/platform/limits/#limits
 queues.consumers = [
     # Max per batch, but other limits respect https://developers.cloudflare.com/browser-rendering/platform/limits/
-    { queue = "mattai-deferred-tasks-preview", max_batch_size = 100, dead_letter_queue = "mattai-deferred-tasks-dlq-preview", max_concurrency = 2 },
+    { queue = "mattai-deferred-tasks-preview", max_batch_size = 100, max_batch_timeout = 2, dead_letter_queue = "mattai-deferred-tasks-dlq-preview", max_concurrency = 2 },
     # Just max to terminate WS as fast as possible
-    { queue = "mattai-deferred-tasks-dlq-preview", max_batch_size = 100, max_concurrency = 20 },
+    { queue = "mattai-deferred-tasks-dlq-preview", max_batch_size = 100, max_batch_timeout = 2, max_concurrency = 20 },
 ]
 durable_objects.bindings = [
     { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
@@ -38,8 +38,8 @@ queues.producers = [
     { binding = "DEFERRED_TASKS", queue = "mattai-deferred-tasks" },
 ]
 queues.consumers = [
-    { queue = "mattai-deferred-tasks", max_batch_size = 100, dead_letter_queue = "mattai-deferred-tasks-dlq", max_concurrency = 2 },
-    { queue = "mattai-deferred-tasks-dlq", max_batch_size = 100, max_concurrency = 20 },
+    { queue = "mattai-deferred-tasks", max_batch_size = 100, max_batch_timeout = 2, dead_letter_queue = "mattai-deferred-tasks-dlq", max_concurrency = 2 },
+    { queue = "mattai-deferred-tasks-dlq", max_batch_size = 100, max_batch_timeout = 2, max_concurrency = 20 },
 ]
 durable_objects.bindings = [
     { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
