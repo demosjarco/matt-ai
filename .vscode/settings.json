@@ -6,7 +6,7 @@
 	},
 	"typescript.preferences.importModuleSpecifier": "relative",
 	"typescript.tsdk": "./node_modules/typescript/lib",
-	"github-actions.workflows.pinned.workflows": [".github/workflows/publish-worker.yml"],
+	"github-actions.workflows.pinned.workflows": [".github/workflows/publish-worker.yml", ".github/workflows/nvSplit.yml"],
 	"material-icon-theme.activeIconPack": "qwik",
 	"editor.quickSuggestions": {
 		"strings": "on"
