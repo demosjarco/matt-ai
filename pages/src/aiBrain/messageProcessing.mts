@@ -95,6 +95,7 @@ export class MessageProcessing extends CFBase {
 		modelUsed: IDBMessageContent['model_used'];
 	}> {
 		return {
+			// Provide `false` for longer because `fp16` has some issues with json formatting
 			action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
 			modelUsed: '@cf/meta/llama-2-7b-chat-int8',
 		};
