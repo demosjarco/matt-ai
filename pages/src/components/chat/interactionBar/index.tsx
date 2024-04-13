@@ -84,10 +84,8 @@ export default component$(() => {
 								new Promise<void>((resolve1, reject1) =>
 									messageGuard(message)
 										.then((userMessageGuard) => {
-											console.debug('userMessageGuard', userMessageGuard);
 											// For UI
 											messageHistory[userMessage.key!]!.safe = userMessageGuard;
-											console.debug(0);
 											// Save to db
 											new IDBMessages()
 												.updateMessage({
@@ -121,13 +119,10 @@ export default component$(() => {
 
 										messageActionDecide(message)
 											.then((userMessageAction) => {
-												console.debug(1);
 												// Remove typechat status
 												if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
 													messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'deciding');
 												}
-
-												console.debug(2);
 
 												const actions: Promise<any>[] = [];
 
@@ -135,8 +130,6 @@ export default component$(() => {
 													action: userMessageAction.action,
 													model_used: userMessageAction.modelUsed,
 												};
-
-												console.debug(3);
 
 												// Add to UI
 												messageHistory[aiMessage.key!]!.content.push(actionInsert);
@@ -149,20 +142,15 @@ export default component$(() => {
 													}),
 												);
 
-												console.debug(4);
-
 												// Setup message context
 												if (userMessageAction.action.previousMessageSearch || userMessageAction.action.webSearchTerms) {
 													messageContext[aiMessage.key!] = {};
 												}
 
-												console.debug(5);
-
 												/**
 												 * @todo typechat actions
 												 */
 												if (userMessageAction.action.webSearchTerms) {
-													console.debug(6);
 													// Add web search status
 													(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
 
@@ -176,20 +164,16 @@ export default component$(() => {
 															messageContext[aiMessage.key!]!.webSearchInfo = ddg;
 														}),
 													);
-													console.debug(7);
 												}
 
 												Promise.all(actions)
 													.catch(mainReject)
 													.finally(() => {
-														console.debug(8);
 														// Add typing status
 														(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
-														console.debug(9);
 
 														messageText('@cf/meta/llama-2-7b-chat-fp16', message, messageContext[aiMessage.key!])
 															.then(async (chatResponse) => {
-																console.debug(10);
 																/**
 																 * @todo text generate
 																 */
@@ -199,14 +183,12 @@ export default component$(() => {
 																};
 																// Add to UI
 																messageHistory[aiMessage.key!]!.content.push(composedInsert);
-																console.debug(11);
 
 																for await (const chatResponseChunk of chatResponse) {
 																	composedInsert.text += chatResponseChunk ?? '';
 																	// Add to UI
 																	messageHistory[aiMessage.key!]!.content[messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record)] = composedInsert;
 																}
-																console.debug(12);
 
 																// Remove typing status
 																messageHistory[aiMessage.key!]!.status = true;
