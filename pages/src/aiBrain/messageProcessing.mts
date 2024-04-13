@@ -193,4 +193,20 @@ export class MessageProcessing extends CFBase {
 				.catch(reject);
 		});
 	}
+
+	public imageGenerate(prompt: Parameters<typeof this.image>[0], model?: Parameters<typeof this.image>[1], num_steps?: Parameters<typeof this.image>[2]) {
+		if (model === undefined) {
+			return new Promise<Awaited<ReturnType<typeof this.image>>>((resolve, reject) =>
+				this.image(prompt, '@cf/stabilityai/stable-diffusion-xl-base-1.0', num_steps)
+					.then(resolve)
+					.catch(() =>
+						this.image(prompt, '@cf/bytedance/stable-diffusion-xl-lightning', num_steps)
+							.then(resolve)
+							.catch(() => this.image(prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps).then(resolve).catch(reject)),
+					),
+			);
+		} else {
+			return this.image(prompt, model, num_steps);
+		}
+	}
 }
