@@ -181,13 +181,21 @@ export default component$(() => {
 																	text: '',
 																	model_used: '@cf/meta/llama-2-7b-chat-fp16',
 																};
+
+																const previousText = messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
+																if (previousText >= 0) {
+																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+																} else {
+																	messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																}
+
 																// Add to UI
 																messageHistory[aiMessage.key!]!.content.push(composedInsert);
 
 																for await (const chatResponseChunk of chatResponse) {
 																	composedInsert.text += chatResponseChunk ?? '';
 																	// Add to UI
-																	messageHistory[aiMessage.key!]!.content[messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record)] = composedInsert;
+																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
 																}
 
 																// Remove typing status
