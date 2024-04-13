@@ -1,25 +1,20 @@
-import { component$, useSignal, useTask$, useVisibleTask$ } from '@builder.io/qwik';
-import { useLocation, useNavigate } from '@builder.io/qwik-city';
+import { component$, useContext, useSignal, useTask$, useVisibleTask$ } from '@builder.io/qwik';
+import { useNavigate } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
-import type { IDBConversation } from '../../IDB/schemas/v2';
+import { ConversationsContext } from '../../extras/context';
 import Item from './item';
 
 export default component$(() => {
-	const conversations = useSignal<IDBConversation[]>([]);
+	const conversations = useContext(ConversationsContext);
 
-	useVisibleTask$(async () => {
-		conversations.value = await new IDBConversations().conversations;
+	useVisibleTask$(async ({ track }) => {
+		track(() => conversations.value);
+
+		if (conversations.value.length === 0) conversations.value = await new IDBConversations().conversations;
 	});
 
-	const loc = useLocation();
 	const navigate = useNavigate();
 	const conversationId = useSignal<number>();
-
-	useTask$(({ track }) => {
-		track(() => loc.params['conversationId']);
-
-		conversationId.value = loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined;
-	});
 
 	useTask$(({ track }) => {
 		track(() => conversationId.value);
