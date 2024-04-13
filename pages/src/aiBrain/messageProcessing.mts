@@ -2,6 +2,7 @@ import { Ai, type modelMappings } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import { addMetadata } from 'meta-png';
+import { Buffer } from 'node:buffer';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../extras/base.mjs';
@@ -95,6 +96,7 @@ export class MessageProcessing extends CFBase {
 		modelUsed: IDBMessageContent['model_used'];
 	}> {
 		return {
+			// Provide `false` for longer because `fp16` has some issues with json formatting
 			action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
 			modelUsed: '@cf/meta/llama-2-7b-chat-int8',
 		};
