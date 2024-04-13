@@ -1,9 +1,10 @@
-import { Slot, component$ } from '@builder.io/qwik';
+import { Slot, component$, useContextProvider, useSignal } from '@builder.io/qwik';
 import type { DocumentHead, RequestHandler } from '@builder.io/qwik-city';
 import { routeAction$, routeLoader$, z, zod$ } from '@builder.io/qwik-city';
 import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
+import { ConversationsContext } from '../extras/context';
 import type { ChatFormSubmit, EnvVars } from '../types';
 
 export const useUserUpdateConversation = routeAction$(
@@ -103,6 +104,10 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 };
 
 export default component$(() => {
+	// Setup contexts
+	useContextProvider(ConversationsContext, useSignal([]));
+
+	// UI
 	return (
 		<>
 			<div class="absolute top-0 w-full">
