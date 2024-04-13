@@ -1,13 +1,13 @@
-import { Slot, component$, useContextProvider, useSignal } from '@builder.io/qwik';
+import { Slot, component$, useContextProvider, useSignal, useStore } from '@builder.io/qwik';
 import type { DocumentHead, RequestHandler } from '@builder.io/qwik-city';
-import { routeAction$, routeLoader$, z, zod$ } from '@builder.io/qwik-city';
+import { routeAction$, routeLoader$, server$, z, zod$ } from '@builder.io/qwik-city';
 import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
-import { ConversationsContext } from '../extras/context';
+import { ConversationsContext, MessagesContext } from '../extras/context';
 import type { ChatFormSubmit, EnvVars } from '../types';
 
-export const useUserUpdateConversation = routeAction$(
+export const useFormSubmissionWithTurnstile = routeAction$(
 	(data, { params, fail, status }) => {
 		if (status() >= 200 && status() < 300) {
 			return {
@@ -27,6 +27,10 @@ export const useUserUpdateConversation = routeAction$(
 
 export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
+});
+
+export const serverParams = server$(function () {
+	return this.params;
 });
 
 export const head: DocumentHead = {
@@ -106,6 +110,7 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 export default component$(() => {
 	// Setup contexts
 	useContextProvider(ConversationsContext, useSignal([]));
+	useContextProvider(MessagesContext, useStore({}, { deep: true }));
 
 	// UI
 	return (
