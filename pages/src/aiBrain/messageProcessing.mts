@@ -2,6 +2,7 @@ import { Ai, type modelMappings } from '@cloudflare/ai';
 import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import { addMetadata } from 'meta-png';
+import { Buffer } from 'node:buffer';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../extras/base.mjs';
