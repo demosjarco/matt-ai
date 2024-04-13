@@ -88,6 +88,16 @@ export class MessageProcessing extends CFBase {
 		});
 	}
 
+	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
+		action: MessageAction;
+		modelUsed: IDBMessageContent['model_used'];
+	}> {
+		return {
+			action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
+			modelUsed: '@cf/meta/llama-2-7b-chat-int8',
+		};
+	}
+
 	public ddg(searchTerms: NonNullable<MessageAction['webSearchTerms']>) {
 		const ddgApi = new URL('https://api.duckduckgo.com');
 		ddgApi.searchParams.set('format', 'json');
@@ -158,15 +168,5 @@ export class MessageProcessing extends CFBase {
 			// Stop processing response all together
 			if (streamError) break;
 		}
-	}
-
-	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
-		action: MessageAction;
-		modelUsed: IDBMessageContent['model_used'];
-	}> {
-		return {
-			action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
-			modelUsed: '@cf/meta/llama-2-7b-chat-int8',
-		};
 	}
 }
