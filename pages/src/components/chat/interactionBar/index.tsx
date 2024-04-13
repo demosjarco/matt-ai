@@ -178,7 +178,7 @@ export default component$(() => {
 												Promise.all(actions)
 													.catch(mainReject)
 													.finally(() => {
-														const finalActions: Promise<any>[] = [
+														const finalActions: Promise<void>[] = [
 															// Text write
 															new Promise<void>((resolve, reject) => {
 																// Add typing status
