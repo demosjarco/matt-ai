@@ -6,11 +6,6 @@ import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
 import type { ChatFormSubmit, EnvVars } from '../types';
 
-export const useConversationId = routeLoader$(({ params }) => {
-	const conversationId = Number(params['conversationId']);
-	return isNaN(conversationId) ? undefined : conversationId;
-});
-
 export const useUserUpdateConversation = routeAction$(
 	(data, { params, fail, status }) => {
 		if (status() >= 200 && status() < 300) {
