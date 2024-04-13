@@ -194,6 +194,10 @@ export default component$(() => {
 																}
 																console.debug('chatResponseChunk', 'done');
 
+																// Cleanup whitespace
+																composedInsert.text = composedInsert.text?.trim();
+																messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+
 																// Remove typing status
 																messageHistory[aiMessage.key!]!.status = true;
 
