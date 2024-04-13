@@ -7,15 +7,20 @@ import Item from './item';
 export default component$(() => {
 	const conversations = useContext(ConversationsContext);
 
-	useVisibleTask$(async ({ track }) => {
-		track(() => conversations.value);
-
+	// Initial load
+	useVisibleTask$(async () => {
 		if (conversations.value.length === 0) conversations.value = await new IDBConversations().conversations;
 	});
+
+	// Track for UI updates
+	/*useTask$(({ track }) => {
+		track(() => conversations.value);
+	});*/
 
 	const navigate = useNavigate();
 	const conversationId = useSignal<number>();
 
+	// Fake navigation
 	useTask$(({ track }) => {
 		track(() => conversationId.value);
 
