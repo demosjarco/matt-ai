@@ -1,5 +1,5 @@
-import { $, component$, useSignal, useStore, useTask$, type Signal } from '@builder.io/qwik';
-import { Form, server$ } from '@builder.io/qwik-city';
+import { $, component$, useSignal, useStore, useTask$ } from '@builder.io/qwik';
+import { Form, server$, useLocation } from '@builder.io/qwik-city';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
@@ -23,7 +23,9 @@ const messageText = server$(async function* (...args: Parameters<MessageProcessi
 	}
 });
 
-export default component$((props: { conversationId: Signal<number | undefined>; messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
+export default component$((props: { messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
+	const loc = useLocation();
+
 	const formRef = useSignal<HTMLFormElement>();
 	const createConversation = useUserUpdateConversation();
 	const messageContext = useStore<MessageContext>({}, { deep: true });
@@ -45,7 +47,8 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 				// Can't `Promise.all()` `saveMessage()` because race condition on auto increment key
 				new IDBMessages()
 					.saveMessage({
-						conversation_id: props.conversationId.value,
+						// Can't compute to a variable otherwise it will return original conv id, not current one
+						conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined,
 						role: 'user',
 						status: true,
 						content: [
@@ -61,7 +64,8 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 
 						new IDBMessages()
 							.saveMessage({
-								conversation_id: props.conversationId.value,
+								// Can't compute to a variable otherwise it will return original conv id, not current one
+								conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined,
 								role: 'assistant',
 								status: false,
 							})
@@ -224,7 +228,6 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 							sendMessage(createConversation.value.sanitizedMessage)
 								.then((message) => {
 									window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
-									props.conversationId.value = message.conversation_id;
 									resolve();
 								})
 								.catch(reject);
@@ -233,7 +236,8 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 							props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 								key: Number.MAX_SAFE_INTEGER,
 								message_id: Number.MAX_SAFE_INTEGER,
-								conversation_id: props.conversationId.value ?? 0,
+								// Can't compute to a variable otherwise it will return original conv id, not current one
+								conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined ?? 0,
 								content_version: 1,
 								btime: new Date(),
 								role: 'system',
@@ -254,7 +258,8 @@ export default component$((props: { conversationId: Signal<number | undefined>; 
 						props.messageHistory[Number.MAX_SAFE_INTEGER] = {
 							key: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
-							conversation_id: props.conversationId.value ?? 0,
+							// Can't compute to a variable otherwise it will return original conv id, not current one
+							conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined ?? 0,
 							content_version: 1,
 							btime: new Date(),
 							role: 'system',
