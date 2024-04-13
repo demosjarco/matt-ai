@@ -11,6 +11,8 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 		track(() => divRef.value);
 		track(() => pRef.value);
 
+		console.debug('TextElement', props.text);
+
 		if (props.text) {
 			if (divRef.value) {
 				try {
