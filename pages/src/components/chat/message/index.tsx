@@ -19,7 +19,7 @@ export default component$((props: { message: IDBMessage }) => {
 							<span class="text-sm font-semibold text-gray-900 dark:text-white">{props.message.role}</span>
 							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(navigator.language || navigator.languages[0])}</span>
 						</div>
-						<Content message={props.message} />
+						<Content key={`messageContent-${props.message.key}`} message={props.message} />
 						{isMe ? undefined : <span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400`}>{Array.isArray(props.message.status) ? props.message.status.join(', ') : props.message.status ? 'Done' : 'Received'}</span>}
 					</div>
 				</div>
