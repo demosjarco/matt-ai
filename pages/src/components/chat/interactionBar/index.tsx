@@ -172,19 +172,22 @@ export default component$(() => {
 														// Add typing status
 														(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
 
-														messageText('@cf/meta/llama-2-7b-chat-fp16', message, messageContext[aiMessage.key!])
+														const model: Parameters<typeof messageText>[0] = '@cf/meta/llama-2-7b-chat-fp16';
+
+														messageText(model, message, messageContext[aiMessage.key!])
 															.then(async (chatResponse) => {
 																/**
 																 * @todo text generate
 																 */
 																const composedInsert: IDBMessageContent = {
 																	text: '',
-																	model_used: '@cf/meta/llama-2-7b-chat-fp16',
+																	model_used: model,
 																};
 
 																// Add to UI
 																// push() returns new length and since it's the last item, just subtract 1
 																const previousText = messageHistory[aiMessage.key!]!.content.push(composedInsert) - 1;
+																console.debug('ui message', 'before', messageHistory[aiMessage.key!]!.content[previousText]);
 
 																for await (const chatResponseChunk of chatResponse) {
 																	composedInsert.text += chatResponseChunk ?? '';
@@ -192,7 +195,7 @@ export default component$(() => {
 																	// Add to UI
 																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
 																}
-																console.debug('chatResponseChunk', 'done');
+																console.debug('ui message', 'after', messageHistory[aiMessage.key!]!.content[previousText]);
 
 																// Cleanup whitespace
 																composedInsert.text = composedInsert.text?.trim();
