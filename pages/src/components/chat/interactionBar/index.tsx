@@ -1,11 +1,11 @@
-import { $, component$, useContext, useSignal, useStore, useTask$ } from '@builder.io/qwik';
+import { $, component$, useContext, useStore, useTask$ } from '@builder.io/qwik';
 import { Form, server$, useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
-import { ConversationsContext } from '../../../extras/context';
-import { useUserUpdateConversation } from '../../../routes/layout';
+import { ConversationsContext, MessagesContext } from '../../../extras/context';
+import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
@@ -25,18 +25,16 @@ const messageText = server$(async function* (...args: Parameters<MessageProcessi
 	}
 });
 
-export default component$((props: { messageHistory: Record<NonNullable<IDBMessage['key']>, IDBMessage> }) => {
+export default component$(() => {
 	const loc = useLocation();
-	const conversations = useContext(ConversationsContext);
+	const submitMessageWithTurnstile = useFormSubmissionWithTurnstile();
 
-	const formRef = useSignal<HTMLFormElement>();
-	const submitMessageWithTurnstile = useUserUpdateConversation();
+	const conversations = useContext(ConversationsContext);
+	const messageHistory = useContext(MessagesContext);
+
 	const messageContext = useStore<MessageContext>({}, { deep: true });
 
-	useTask$(({ track, cleanup }) => {
-		track(() => formRef.value);
-
-		// Prevent memory leak
+	useTask$(({ cleanup }) => {
 		cleanup(() => {
 			Object.keys(messageContext).forEach((message) => {
 				delete messageContext[parseInt(message)];
@@ -45,8 +43,8 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 	});
 
 	const sendMessage = $(
-		(message: string) =>
-			new Promise<IDBMessage>((mainResolve, mainReject) =>
+		(message: string, cb: (conversation_id: IDBMessage['conversation_id']) => void) =>
+			new Promise<void>((mainResolve, mainReject) =>
 				// Can't `Promise.all()` `saveMessage()` because race condition on auto increment key
 				new IDBMessages()
 					.saveMessage({
@@ -62,8 +60,8 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 						],
 					})
 					.then((userMessage) => {
-						props.messageHistory[userMessage.key!] = userMessage;
-						mainResolve(userMessage);
+						messageHistory[userMessage.key!] = userMessage;
+						cb(userMessage.conversation_id);
 
 						Promise.all([
 							new IDBConversations().getConversation({ key: userMessage.conversation_id }),
@@ -79,142 +77,170 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 								if (conversations.value.indexOf(newConversation) < 0) conversations.value.unshift(newConversation);
 
 								// Add placeholder to UI
-								props.messageHistory[aiMessage.key!] = aiMessage;
-								props.messageHistory[aiMessage.key!]!.status = ['filtering'];
+								messageHistory[aiMessage.key!] = aiMessage;
+								messageHistory[aiMessage.key!]!.status = ['filtering'];
 
-								let continueHumanMessage: boolean = false;
 								// Check human message
-								messageGuard(message)
-									.then(async (userMessageGuard) => {
-										// For process chain
-										continueHumanMessage = userMessageGuard;
-										// For UI
-										props.messageHistory[userMessage.key!]!.safe = userMessageGuard;
-										// Save to db
-										await new IDBMessages().updateMessage({
-											key: userMessage.key,
-											safe: userMessageGuard,
-										});
-									})
-									.catch(async (reason) => {
-										// For process chain
-										continueHumanMessage = true;
-										// For UI
-										props.messageHistory[userMessage.key!]!.safe = null;
-										// Save to db
-										await new IDBMessages().updateMessage({
-											key: userMessage.key,
-											safe: null,
-										});
-										console.warn('llamaguard', null, reason);
-									})
-									.finally(async () => {
-										// Remove guard status
-										if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
-											props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'filtering'.toLowerCase());
-										}
+								new Promise<void>((resolve1, reject1) =>
+									messageGuard(message)
+										.then((userMessageGuard) => {
+											console.debug('userMessageGuard', userMessageGuard);
+											// For UI
+											messageHistory[userMessage.key!]!.safe = userMessageGuard;
+											console.debug(0);
+											// Save to db
+											new IDBMessages()
+												.updateMessage({
+													key: userMessage.key,
+													safe: userMessageGuard,
+													status: messageHistory[aiMessage.key!]!.status,
+												})
+												.then(() => (userMessageGuard ? resolve1() : reject1()))
+												.catch(mainReject);
+										})
+										.catch((reason) => {
+											console.warn('llamaguard', null, reason);
 
-										if (continueHumanMessage) {
-											// Add typechat status
-											(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('deciding');
+											// For UI
+											messageHistory[userMessage.key!]!.safe = null;
+											// Save to db
+											new IDBMessages()
+												.updateMessage({
+													key: userMessage.key,
+													safe: null,
+													status: messageHistory[aiMessage.key!]!.status,
+												})
+												.then(() => resolve1())
+												.catch(mainReject);
+										}),
+								)
+									// llamaguard pass
+									.then(() => {
+										// Add typechat status
+										(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('deciding');
 
-											messageActionDecide(message)
-												.then(async (userMessageAction) => {
-													// Remove typechat status
-													if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
-														props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'deciding'.toLowerCase());
-													}
+										messageActionDecide(message)
+											.then((userMessageAction) => {
+												console.debug(1);
+												// Remove typechat status
+												if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
+													messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'deciding');
+												}
 
-													const actions: Promise<any>[] = [];
+												console.debug(2);
 
-													const actionInsert: IDBMessageContent = {
-														action: userMessageAction.action,
-														model_used: userMessageAction.modelUsed,
-													};
+												const actions: Promise<any>[] = [];
 
-													// Add to UI
-													props.messageHistory[aiMessage.key!]!.content.push(actionInsert);
-													// Add to storage
+												const actionInsert: IDBMessageContent = {
+													action: userMessageAction.action,
+													model_used: userMessageAction.modelUsed,
+												};
+
+												console.debug(3);
+
+												// Add to UI
+												messageHistory[aiMessage.key!]!.content.push(actionInsert);
+												// Add to storage
+												actions.push(
+													new IDBMessages().updateMessage({
+														key: aiMessage.key!,
+														content: [actionInsert],
+														status: messageHistory[aiMessage.key!]!.status,
+													}),
+												);
+
+												console.debug(4);
+
+												// Setup message context
+												if (userMessageAction.action.previousMessageSearch || userMessageAction.action.webSearchTerms) {
+													messageContext[aiMessage.key!] = {};
+												}
+
+												console.debug(5);
+
+												/**
+												 * @todo typechat actions
+												 */
+												if (userMessageAction.action.webSearchTerms) {
+													console.debug(6);
+													// Add web search status
+													(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
+
 													actions.push(
-														new IDBMessages().updateMessage({
-															key: aiMessage.key!,
-															content: [actionInsert],
+														messageActionDdg(userMessageAction.action.webSearchTerms).then((ddg) => {
+															// Remove web search status
+															if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
+																messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'webSearching');
+															}
+
+															messageContext[aiMessage.key!]!.webSearchInfo = ddg;
 														}),
 													);
+													console.debug(7);
+												}
 
-													// Setup message context
-													if (userMessageAction.action.previousMessageSearch || userMessageAction.action.webSearchTerms) {
-														messageContext[aiMessage.key!] = {};
-													}
+												Promise.all(actions)
+													.catch(mainReject)
+													.finally(() => {
+														console.debug(8);
+														// Add typing status
+														(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
+														console.debug(9);
 
-													/**
-													 * @todo typechat actions
-													 */
-													if (userMessageAction.action.webSearchTerms) {
-														// Add web search status
-														(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
+														messageText('@cf/meta/llama-2-7b-chat-fp16', message, messageContext[aiMessage.key!])
+															.then(async (chatResponse) => {
+																console.debug(10);
+																/**
+																 * @todo text generate
+																 */
+																const composedInsert: IDBMessageContent = {
+																	text: '',
+																	model_used: '@cf/meta/llama-2-7b-chat-fp16',
+																};
+																// Add to UI
+																messageHistory[aiMessage.key!]!.content.push(composedInsert);
+																console.debug(11);
 
-														actions.push(
-															messageActionDdg(userMessageAction.action.webSearchTerms).then((ddg) => {
-																// Remove web search status
-																if (Array.isArray(props.messageHistory[aiMessage.key!]!.status)) {
-																	props.messageHistory[aiMessage.key!]!.status = (props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str.toLowerCase() !== 'webSearching'.toLowerCase());
-																}
-
-																messageContext[aiMessage.key!]!.webSearchInfo = ddg;
-															}),
-														);
-													}
-
-													Promise.all(actions)
-														.catch(mainReject)
-														.finally(() => {
-															// Add typing status
-															(props.messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
-
-															messageText('@cf/meta/llama-2-7b-chat-fp16', message, messageContext[aiMessage.key!])
-																.then(async (chatResponse) => {
-																	/**
-																	 * @todo text generate
-																	 */
-																	const composedInsert: IDBMessageContent = {
-																		text: '',
-																		model_used: '@cf/meta/llama-2-7b-chat-fp16',
-																	};
+																for await (const chatResponseChunk of chatResponse) {
+																	composedInsert.text += chatResponseChunk ?? '';
 																	// Add to UI
-																	const previousText = props.messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
-																	if (previousText >= 0) {
-																		props.messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-																	} else {
-																		props.messageHistory[aiMessage.key!]!.content.push(composedInsert);
-																	}
+																	messageHistory[aiMessage.key!]!.content[messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record)] = composedInsert;
+																}
+																console.debug(12);
 
-																	for await (const chatResponseChunk of chatResponse) {
-																		composedInsert.text += chatResponseChunk ?? '';
-																		// Add to UI
-																		props.messageHistory[aiMessage.key!]!.content[props.messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record)] = composedInsert;
-																	}
+																// Remove typing status
+																messageHistory[aiMessage.key!]!.status = true;
 
-																	// Remove typing status
-																	props.messageHistory[aiMessage.key!]!.status = true;
-
-																	// Add to storage
-																	await new IDBMessages().updateMessage({
+																// Add to storage
+																new IDBMessages()
+																	.updateMessage({
 																		key: aiMessage.key!,
 																		content: [composedInsert],
 																		status: true,
-																	});
-																})
-																.catch(mainReject);
-														});
-												})
-												.catch(mainReject);
-										} else {
-											props.messageHistory[aiMessage.key!]!.status = true;
-											await new IDBMessages().updateMessage({
+																	})
+																	.then(() => mainResolve())
+																	.catch(mainReject);
+															})
+															.catch(mainReject);
+													});
+											})
+											.catch(mainReject);
+									})
+									// llamaguard fail
+									.catch(() => {
+										messageHistory[aiMessage.key!]!.status = true;
+										new IDBMessages()
+											.updateMessage({
 												key: aiMessage.key,
 												status: true,
-											});
+											})
+											.then(() => mainResolve())
+											.catch(mainReject);
+									})
+									.finally(() => {
+										// Remove guard status
+										if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
+											messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'filtering');
 										}
 									});
 							})
@@ -227,43 +253,16 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 	return (
 		<Form
 			action={submitMessageWithTurnstile}
-			ref={formRef}
 			spaReset={true}
-			onSubmitCompleted$={() =>
-				new Promise<void>((resolve, reject) => {
-					if (submitMessageWithTurnstile.status && submitMessageWithTurnstile.status >= 200 && submitMessageWithTurnstile.status < 300) {
-						if (submitMessageWithTurnstile.value && submitMessageWithTurnstile.value.sanitizedMessage) {
-							sendMessage(submitMessageWithTurnstile.value.sanitizedMessage)
-								.then((message) => {
-									window.history.replaceState({}, '', `/${['c', message.conversation_id].join('/')}`);
-									resolve();
-								})
-								.catch(reject);
-						} else {
-							// Bad form
-							props.messageHistory[Number.MAX_SAFE_INTEGER] = {
-								key: Number.MAX_SAFE_INTEGER,
-								message_id: Number.MAX_SAFE_INTEGER,
-								// Can't compute to a variable otherwise it will return original conv id, not current one
-								conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : 0,
-								content_version: 1,
-								btime: new Date(),
-								role: 'system',
-								status: true,
-								content: [
-									{
-										text: 'Something went wrong with the bot verification. Humans, please refresh page. Bots, please go away',
-										model_used: null,
-									},
-								],
-								content_chips: [],
-								content_references: [],
-							};
-							reject();
-						}
+			onSubmitCompleted$={async () => {
+				if (submitMessageWithTurnstile.status && submitMessageWithTurnstile.status >= 200 && submitMessageWithTurnstile.status < 300) {
+					if (submitMessageWithTurnstile.value && submitMessageWithTurnstile.value.sanitizedMessage) {
+						await sendMessage(submitMessageWithTurnstile.value.sanitizedMessage, (conversation_id) => {
+							window.history.replaceState({}, '', `/${['c', conversation_id].join('/')}`);
+						});
 					} else {
-						// Failed turnstile
-						props.messageHistory[Number.MAX_SAFE_INTEGER] = {
+						// Bad form
+						messageHistory[Number.MAX_SAFE_INTEGER] = {
 							key: Number.MAX_SAFE_INTEGER,
 							message_id: Number.MAX_SAFE_INTEGER,
 							// Can't compute to a variable otherwise it will return original conv id, not current one
@@ -274,17 +273,36 @@ export default component$((props: { messageHistory: Record<NonNullable<IDBMessag
 							status: true,
 							content: [
 								{
-									text: 'Bot verifcation failed. Humans, please refresh page. Bots, please go away',
+									text: 'Something went wrong with the bot verification. Humans, please refresh page. Bots, please go away',
 									model_used: null,
 								},
 							],
 							content_chips: [],
 							content_references: [],
 						};
-						reject();
 					}
-				})
-			}
+				} else {
+					// Failed turnstile
+					messageHistory[Number.MAX_SAFE_INTEGER] = {
+						key: Number.MAX_SAFE_INTEGER,
+						message_id: Number.MAX_SAFE_INTEGER,
+						// Can't compute to a variable otherwise it will return original conv id, not current one
+						conversation_id: loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : 0,
+						content_version: 1,
+						btime: new Date(),
+						role: 'system',
+						status: true,
+						content: [
+							{
+								text: 'Bot verifcation failed. Humans, please refresh page. Bots, please go away',
+								model_used: null,
+							},
+						],
+						content_chips: [],
+						content_references: [],
+					};
+				}
+			}}
 			class="flex h-16 w-full flex-row items-center bg-gray-50 p-2 dark:bg-slate-800">
 			<ChatBox />
 			<Submit />

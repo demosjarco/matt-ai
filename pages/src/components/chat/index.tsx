@@ -1,39 +1,79 @@
-import { component$, useStore, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useContext, useTask$, useVisibleTask$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
-import type { IDBMessage } from '../../IDB/schemas/v2';
+import { MessagesContext } from '../../extras/context';
+import { serverParams } from '../../routes/layout';
 import InteractionBar from './interactionBar';
 import Message from './message';
 
 export default component$(() => {
 	const loc = useLocation();
-	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
+	const messageHistory = useContext(MessagesContext);
 
+	// Initial load
 	useVisibleTask$(async ({ track, cleanup }) => {
-		track(() => loc.params['conversationId']);
-		const conversationId = loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined;
+		track(() => loc.params);
+		let conversationId: number | undefined = undefined;
+		if (loc.params['conversationId']) {
+			conversationId = parseInt(loc.params['conversationId']);
+		} else {
+			const params = await serverParams();
+
+			if (params['conversationId']) {
+				conversationId = parseInt(params['conversationId']);
+			}
+		}
 
 		if (conversationId) {
-			new IDBConversations().updateConversation({
-				key: conversationId,
-				atime: new Date(),
-			});
+			const savedMessages = await new IDBMessages().getMessagesForConversation(conversationId);
 
-			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId);
-			console.debug('Found', existingMessages.length, 'messages for conversation id', conversationId);
-			existingMessages.forEach((existingMessage) => {
-				messageHistory[existingMessage.key!] = existingMessage;
-			});
+			console.debug('Found', savedMessages.length, 'messages for conversation id', conversationId);
+
+			const potentialPromise: ReturnType<IDBConversations['updateConversation']>[] = [];
+			if (savedMessages.length) {
+				potentialPromise.push(
+					new IDBConversations().updateConversation({
+						key: conversationId,
+						atime: new Date(),
+					}),
+				);
+			}
+
+			// Turn into promise to not block
+			await Promise.all([
+				...potentialPromise,
+				new Promise<void>(() =>
+					savedMessages.forEach((savedMessage) => {
+						// Only add if doesn't exist
+						if (!messageHistory[savedMessage.key!]) messageHistory[savedMessage.key!] = savedMessage;
+					}),
+				),
+			]);
 		} else {
-			console.warn('conversation id', conversationId);
+			console.warn('conversation id', conversationId, 'empty');
 		}
 
 		cleanup(() => {
-			Object.keys(messageHistory).forEach((message) => {
-				delete messageHistory[parseInt(message)];
-			});
+			const messageKeys = Object.keys(messageHistory);
+
+			// Only cleanup if there are items
+			if (messageKeys.length > 0) {
+				const newConversationId = loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined;
+
+				// Only cleanup if conversation is different
+				if (messageHistory[parseInt(messageKeys[0]!)]!.conversation_id !== newConversationId) {
+					Object.keys(messageHistory).forEach((message) => {
+						delete messageHistory[parseInt(message)];
+					});
+				}
+			}
 		});
+	});
+
+	// Out of component updates
+	useTask$(({ track }) => {
+		track(() => messageHistory);
 	});
 
 	return (
@@ -48,7 +88,7 @@ export default component$(() => {
 						</div>
 					</div>
 				</div>
-				<InteractionBar messageHistory={messageHistory} />
+				<InteractionBar />
 			</div>
 		</>
 	);
