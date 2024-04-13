@@ -12,6 +12,7 @@ export default component$<{ id: IDBMessage['key'] }>((props) => {
 
 	const isMe = message.role === 'user' ? true : false;
 
+	const actionIndex = message.content.findIndex((record) => 'action' in record);
 	const textContentIndex = message.content.findIndex((record) => 'text' in record);
 	const imageContentIndex = message.content.findIndex((record) => 'image' in record);
 	const cardContentIndex = message.content.findIndex((record) => 'card' in record);
