@@ -1,4 +1,4 @@
-import { component$, useContext, useTask$, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useContext, useVisibleTask$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
@@ -69,11 +69,6 @@ export default component$(() => {
 				}
 			}
 		});
-	});
-
-	// Out of component updates
-	useTask$(({ track }) => {
-		track(() => messageHistory);
 	});
 
 	return (
