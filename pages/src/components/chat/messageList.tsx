@@ -54,12 +54,21 @@ export default component$(() => {
 			console.warn('conversation id', conversationId, 'empty');
 		}
 
-		cleanup(() => {
+		cleanup(async () => {
 			const messageKeys = Object.keys(messageHistory);
 
 			// Only cleanup if there are items
 			if (messageKeys.length > 0) {
-				const newConversationId = loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined;
+				let newConversationId: number | undefined = undefined;
+				if (loc.params['conversationId']) {
+					newConversationId = parseInt(loc.params['conversationId']);
+				} else {
+					const params = await serverParams();
+
+					if (params['conversationId']) {
+						newConversationId = parseInt(params['conversationId']);
+					}
+				}
 
 				// Only cleanup if conversation is different
 				if (messageHistory[parseInt(messageKeys[0]!)]!.conversation_id !== newConversationId) {
