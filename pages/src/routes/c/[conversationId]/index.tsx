@@ -1,14 +1,11 @@
 import { component$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import Chat from '../../../components/chat';
-import { useConversationId } from '../../layout';
 
 export default component$(() => {
-	const conversationId = useConversationId();
-
 	return (
 		<>
-			<Chat initialConversationId={conversationId.value} />
+			<Chat />
 		</>
 	);
 });

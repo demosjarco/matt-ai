@@ -1,4 +1,4 @@
-import { component$, useSignal, useStore, useTask$, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useStore, useVisibleTask$ } from '@builder.io/qwik';
 import { useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../IDB/conversations';
 import { IDBMessages } from '../../IDB/messages';
@@ -6,33 +6,27 @@ import type { IDBMessage } from '../../IDB/schemas/v2';
 import InteractionBar from './interactionBar';
 import Message from './message';
 
-export default component$((props: { initialConversationId?: number }) => {
+export default component$(() => {
 	const loc = useLocation();
-	const conversationId = useSignal<number | undefined>(props.initialConversationId);
 	const messageHistory = useStore<Record<NonNullable<IDBMessage['key']>, IDBMessage>>({}, { deep: true });
 
-	useTask$(({ track }) => {
-		track(() => loc.params['conversationId']);
-
-		conversationId.value = parseInt(loc.params['conversationId']!);
-	});
-
 	useVisibleTask$(async ({ track, cleanup }) => {
-		track(() => conversationId.value);
+		track(() => loc.params['conversationId']);
+		const conversationId = loc.params['conversationId'] ? parseInt(loc.params['conversationId']) : undefined;
 
-		if (conversationId.value) {
+		if (conversationId) {
 			new IDBConversations().updateConversation({
-				key: conversationId.value,
+				key: conversationId,
 				atime: new Date(),
 			});
 
-			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId.value);
-			console.debug('Found', existingMessages.length, 'messages for conversation id', conversationId.value);
+			const existingMessages = await new IDBMessages().getMessagesForConversation(conversationId);
+			console.debug('Found', existingMessages.length, 'messages for conversation id', conversationId);
 			existingMessages.forEach((existingMessage) => {
 				messageHistory[existingMessage.key!] = existingMessage;
 			});
 		} else {
-			console.warn('conversation id', conversationId.value);
+			console.warn('conversation id', conversationId);
 		}
 
 		cleanup(() => {
@@ -54,7 +48,7 @@ export default component$((props: { initialConversationId?: number }) => {
 						</div>
 					</div>
 				</div>
-				<InteractionBar conversationId={conversationId} messageHistory={messageHistory} />
+				<InteractionBar messageHistory={messageHistory} />
 			</div>
 		</>
 	);
