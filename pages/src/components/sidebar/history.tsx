@@ -16,6 +16,7 @@ export default component$(() => {
 	const navigate = useNavigate();
 	const conversationId = useSignal<number>();
 
+	// Fake navigation
 	useTask$(({ track }) => {
 		track(() => conversationId.value);
 
