@@ -183,19 +183,12 @@ export default component$(() => {
 																};
 
 																// Add to UI
-																let previousText = messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
-																console.debug('previousText', 'before', previousText);
-																if (previousText > -1) {
-																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-																} else {
-																	const length = messageHistory[aiMessage.key!]!.content.push(composedInsert);
-																	previousText = length - 1;
-																}
-																console.debug('previousText', 'after', previousText);
+																// push() returns new length and since it's the last item, just subtract 1
+																const previousText = messageHistory[aiMessage.key!]!.content.push(composedInsert) - 1;
 
 																for await (const chatResponseChunk of chatResponse) {
-																	console.debug('chatResponseChunk', chatResponseChunk);
 																	composedInsert.text += chatResponseChunk ?? '';
+																	console.debug('chatResponseChunk', composedInsert.text);
 																	// Add to UI
 																	messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
 																}
