@@ -13,6 +13,7 @@ export default component$(() => {
 	// Initial load
 	useVisibleTask$(async ({ track, cleanup }) => {
 		track(() => loc.params);
+
 		let conversationId: number | undefined = undefined;
 		if (loc.params['conversationId']) {
 			conversationId = parseInt(loc.params['conversationId']);
