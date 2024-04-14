@@ -1,13 +1,15 @@
 import { component$, useSignal, useTask$ } from '@builder.io/qwik';
 import DOMPurify from 'dompurify';
 import { Marked } from 'marked';
-import admonition from 'marked-admonition-extension';
 import markedAlert from 'marked-alert';
-import markedBidi from 'marked-bidi';
-import extendedTables from 'marked-extended-tables';
 import markedFootnote from 'marked-footnote';
 import type { MessageAction } from '../../../../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
+
+// @ts-expect-error
+import markedBidi from 'marked-bidi';
+// @ts-expect-error
+import extendedTables from 'marked-extended-tables';
 
 export default component$((props: { text?: IDBMessageContentText; debug?: MessageAction }) => {
 	const divRef = useSignal<HTMLDivElement>();
@@ -23,17 +25,15 @@ export default component$((props: { text?: IDBMessageContentText; debug?: Messag
 		if (props.text) {
 			if (divRef.value) {
 				try {
-					const markdownHtml = await new Marked()
-						.use(
-							admonition(),
-							markedAlert(),
-							markedBidi(),
-							extendedTables(),
-							markedFootnote({
-								refMarkers: true,
-							}),
-						)
-						.parse(props.text, { async: true, breaks: true });
+					const markdownHtml = await new Marked({
+						async: true,
+						breaks: true,
+					})
+						.use(markedAlert())
+						.use(markedBidi())
+						.use(extendedTables())
+						.use(markedFootnote())
+						.parse(props.text);
 					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
 				} catch (error) {
 					console.error('markdown error', error);
