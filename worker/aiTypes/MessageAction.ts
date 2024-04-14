@@ -8,7 +8,7 @@ export interface MessageAction {
 		userRequestLanguage: LanguagesSupported | null;
 		preferredResponseLanguage: LanguagesSupported | null;
 	} | null;
-	previousMessageSearch: string[] | null;
+	previousMessageKeywordSearch: string[] | null;
 	webSearchTerms: string[] | null;
 	imageGenerate: string | null;
 }

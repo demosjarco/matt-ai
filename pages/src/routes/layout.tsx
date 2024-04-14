@@ -28,6 +28,9 @@ export const useFormSubmissionWithTurnstile = routeAction$(
 export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
 });
+export const serverNodeEnv = server$(function () {
+	return (this.platform.env as EnvVars).NODE_ENV;
+});
 
 export const serverParams = server$(function () {
 	return this.params;
