@@ -188,7 +188,7 @@ export default component$(() => {
 																// Add typing status
 																(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
 
-																const model: Parameters<typeof messageText>[0] = '@cf/meta/llama-2-7b-chat-fp16';
+																const model: Parameters<typeof messageText>[0] = '@hf/thebloke/llama-2-13b-chat-awq';
 
 																messageText(model, message, messageContext[aiMessage.key!])
 																	.then(async (chatResponse) => {
