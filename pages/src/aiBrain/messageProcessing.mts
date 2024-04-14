@@ -1,12 +1,13 @@
 import { Ai, type modelMappings } from '@cloudflare/ai';
-import type { AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
+import type { AiTextGenerationInput, AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
 import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
+import type Worker from '../../../worker/src/index';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../extras/base.mjs';
-import type { MessageContextValue } from '../types';
+import type { MessageActionTaken, MessageContextValue } from '../types';
 
 export class MessageProcessing extends CFBase {
 	static isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
@@ -91,15 +92,35 @@ export class MessageProcessing extends CFBase {
 		});
 	}
 
-	public async actionDecide(message: RoleScopedChatInput['content']): Promise<{
-		action: MessageAction;
-		modelUsed: IDBMessageContent['model_used'];
-	}> {
-		return {
-			// Provide `false` for longer because `fp16` has some issues with json formatting
-			action: await this.helpers.c.env.BACKEND_WORKER.messageAction(message, false),
-			modelUsed: '@cf/meta/llama-2-7b-chat-int8',
-		};
+	public async actionDecide(message: RoleScopedChatInput['content']) {
+		// Uncomment below to test
+		// const testingModels: IDBMessageContent['model_used'][] = ['@cf/mistral/mistral-7b-instruct-v0.1', '@cf/tiiuae/falcon-7b-instruct', '@hf/google/gemma-7b-it', '@hf/thebloke/mistral-7b-instruct-v0.1-awq', '@hf/mistralai/mistral-7b-instruct-v0.2'];
+		// await Promise.allSettled(testingModels.map((model) => this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)).then((promises) => promises.map((promise) => console.debug(testingModels[promises.indexOf(promise)], promise.status === 'fulfilled' ? promise.value : promise.reason)));
+
+		/**
+		 * Use instruct models only
+		 *
+		 * @param `@cf/mistral/mistral-7b-instruct-v0.1` - @todo had outage at the time
+		 * @param `@cf/tiiuae/falcon-7b-instruct` - fails to format in JSON properly
+		 * @param `@hf/google/gemma-7b-it` - Good, but conservate and ends up too vague to be useful at times
+		 * @param `@hf/thebloke/mistral-7b-instruct-v0.1-awq` - what are you even doing?
+		 * @param `@hf/mistralai/mistral-7b-instruct-v0.2` - Perfect so far
+		 */
+		const model: IDBMessageContent['model_used'] = '@hf/mistralai/mistral-7b-instruct-v0.2';
+
+		return new Promise<{
+			action: MessageAction;
+			modelUsed: IDBMessageContent['model_used'];
+		}>((resolve, reject) =>
+			(this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)
+				.then((action) =>
+					resolve({
+						action,
+						modelUsed: model,
+					}),
+				)
+				.catch(reject),
+		);
 	}
 
 	public ddg(searchTerms: NonNullable<MessageAction['webSearchTerms']>) {
@@ -117,12 +138,12 @@ export class MessageProcessing extends CFBase {
 	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
 	 */
 
-	public async *textResponse(model: (typeof modelMappings)['text-generation']['models'][number], message: RoleScopedChatInput['content'], context?: MessageContextValue) {
-		const messages: RoleScopedChatInput[] = [];
-		if (context) messages.push({ role: 'system', content: `Use the following additional information to respond to the user with: ${JSON.stringify(context)}` });
+	public async *textResponse(model: (typeof modelMappings)['text-generation']['models'][number], messages: NonNullable<AiTextGenerationInput['messages']>, previousActions?: MessageActionTaken, context?: MessageContextValue) {
+		const systemMessages: RoleScopedChatInput[] = [{ role: 'system', content: `You are a helpful assistant. The current datetime is ${new Date().toISOString()}` }];
+		if (previousActions) systemMessages.push({ role: 'system', content: `You are the last step in a chain of ai prompts. The previous actions already done are ${JSON.stringify(previousActions)}.` + (context ? `The following context is now available due to those previous actions: ${JSON.stringify(context)}` : '') });
 
 		const stream = await new Ai(this.helpers.c.env.AI).run(model, {
-			messages: [...messages, { role: 'user', content: message }],
+			messages: [...systemMessages, ...messages],
 			stream: true,
 		});
 		const decoder = new TextDecoder('utf-8');

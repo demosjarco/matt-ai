@@ -5,6 +5,7 @@ import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
+import { calculateActionTaken } from '../../../extras';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
@@ -147,7 +148,7 @@ export default component$(() => {
 												);
 
 												// Setup message context
-												if (userMessageAction.action.previousMessageSearch || userMessageAction.action.webSearchTerms) {
+												if (userMessageAction.action.previousMessageKeywordSearch || userMessageAction.action.webSearchTerms) {
 													messageContext[aiMessage.key!] = {};
 												}
 
@@ -190,7 +191,7 @@ export default component$(() => {
 
 																const model: Parameters<typeof messageText>[0] = '@hf/thebloke/llama-2-13b-chat-awq';
 
-																messageText(model, message, messageContext[aiMessage.key!])
+																messageText(model, [{ role: 'user', content: message }], calculateActionTaken(userMessageAction.action), messageContext[aiMessage.key!])
 																	.then(async (chatResponse) => {
 																		/**
 																		 * @todo text generate
