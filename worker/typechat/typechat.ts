@@ -137,7 +137,7 @@ export function createJsonTranslator<T extends object>(model: TypeChatLanguageMo
 			const startIndex = responseText.indexOf('{');
 			const endIndex = responseText.lastIndexOf('}');
 			if (!(startIndex >= 0 && endIndex > startIndex)) {
-				return error(`Response is not JSON:\n${responseText}`);
+				return error('Response is not JSON:\n' + responseText);
 			}
 			const jsonText = responseText.slice(startIndex, endIndex + 1);
 			let jsonObject;
