@@ -1,9 +1,10 @@
 import { component$, useSignal, useTask$ } from '@builder.io/qwik';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
+import type { MessageAction } from '../../../../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
 
-export default component$((props: { text?: IDBMessageContentText }) => {
+export default component$((props: { text?: IDBMessageContentText; debug?: MessageAction }) => {
 	const divRef = useSignal<HTMLDivElement>();
 	const pRef = useSignal<HTMLParagraphElement>();
 
@@ -12,6 +13,7 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 		track(() => pRef.value);
 		// Needs to be retracked
 		track(() => props.text);
+		track(() => props.debug);
 
 		if (props.text) {
 			if (divRef.value) {
@@ -39,6 +41,9 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 	if (props.text) {
 		return (
 			<>
+				{props.debug?.translation ? <p class="whitespace-pre-wrap text-balance font-mono text-sm font-normal text-gray-900 dark:text-white">{JSON.stringify(props.debug.translation, null, '\t')}</p> : undefined}
+				{props.debug?.previousMessageSearch ? <p class="whitespace-pre-wrap text-balance font-mono text-sm font-normal text-gray-900 dark:text-white">{JSON.stringify(props.debug.previousMessageSearch, null, '\t')}</p> : undefined}
+				{props.debug?.translation || props.debug?.previousMessageSearch ? <hr /> : undefined}
 				<div ref={divRef} class="text-balance text-gray-900 dark:text-white"></div>
 				<p ref={pRef} hidden={true} class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white"></p>
 			</>
