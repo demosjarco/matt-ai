@@ -1,4 +1,5 @@
 import type { randomUUID } from 'node:crypto';
+import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 import type Helper from '../../worker/src/index';
 import type { IDBMessage } from './IDB/schemas/v2';
 
@@ -40,6 +41,8 @@ export interface ChatFormSubmit {
 }
 
 export type MessageContext = Record<NonNullable<IDBMessage['key']>, MessageContextValue>;
+
+export type MessageActionTaken = Record<keyof MessageAction, boolean>;
 
 export interface MessageContextValue {
 	previousMessages?: IDBMessage[];
