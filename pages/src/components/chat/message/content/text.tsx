@@ -36,6 +36,8 @@ export default component$((props: { text?: IDBMessageContentText; debug?: Messag
 						.parse(props.text, { async: true, breaks: true });
 					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
 				} catch (error) {
+					console.error('markdown error', error);
+
 					divRef.value.hidden = true;
 					if (pRef.value) {
 						pRef.value.hidden = false;
