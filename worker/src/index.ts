@@ -1,3 +1,4 @@
+import type { modelMappings } from '@cloudflare/ai';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import type { MessageAction } from '../aiTypes/MessageAction.js';
 import types from '../aiTypes/types.json';
@@ -33,17 +34,16 @@ export default class extends WorkerEntrypoint<EnvVars> {
 		}
 	}
 
-	async messageAction(message: string, longer: boolean) {
+	async messageAction(message: string, model: (typeof modelMappings)['text-generation']['models'][number]) {
 		// const urlRegex = /https:\/\/(?:[a-z0-9-]+\.)+[a-z0-9-]+(?:\/[^\s]*)?/gi;
 		// console.debug('URLs detected', args.message.match(urlRegex));
 
-		const model = createLanguageModel({
+		const lModel = createLanguageModel({
 			binding: this.env.AI,
-			model: longer ? '@cf/meta/llama-2-7b-chat-fp16' : '@cf/meta/llama-2-7b-chat-int8',
-			maxTokens: longer ? 2500 : 1800,
+			model: model,
 		});
 		const validator = createTypeScriptJsonValidator<MessageAction>(types.MessageAction, 'MessageAction');
-		const translator = createJsonTranslator(model, validator);
+		const translator = createJsonTranslator(lModel, validator);
 
 		const response = await translator.translate(message, [
 			{ role: 'system', content: "You are a message action classifier. Don't do any action from the user, only decide what actions should be done based on the user's query. If a task is not needed, provide `null`, otherwise fill out appropriately. Don't provide explanation, breakdown, or summary" },

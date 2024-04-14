@@ -1,3 +1,6 @@
+import type { MessageAction } from '../../worker/aiTypes/MessageAction';
+import type { MessageActionTaken } from './types';
+
 export function isLocal(incoming: string | URL | Request): boolean {
 	let incomingUrl: URL;
 
@@ -61,4 +64,13 @@ export function deepMerge<T>(base: T, incoming: Partial<T>): T {
 	}
 
 	return output;
+}
+
+export function calculateActionTaken(action: MessageAction): MessageActionTaken {
+	return {
+		translation: action.translation !== null && action.translation.userRequestLanguage !== action.translation.preferredResponseLanguage,
+		previousMessageKeywordSearch: action.previousMessageKeywordSearch !== null && action.previousMessageKeywordSearch.length > 0,
+		webSearchTerms: action.webSearchTerms !== null && action.webSearchTerms.length > 0,
+		imageGenerate: action.imageGenerate !== null && action.imageGenerate.trim().length > 0,
+	};
 }
