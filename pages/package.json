@@ -44,7 +44,6 @@
 		"marked-alert": "^2.0.1",
 		"marked-bidi": "^1.0.9",
 		"marked-extended-tables": "^1.0.8",
-		"marked-footnote": "^1.2.2",
 		"meta-png": "^1.0.6"
 	},
 	"devDependencies": {
