@@ -33,18 +33,18 @@ export default component$((props: { text?: IDBMessageContentText; debug?: Messag
 								refMarkers: true,
 							}),
 						)
-						.parse(props.text.trim(), { async: true, breaks: true });
+						.parse(props.text, { async: true, breaks: true });
 					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
 				} catch (error) {
 					divRef.value.hidden = true;
 					if (pRef.value) {
 						pRef.value.hidden = false;
-						pRef.value.innerText = props.text.trim();
+						pRef.value.innerText = props.text;
 					}
 				}
 			} else if (pRef.value) {
 				pRef.value.hidden = false;
-				pRef.value.innerText = props.text.trim();
+				pRef.value.innerText = props.text;
 			}
 		}
 
