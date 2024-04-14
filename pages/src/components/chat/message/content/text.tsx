@@ -1,6 +1,11 @@
 import { component$, useSignal, useTask$ } from '@builder.io/qwik';
 import DOMPurify from 'dompurify';
-import { marked } from 'marked';
+import { Marked } from 'marked';
+import admonition from 'marked-admonition-extension';
+import markedAlert from 'marked-alert';
+import markedBidi from 'marked-bidi';
+import extendedTables from 'marked-extended-tables';
+import markedFootnote from 'marked-footnote';
 import type { MessageAction } from '../../../../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
 
@@ -18,7 +23,17 @@ export default component$((props: { text?: IDBMessageContentText; debug?: Messag
 		if (props.text) {
 			if (divRef.value) {
 				try {
-					const markdownHtml = await marked.parse(props.text.trim(), { async: true, breaks: true });
+					const markdownHtml = await new Marked()
+						.use(
+							admonition(),
+							markedAlert(),
+							markedBidi(),
+							extendedTables(),
+							markedFootnote({
+								refMarkers: true,
+							}),
+						)
+						.parse(props.text.trim(), { async: true, breaks: true });
 					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
 				} catch (error) {
 					divRef.value.hidden = true;
