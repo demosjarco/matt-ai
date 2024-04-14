@@ -68,11 +68,11 @@ updates:
           - 'flowbite'
           - 'less'
           - '@qwikest/icons'
-      graphql:
+      markdown:
         patterns:
-          - 'graphql'
-          - 'graphql-*'
-          - '@graphql-yoga/*'
+          - 'marked'
+          - 'marked-*'
+          - 'dompurify'
       typescript-core:
         patterns:
           - 'typescript'
