@@ -3,14 +3,14 @@ import DOMPurify from 'dompurify';
 import { Marked } from 'marked';
 import markedAlert from 'marked-alert';
 import markedFootnote from 'marked-footnote';
-import type { IDBMessageContent, IDBMessageContentText } from '../../../../IDB/schemas/v2';
+import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
 
 // @ts-expect-error
 import markedBidi from 'marked-bidi';
 // @ts-expect-error
 import extendedTables from 'marked-extended-tables';
 
-export default component$((props: { text?: IDBMessageContentText; debug?: IDBMessageContent }) => {
+export default component$((props: { text?: IDBMessageContentText }) => {
 	const divRef = useSignal<HTMLDivElement>();
 	const pRef = useSignal<HTMLParagraphElement>();
 
@@ -19,7 +19,6 @@ export default component$((props: { text?: IDBMessageContentText; debug?: IDBMes
 		track(() => pRef.value);
 		// Needs to be retracked
 		track(() => props.text);
-		track(() => props.debug);
 
 		if (props.text) {
 			if (divRef.value) {
@@ -57,12 +56,6 @@ export default component$((props: { text?: IDBMessageContentText; debug?: IDBMes
 	if (props.text) {
 		return (
 			<>
-				{props.debug ? (
-					<>
-						<p class="whitespace-pre-wrap text-balance font-mono text-sm font-normal text-gray-900 dark:text-white">{JSON.stringify(props.debug, null, '\t')}</p>
-						<hr />
-					</>
-				) : undefined}
 				<div ref={divRef} class="text-balance text-gray-900 dark:text-white"></div>
 				<p ref={pRef} hidden={true} class="whitespace-pre-wrap text-balance text-sm font-normal text-gray-900 dark:text-white"></p>
 			</>

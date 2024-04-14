@@ -106,12 +106,14 @@ export class MessageProcessing extends CFBase {
 		 * @param `@hf/thebloke/mistral-7b-instruct-v0.1-awq` - what are you even doing?
 		 * @param `@hf/mistralai/mistral-7b-instruct-v0.2` - Perfect so far
 		 */
+		// @ts-expect-error `@cloudflare/ai` hasn't been updated yet
 		const model: IDBMessageContent['model_used'] = '@hf/mistralai/mistral-7b-instruct-v0.2';
 
 		return new Promise<{
 			action: MessageAction;
 			modelUsed: IDBMessageContent['model_used'];
 		}>((resolve, reject) =>
+			// @ts-expect-error `@cloudflare/ai` hasn't been updated yet
 			(this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)
 				.then((action) =>
 					resolve({
