@@ -232,8 +232,6 @@ export default component$(() => {
 
 																const model: Parameters<typeof messageText>[0] = '@hf/thebloke/llama-2-13b-chat-awq';
 
-																console.debug('messages going', previousMessages, [{ role: 'user', content: message }], [...previousMessages, { role: 'user', content: message }]);
-
 																retryWithSelectiveRemoval(messageText, model, [...previousMessages, { role: 'user', content: message }], calculateActionTaken(userMessageAction.action), messageContext[aiMessage.key!])
 																	.then(async (chatResponse) => {
 																		/**
