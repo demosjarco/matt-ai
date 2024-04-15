@@ -5,7 +5,7 @@ import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
 import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
-import { calculateActionTaken } from '../../../extras';
+import { calculateActionTaken, retryWithSelectiveRemoval } from '../../../extras';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
@@ -152,9 +152,43 @@ export default component$(() => {
 													messageContext[aiMessage.key!] = {};
 												}
 
-												/**
-												 * @todo Previous message search
-												 */
+												const previousMessages: Parameters<typeof messageText>[1] = [];
+												if (userMessageAction.action.previousMessageKeywordSearch) {
+													// Add web search status
+													(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('historySearching');
+
+													// Convert all search terms to lowercase for case-insensitive matching
+													const normalizedSearchTerms = userMessageAction.action.previousMessageKeywordSearch.map((term) => term.toLowerCase());
+
+													// Filter messages that match any of the search terms in their text content
+													previousMessages.push(
+														...Object.values(messageHistory)
+															.filter((message) => {
+																// Assuming that 'content' can have multiple entries, we check each content entry if it's of type text
+																return message.content.some((contentItem) => {
+																	if (contentItem.text) {
+																		// Normalize the text for case-insensitive search
+																		const normalizedText = contentItem.text.toLowerCase();
+																		// Check if any of the search terms are included in the text
+																		return normalizedSearchTerms.some((term) => normalizedText.includes(term));
+																	}
+																	return false;
+																});
+															})
+															.sort((a, b) => b.btime.getTime() - a.btime.getTime())
+															// Reverse so that the oldest are first as chat conventions
+															.reverse()
+															.map((message) => {
+																// Find the first text content item in the message
+																const textContent = message.content.find((contentItem) => contentItem.text)?.text ?? 'Content not found';
+																return {
+																	role: message.role,
+																	content: textContent,
+																};
+															}),
+													);
+												}
+
 												if (userMessageAction.action.webSearchTerms) {
 													// Add web search status
 													(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
@@ -191,7 +225,9 @@ export default component$(() => {
 
 																const model: Parameters<typeof messageText>[0] = '@hf/thebloke/llama-2-13b-chat-awq';
 
-																messageText(model, [{ role: 'user', content: message }], calculateActionTaken(userMessageAction.action), messageContext[aiMessage.key!])
+																console.debug('messages going', previousMessages, [{ role: 'user', content: message }], [...previousMessages, { role: 'user', content: message }]);
+
+																retryWithSelectiveRemoval(messageText, model, [...previousMessages, { role: 'user', content: message }], calculateActionTaken(userMessageAction.action), messageContext[aiMessage.key!])
 																	.then(async (chatResponse) => {
 																		/**
 																		 * @todo text generate

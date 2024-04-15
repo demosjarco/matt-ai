@@ -43,8 +43,9 @@ export interface ChatFormSubmit {
 export type MessageContext = Record<NonNullable<IDBMessage['key']>, MessageContextValue>;
 
 export interface MessageContextValue {
-	previousMessages?: IDBMessage[];
 	webSearchInfo?: Record<string, any>;
 }
 
 export type MessageActionTaken = Record<keyof MessageAction, boolean>;
+
+export type AsyncFunctionWithParams<P1, P2, P3, R, T> = (param1: P1, items: T[], param2: P2, param3: P3) => Promise<R>;
