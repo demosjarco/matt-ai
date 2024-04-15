@@ -154,13 +154,14 @@ export default component$(() => {
 
 												const previousMessages: Parameters<typeof messageText>[1] = [];
 												if (userMessageAction.action.previousMessageKeywordSearch) {
-													// Add web search status
+													// Add history search status
 													(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('historySearching');
 
 													// Convert all search terms to lowercase for case-insensitive matching
 													const normalizedSearchTerms = userMessageAction.action.previousMessageKeywordSearch.map((term) => term.toLowerCase());
 
 													// Filter messages that match any of the search terms in their text content
+
 													previousMessages.push(
 														...Object.values(messageHistory)
 															.filter((message) => {
@@ -188,7 +189,7 @@ export default component$(() => {
 															}),
 													);
 
-													// Remove web search status
+													// Remove history search status
 													if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
 														messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'historySearching');
 													}
