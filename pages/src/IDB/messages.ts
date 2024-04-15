@@ -9,7 +9,22 @@ type InternalMessageGuarantee = Pick<IDBMessage, 'key'> & Omit<Partial<IDBMessag
 
 export class IDBMessages extends IDBBase {
 	public getMessagesForConversation(cid: number) {
-		return this.db.then((db) => db.getAllFromIndex('messages', IDBMessageIndexes.conversationIdMessageIdContentVersion, IDBKeyRange.bound([cid], [cid, [], []])));
+		return this.db.then((db) =>
+			db.getAllFromIndex('messages', IDBMessageIndexes.conversationIdMessageIdContentVersion, IDBKeyRange.bound([cid], [cid, [], []])).then((messages) =>
+				Array.from(
+					messages
+						// Only return latest version of a message
+						.reduce((acc, message) => {
+							const existingMessage = acc.get(message.message_id);
+							if (!existingMessage || existingMessage.content_version < message.content_version) {
+								acc.set(message.message_id, message);
+							}
+							return acc;
+						}, new Map<IDBMessage['message_id'], IDBMessage>())
+						.values(),
+				),
+			),
+		);
 	}
 
 	public getMessage(message: InternalMessageGuarantee) {
