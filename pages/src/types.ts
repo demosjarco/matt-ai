@@ -42,9 +42,9 @@ export interface ChatFormSubmit {
 
 export type MessageContext = Record<NonNullable<IDBMessage['key']>, MessageContextValue>;
 
-export type MessageActionTaken = Record<keyof MessageAction, boolean>;
-
 export interface MessageContextValue {
 	previousMessages?: IDBMessage[];
 	webSearchInfo?: Record<string, any>;
 }
+
+export type MessageActionTaken = Record<keyof MessageAction, boolean>;
