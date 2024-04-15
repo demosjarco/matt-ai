@@ -5,7 +5,7 @@ import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
 import { ConversationsContext, MessagesContext } from '../extras/context';
-import type { ChatFormSubmit, EnvVars } from '../types';
+import type { ChatFormSubmit, EnvVars, TurnstileResponse } from '../types';
 
 export const useFormSubmissionWithTurnstile = routeAction$(
 	(data, { params, fail, status }) => {
@@ -87,7 +87,7 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 					body: formData,
 				});
 				if (result.ok) {
-					const outcome: { success: boolean } = await result.json();
+					const outcome = await result.json<TurnstileResponse>();
 					turnstileSuccess = outcome.success;
 				} else {
 					status(result.status);

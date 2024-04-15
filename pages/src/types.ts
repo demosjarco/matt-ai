@@ -49,3 +49,30 @@ export interface MessageContextValue {
 export type MessageActionTaken = Record<keyof MessageAction, boolean>;
 
 export type AsyncFunctionWithParams<P1, P2, P3, R, T> = (param1: P1, items: T[], param2: P2, param3: P3) => Promise<R>;
+
+/**
+ * @link https://developers.cloudflare.com/turnstile/get-started/server-side-validation/#accepted-parameters
+ */
+export interface TurnstileResponse {
+	success: boolean;
+	/**
+	 * the ISO timestamp for the time the challenge was solved
+	 */
+	challenge_ts: ReturnType<Date['toISOString']>;
+	/**
+	 * the hostname for which the challenge was served
+	 */
+	hostname: URL['hostname'];
+	/**
+	 * the customer widget identifier passed to the widget on the client side. This is used to differentiate widgets using the same sitekey in analytics. Its integrity is protected by modifications from an attacker. It is recommended to validate that the action matches an expected value
+	 */
+	action: string;
+	/**
+	 * the customer data passed to the widget on the client side. This can be used by the customer to convey state. It is integrity protected by modifications from an attacker
+	 */
+	cdata: string;
+	/**
+	 * a list of errors that occurred
+	 */
+	'error-codes': string[];
+}
