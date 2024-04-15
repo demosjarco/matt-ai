@@ -187,6 +187,11 @@ export default component$(() => {
 																};
 															}),
 													);
+
+													// Remove web search status
+													if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
+														messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'historySearching');
+													}
 												}
 
 												if (userMessageAction.action.webSearchTerms) {
