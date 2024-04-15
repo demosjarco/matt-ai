@@ -1,5 +1,5 @@
 import type { MessageAction } from '../../worker/aiTypes/MessageAction';
-import type { MessageActionTaken } from './types';
+import type { AsyncFunctionWithParams, MessageActionTaken } from './types';
 
 export function isLocal(incoming: string | URL | Request): boolean {
 	let incomingUrl: URL;
@@ -73,4 +73,22 @@ export function calculateActionTaken(action: MessageAction): MessageActionTaken 
 		webSearchTerms: action.webSearchTerms !== null && action.webSearchTerms.length > 0,
 		imageGenerate: action.imageGenerate !== null && action.imageGenerate.trim().length > 0,
 	};
+}
+
+export function retryWithSelectiveRemoval<P1, P2, P3, R, T>(func: AsyncFunctionWithParams<P1, P2, P3, R, T>, param1: P1, items: T[], param2: P2, param3: P3): Promise<R> {
+	if (items.length === 0) {
+		throw new Error('No items left to process');
+	}
+
+	try {
+		return func(param1, items, param2, param3);
+	} catch (error) {
+		if (items.length > 1) {
+			// Remove the topmost item and retry
+			return retryWithSelectiveRemoval(func, param1, items.slice(1), param2, param3);
+		} else {
+			// Only one item left, throw the error
+			throw new Error('Last item in the array also failed: ' + error);
+		}
+	}
 }
