@@ -164,9 +164,10 @@ export default component$(() => {
 
 													previousMessages.push(
 														...Object.values(messageHistory)
-															.filter((message) => {
+															.filter((historyMessage) => historyMessage.message_id !== userMessage.message_id)
+															.filter((historyMessage) => {
 																// Assuming that 'content' can have multiple entries, we check each content entry if it's of type text
-																return message.content.some((contentItem) => {
+																return historyMessage.content.some((contentItem) => {
 																	if (contentItem.text) {
 																		// Normalize the text for case-insensitive search
 																		const normalizedText = contentItem.text.toLowerCase();
