@@ -103,6 +103,7 @@ export class MessageProcessing extends CFBase {
 		 * @param `@cf/mistral/mistral-7b-instruct-v0.1` - Decent, but kind of regurgitating verbatim
 		 * @param `@cf/tiiuae/falcon-7b-instruct` - fails to format in JSON properly
 		 * @param `@hf/google/gemma-7b-it` - Good, but conservate and ends up too vague to be useful at times
+		 * @param `@cf/meta/llama-3-8b-instruct` - Doesn't always works, but when it does, it regurgitates verbatim directly and isn't actually useful
 		 * @param `@hf/thebloke/mistral-7b-instruct-v0.1-awq` - what are you even doing?
 		 * @param `@hf/mistralai/mistral-7b-instruct-v0.2` - Perfect so far
 		 */
