@@ -94,7 +94,7 @@ export class MessageProcessing extends CFBase {
 
 	public async actionDecide(message: RoleScopedChatInput['content']) {
 		// Uncomment below to test
-		// const testingModels: IDBMessageContent['model_used'][] = ['@cf/mistral/mistral-7b-instruct-v0.1', '@cf/tiiuae/falcon-7b-instruct', '@hf/google/gemma-7b-it', '@hf/thebloke/mistral-7b-instruct-v0.1-awq', '@hf/mistralai/mistral-7b-instruct-v0.2'];
+		// const testingModels: IDBMessageContent['model_used'][] = ['@cf/meta/llama-2-7b-chat-int8', '@cf/mistral/mistral-7b-instruct-v0.1', '@cf/tiiuae/falcon-7b-instruct', '@hf/google/gemma-7b-it', '@cf/meta/llama-3-8b-instruct', '@hf/thebloke/mistral-7b-instruct-v0.1-awq', '@hf/mistralai/mistral-7b-instruct-v0.2'];
 		// await Promise.allSettled(testingModels.map((model) => this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)).then((promises) => promises.map((promise) => console.debug(testingModels[promises.indexOf(promise)], promise.status === 'fulfilled' ? promise.value : promise.reason)));
 
 		/**
