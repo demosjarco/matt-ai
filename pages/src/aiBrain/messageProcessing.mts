@@ -100,7 +100,7 @@ export class MessageProcessing extends CFBase {
 		/**
 		 * Use instruct models only
 		 *
-		 * @param `@cf/mistral/mistral-7b-instruct-v0.1` - @todo had outage at the time
+		 * @param `@cf/mistral/mistral-7b-instruct-v0.1` - Decent, but kind of regurgitating verbatim
 		 * @param `@cf/tiiuae/falcon-7b-instruct` - fails to format in JSON properly
 		 * @param `@hf/google/gemma-7b-it` - Good, but conservate and ends up too vague to be useful at times
 		 * @param `@hf/thebloke/mistral-7b-instruct-v0.1-awq` - what are you even doing?
