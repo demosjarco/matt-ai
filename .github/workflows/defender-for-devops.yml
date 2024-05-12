@@ -38,11 +38,11 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      - uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
         with:
           disable-sudo: true
           egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
-      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+      - uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: lts/*
@@ -50,6 +50,6 @@ jobs:
           cache: 'npm'
       - uses: microsoft/security-devops-action@7e3060ae1e6a9347dd7de6b28195099f39852fe2 # v1.10.0
         id: msdo
-      - uses: github/codeql-action/upload-sarif@8f596b4ae3cb3c588a5c46780b86dd53fef16c52 # v3.25.2
+      - uses: github/codeql-action/upload-sarif@ccf74c947955fd1cf117aef6a0e4e66191ef6f61 # v3.25.4
         with:
           sarif_file: ${{ steps.msdo.outputs.sarifFile }}
