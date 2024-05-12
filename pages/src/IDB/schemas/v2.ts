@@ -1,5 +1,3 @@
-import type { Ai } from '@cloudflare/ai';
-import type { AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
 import type { DBSchema, IDBPDatabase } from 'idb';
 import type { MessageAction } from '../../../../worker/aiTypes/MessageAction';
 
