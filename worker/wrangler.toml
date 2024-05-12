@@ -1,7 +1,7 @@
 name = "mattai-worker-preview"
 main = "src/index.ts"
 compatibility_date = "2024-04-19"
-compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
+compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 minify = true
 ai = { binding = "AI" }
@@ -30,7 +30,7 @@ mode = "smart"
 [env.production]
 name = "mattai-worker"
 compatibility_date = "2024-04-19"
-compatibility_flags = ["nodejs_compat", "brotli_content_encoding"]
+compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 minify = true
 ai = { binding = "AI" }
