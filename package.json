@@ -21,11 +21,11 @@
 		"worker"
 	],
 	"devDependencies": {
-		"@cloudflare/ai": "^1.1.0",
+		"@cloudflare/ai": "^1.2.2",
 		"@cloudflare/workers-types": "^4.20240502.0",
 		"@demosjarco/prettier-config": "^1.0.1",
 		"prettier": "^3.2.5",
 		"typescript": "^5.4.5",
-		"wrangler": "^3.52.0"
+		"wrangler": "^3.55.0"
 	}
 }
