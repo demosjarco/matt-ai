@@ -40,6 +40,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 
 		const lModel = createLanguageModel({
 			binding: this.env.AI,
+			// @ts-expect-error todo: specify that it is text only
 			model: model,
 		});
 		const validator = createTypeScriptJsonValidator<MessageAction>(types.MessageAction, 'MessageAction');
