@@ -1,6 +1,4 @@
-import { Ai, type modelMappings } from '@cloudflare/ai';
-import type { AiTextGenerationInput, AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/ai/dist/ai/tasks/text-generation';
-import type { AiTextToImageInput, AiTextToImageOutput } from '@cloudflare/ai/dist/ai/tasks/text-to-image';
+import type { modelMappings } from '@cloudflare/ai';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
@@ -48,27 +46,26 @@ export class MessageProcessing extends CFBase {
 				},
 			};
 
-			new Ai(this.helpers.c.env.AI)
-				.run('@hf/thebloke/llamaguard-7b-awq', {
-					messages: [
-						{
-							role: 'system',
-							content: `Task: Check if there is unsafe content in 'User' messages in conversations according to our safety policy with the below categories. Respond with boolean "true"|"false" if message is safe or not safe.`,
-						},
-						{
-							role: 'system',
-							content: `<BEGIN UNSAFE CONTENT CATEGORIES>
+			this.helpers.c.env.AI.run('@hf/thebloke/llamaguard-7b-awq', {
+				messages: [
+					{
+						role: 'system',
+						content: `Task: Check if there is unsafe content in 'User' messages in conversations according to our safety policy with the below categories. Respond with boolean "true"|"false" if message is safe or not safe.`,
+					},
+					{
+						role: 'system',
+						content: `<BEGIN UNSAFE CONTENT CATEGORIES>
 							${JSON.stringify(unsafeCategories)}
 							<END UNSAFE CONTENT CATEGORIES>`,
-						},
-						{
-							role: 'user',
-							content: `<BEGIN CONVERSATION>
+					},
+					{
+						role: 'user',
+						content: `<BEGIN CONVERSATION>
 							${message}
 							<END CONVERSATION>`,
-						},
-					],
-				})
+					},
+				],
+			})
 				.then((response: AiTextGenerationOutput) => {
 					if (MessageProcessing.isNotReadableStream(response)) {
 						const parsedResponseRaw = response.response!.trim().toLowerCase();
@@ -94,26 +91,27 @@ export class MessageProcessing extends CFBase {
 
 	public async actionDecide(message: RoleScopedChatInput['content']) {
 		// Uncomment below to test
-		// const testingModels: IDBMessageContent['model_used'][] = ['@cf/mistral/mistral-7b-instruct-v0.1', '@cf/tiiuae/falcon-7b-instruct', '@hf/google/gemma-7b-it', '@hf/thebloke/mistral-7b-instruct-v0.1-awq', '@hf/mistralai/mistral-7b-instruct-v0.2'];
+		// const testingModels: IDBMessageContent['model_used'][] = ['@cf/meta/llama-2-7b-chat-int8', '@cf/mistral/mistral-7b-instruct-v0.1', '@cf/tiiuae/falcon-7b-instruct', '@hf/google/gemma-7b-it', '@cf/meta/llama-3-8b-instruct', '@hf/thebloke/mistral-7b-instruct-v0.1-awq', '@hf/mistralai/mistral-7b-instruct-v0.2'];
 		// await Promise.allSettled(testingModels.map((model) => this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)).then((promises) => promises.map((promise) => console.debug(testingModels[promises.indexOf(promise)], promise.status === 'fulfilled' ? promise.value : promise.reason)));
 
 		/**
 		 * Use instruct models only
 		 *
-		 * @param `@cf/mistral/mistral-7b-instruct-v0.1` - @todo had outage at the time
+		 * @param `@cf/mistral/mistral-7b-instruct-v0.1` - Decent, but kind of regurgitating verbatim
 		 * @param `@cf/tiiuae/falcon-7b-instruct` - fails to format in JSON properly
 		 * @param `@hf/google/gemma-7b-it` - Good, but conservate and ends up too vague to be useful at times
+		 * @param `@cf/meta/llama-3-8b-instruct` - Doesn't always works, but when it does, it regurgitates verbatim directly and isn't actually useful
 		 * @param `@hf/thebloke/mistral-7b-instruct-v0.1-awq` - what are you even doing?
 		 * @param `@hf/mistralai/mistral-7b-instruct-v0.2` - Perfect so far
 		 */
-		// @ts-expect-error `@cloudflare/ai` hasn't been updated yet
+		// @ts-expect-error todo: specify that it is text only
 		const model: IDBMessageContent['model_used'] = '@hf/mistralai/mistral-7b-instruct-v0.2';
 
 		return new Promise<{
 			action: MessageAction;
 			modelUsed: IDBMessageContent['model_used'];
 		}>((resolve, reject) =>
-			// @ts-expect-error `@cloudflare/ai` hasn't been updated yet
+			// @ts-expect-error todo: specify that it is text only
 			(this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)
 				.then((action) =>
 					resolve({
@@ -144,8 +142,9 @@ export class MessageProcessing extends CFBase {
 		const systemMessages: RoleScopedChatInput[] = [{ role: 'system', content: `You are a helpful assistant. The current datetime is ${new Date().toISOString()}` }];
 		if (previousActions) systemMessages.push({ role: 'system', content: `You are the last step in a chain of ai prompts. The previous actions already done are ${JSON.stringify(previousActions)}.` + (context ? `The following context is now available due to those previous actions: ${JSON.stringify(context)}` : '') });
 
-		const stream = await new Ai(this.helpers.c.env.AI).run(model, {
+		const stream: BaseAiTextGeneration['postProcessedOutputs'] = await this.helpers.c.env.AI.run(model as Parameters<Ai['run']>[0], {
 			messages: [...systemMessages, ...messages],
+			// @ts-expect-error todo: specify that it is text only
 			stream: true,
 		});
 		const decoder = new TextDecoder('utf-8');
@@ -199,8 +198,8 @@ export class MessageProcessing extends CFBase {
 
 	private image(prompt: AiTextToImageInput['prompt'], model: (typeof modelMappings)['text-to-image']['models'][number], num_steps: AiTextToImageInput['num_steps'] = 20) {
 		return new Promise<{ raw: ReturnType<Buffer['toString']>; model: typeof model }>((resolve, reject) => {
-			new Ai(this.helpers.c.env.AI)
-				.run(model, { prompt, num_steps })
+			// @ts-expect-error todo: specify that it is image only
+			this.helpers.c.env.AI.run(model, { prompt, num_steps })
 				.then(async (imageGeneration: AiTextToImageOutput | NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
 					if (imageGeneration instanceof ReadableStream) {
 						imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());

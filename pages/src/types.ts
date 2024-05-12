@@ -10,7 +10,7 @@ export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, R
 }
 
 interface Bindings {
-	AI: any;
+	AI: Ai;
 	BACKEND_WORKER: Service<Helper>;
 }
 

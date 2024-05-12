@@ -5,6 +5,6 @@ export interface EnvVars extends Bindings, Record<string, any> {
 }
 
 interface Bindings {
-	AI: any;
+	AI: Ai;
 	QUEUE_CALLBACK_HANDLER: DurableObjectNamespace<QueueCallbackHandler>;
 }

@@ -1,6 +1,5 @@
 import { $, component$, useContext, useStore, useTask$ } from '@builder.io/qwik';
 import { Form, server$, useLocation } from '@builder.io/qwik-city';
-import type { Ai } from '@cloudflare/ai';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
@@ -239,6 +238,7 @@ export default component$(() => {
 																		 */
 																		const composedInsert: IDBMessageContent = {
 																			text: '',
+																			// @ts-expect-error todo: specify that it is text only
 																			model_used: model,
 																		};
 
