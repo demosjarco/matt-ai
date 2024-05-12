@@ -1,13 +1,10 @@
-import { Ai } from '@cloudflare/ai';
-import type { AiTextGenerationInput, AiTextGenerationOutput } from '@cloudflare/ai/dist/ai/tasks/text-generation.js';
 import { error, success, type Result } from './result.js';
 
 export type ExcludeType<UnionType, ExcludedType> = UnionType extends ExcludedType ? never : UnionType;
 
 export interface ModelSelector {
-	binding: ConstructorParameters<typeof Ai>[0];
+	binding: Ai;
 	model: Parameters<Ai['run']>[0];
-	options?: ConstructorParameters<typeof Ai>[1];
 	maxTokens?: AiTextGenerationInput['max_tokens'];
 	stream?: AiTextGenerationInput['stream'];
 }
@@ -69,13 +66,13 @@ export interface TypeChatLanguageModel {
 
 export function createLanguageModel(config: ModelSelector): TypeChatLanguageModel {
 	if (config.binding && config.model) {
-		return createBindingLanguageModel(config.binding, config.model, config.options, config.stream, config.maxTokens);
+		return createBindingLanguageModel(config.binding, config.model, config.stream, config.maxTokens);
 	} else {
 		throw new Error('Missing AI Binding and/or model selection');
 	}
 }
 
-function createBindingLanguageModel(binding: ModelSelector['binding'], model: ModelSelector['model'], options: ModelSelector['options'], shouldStream: ModelSelector['stream'] = false, maxTokens: ModelSelector['maxTokens']) {
+function createBindingLanguageModel(binding: ModelSelector['binding'], model: ModelSelector['model'], shouldStream: ModelSelector['stream'] = false, maxTokens: ModelSelector['maxTokens']) {
 	const returnModel: TypeChatLanguageModel = {
 		complete,
 	};
@@ -89,7 +86,8 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 		while (true) {
 			try {
 				const { response } = await new Promise<Required<ExcludeType<AiTextGenerationOutput, ReadableStream>>>((resolve, reject) =>
-					new Ai(binding, options)
+					binding
+						// @ts-expect-error todo: specify that it is text only
 						.run(model, { messages, max_tokens: maxTokens, stream: shouldStream })
 						.then(async (rawResponse: any) => {
 							const response = rawResponse as AiTextGenerationOutput;
