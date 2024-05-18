@@ -3,7 +3,7 @@ import type { IDBMessage } from '../../../IDB/schemas/v2';
 import Avatar from '../Avatar';
 import Content from './content';
 
-export default component$((props: { message: IDBMessage }) => {
+export default component$<{ message: IDBMessage }>((props) => {
 	const isMe = props.message.role === 'user' ? true : false;
 
 	return (
