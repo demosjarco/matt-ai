@@ -55,6 +55,7 @@
 		"@typescript-eslint/eslint-plugin": "^7.9.0",
 		"@typescript-eslint/parser": "^7.9.0",
 		"autoprefixer": "^10.4.19",
+		"base64-js": "^1.5.1",
 		"eslint": "^8.57.0",
 		"eslint-plugin-qwik": "^1.5.4",
 		"less": "^4.2.0",
