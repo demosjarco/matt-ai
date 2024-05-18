@@ -102,10 +102,10 @@ export class MessageProcessing extends CFBase {
 		 * @param `@hf/google/gemma-7b-it` - Good, but conservate and ends up too vague to be useful at times
 		 * @param `@cf/meta/llama-3-8b-instruct` - Doesn't always works, but when it does, it regurgitates verbatim directly and isn't actually useful
 		 * @param `@hf/thebloke/mistral-7b-instruct-v0.1-awq` - what are you even doing?
-		 * @param `@hf/mistralai/mistral-7b-instruct-v0.2` - Perfect so far
+		 * @param `@hf/mistral/mistral-7b-instruct-v0.2` - Perfect so far
 		 */
-		// @ts-expect-error todo: specify that it is text only
-		const model: IDBMessageContent['model_used'] = '@hf/mistralai/mistral-7b-instruct-v0.2';
+
+		const model: IDBMessageContent['model_used'] = '@hf/mistral/mistral-7b-instruct-v0.2';
 
 		return new Promise<{
 			action: MessageAction;
