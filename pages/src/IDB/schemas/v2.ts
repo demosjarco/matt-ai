@@ -1,3 +1,4 @@
+import type { modelMappings } from '@cloudflare/ai';
 import type { DBSchema, IDBPDatabase } from 'idb';
 import type { MessageAction } from '../../../../worker/aiTypes/MessageAction';
 
@@ -89,7 +90,7 @@ export interface IDBMessageContent {
 	text?: IDBMessageContentText;
 	image?: IDBMessageContentImage;
 	card?: IDBMessageContentCard;
-	model_used: Parameters<Ai['run']>[0] | null;
+	model_used: (typeof modelMappings)[keyof typeof modelMappings]['models'][number] | null;
 }
 export type IDBMessageContentText = string;
 export interface IDBMessageContentCard extends Record<string, any> {}

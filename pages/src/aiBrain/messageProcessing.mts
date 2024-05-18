@@ -111,7 +111,6 @@ export class MessageProcessing extends CFBase {
 			action: MessageAction;
 			modelUsed: IDBMessageContent['model_used'];
 		}>((resolve, reject) =>
-			// @ts-expect-error todo: specify that it is text only
 			(this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)
 				.then((action) =>
 					resolve({
