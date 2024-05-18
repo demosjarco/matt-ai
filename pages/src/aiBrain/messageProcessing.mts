@@ -225,7 +225,11 @@ export class MessageProcessing extends CFBase {
 					.catch(() =>
 						this.image(prompt, '@cf/bytedance/stable-diffusion-xl-lightning', num_steps)
 							.then(resolve)
-							.catch(() => this.image(prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps).then(resolve).catch(reject)),
+							.catch(() =>
+								this.image(prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps)
+									.then(resolve)
+									.catch(() => this.image(prompt, '@cf/stabilityai/stable-diffusion-xl-turbo').then(resolve).catch(reject)),
+							),
 					),
 			);
 		} else {
