@@ -102,16 +102,15 @@ export class MessageProcessing extends CFBase {
 		 * @param `@hf/google/gemma-7b-it` - Good, but conservate and ends up too vague to be useful at times
 		 * @param `@cf/meta/llama-3-8b-instruct` - Doesn't always works, but when it does, it regurgitates verbatim directly and isn't actually useful
 		 * @param `@hf/thebloke/mistral-7b-instruct-v0.1-awq` - what are you even doing?
-		 * @param `@hf/mistralai/mistral-7b-instruct-v0.2` - Perfect so far
+		 * @param `@hf/mistral/mistral-7b-instruct-v0.2` - Perfect so far
 		 */
-		// @ts-expect-error todo: specify that it is text only
-		const model: IDBMessageContent['model_used'] = '@hf/mistralai/mistral-7b-instruct-v0.2';
+
+		const model: IDBMessageContent['model_used'] = '@hf/mistral/mistral-7b-instruct-v0.2';
 
 		return new Promise<{
 			action: MessageAction;
 			modelUsed: IDBMessageContent['model_used'];
 		}>((resolve, reject) =>
-			// @ts-expect-error todo: specify that it is text only
 			(this.helpers.c.env.BACKEND_WORKER.messageAction(message, model) as ReturnType<Worker['messageAction']>)
 				.then((action) =>
 					resolve({
@@ -226,7 +225,11 @@ export class MessageProcessing extends CFBase {
 					.catch(() =>
 						this.image(prompt, '@cf/bytedance/stable-diffusion-xl-lightning', num_steps)
 							.then(resolve)
-							.catch(() => this.image(prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps).then(resolve).catch(reject)),
+							.catch(() =>
+								this.image(prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps)
+									.then(resolve)
+									.catch(() => this.image(prompt, '@cf/stabilityai/stable-diffusion-xl-turbo').then(resolve).catch(reject)),
+							),
 					),
 			);
 		} else {

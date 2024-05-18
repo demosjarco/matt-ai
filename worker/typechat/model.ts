@@ -1,10 +1,11 @@
+import type { modelMappings } from '@cloudflare/ai';
 import { error, success, type Result } from './result.js';
 
 export type ExcludeType<UnionType, ExcludedType> = UnionType extends ExcludedType ? never : UnionType;
 
 export interface ModelSelector {
 	binding: Ai;
-	model: Parameters<Ai['run']>[0];
+	model: (typeof modelMappings)['text-generation']['models'][number];
 	maxTokens?: AiTextGenerationInput['max_tokens'];
 	stream?: AiTextGenerationInput['stream'];
 }
@@ -87,7 +88,7 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 			try {
 				const { response } = await new Promise<Required<ExcludeType<AiTextGenerationOutput, ReadableStream>>>((resolve, reject) =>
 					binding
-						// @ts-expect-error todo: specify that it is text only
+						// @ts-ignore @todo specify that it is text only
 						.run(model, { messages, max_tokens: maxTokens, stream: shouldStream })
 						.then(async (rawResponse: any) => {
 							const response = rawResponse as AiTextGenerationOutput;
