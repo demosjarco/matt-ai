@@ -1,6 +1,6 @@
 name = "matt-ai"
 pages_build_output_dir = "pages/dist"
-compatibility_date = "2024-04-19"
+compatibility_date = "2024-05-12"
 compatibility_flags = ["nodejs_compat"]
 ai = { binding = "AI" }
 services = [
@@ -12,7 +12,7 @@ NODE_ENV = "development"
 
 
 [env.production]
-compatibility_date = "2024-04-19"
+compatibility_date = "2024-05-12"
 compatibility_flags = ["nodejs_compat"]
 ai = { binding = "AI" }
 services = [
