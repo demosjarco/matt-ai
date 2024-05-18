@@ -238,7 +238,6 @@ export default component$(() => {
 																		 */
 																		const composedInsert: IDBMessageContent = {
 																			text: '',
-																			// @ts-expect-error todo: specify that it is text only
 																			model_used: model,
 																		};
 
