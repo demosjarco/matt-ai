@@ -9,6 +9,7 @@ services = [
 
 [vars]
 NODE_ENV = "development"
+TURNSTILE_SITE_KEY = "0x4AAAAAAAQ34m_klLCEVN51"
 
 
 [env.production]
@@ -21,6 +22,7 @@ services = [
 
 [env.production.vars]
 NODE_ENV = "production"
+TURNSTILE_SITE_KEY = "0x4AAAAAAAQ34m_klLCEVN51"
 
 
 [dev]

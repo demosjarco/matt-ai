@@ -4,9 +4,12 @@ import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 import type Helper from '../../worker/src/index';
 import type { IDBMessage } from './IDB/schemas/v2';
 
-export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
+export interface EnvVars extends Secrets, Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
+	TURNSTILE_SITE_KEY: string;
+}
 
+interface Secrets {
 	TURNSTILE_SECRET_KEY: string;
 }
 
@@ -53,6 +56,26 @@ export interface MessageContextValue {
 export type MessageActionTaken = Record<keyof MessageAction, boolean>;
 
 export type AsyncFunctionWithParams<P1, P2, P3, R, T> = (param1: P1, items: T[], param2: P2, param3: P3) => Promise<R>;
+
+/**
+ * @link https://developers.cloudflare.com/turnstile/troubleshooting/testing/#dummy-sitekeys-and-secret-keys
+ */
+export namespace TurnstileDummySitekey {
+	export enum Visible {
+		passes = '1x00000000000000000000AA',
+		blocks = '2x00000000000000000000AB',
+		interactive = '3x00000000000000000000FF',
+	}
+	export enum Invisible {
+		passes = '1x00000000000000000000BB',
+		blocks = '2x00000000000000000000BB',
+	}
+}
+export enum TurnstileDummySecretkey {
+	passes = '1x0000000000000000000000000000000AA',
+	fails = '2x0000000000000000000000000000000AA',
+	spent = '3x0000000000000000000000000000000AA',
+}
 
 /**
  * @link https://developers.cloudflare.com/turnstile/get-started/server-side-validation/#accepted-parameters
