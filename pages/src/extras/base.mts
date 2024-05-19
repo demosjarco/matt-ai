@@ -1,4 +1,4 @@
-import type { CustomContext, EnvVars } from '../types';
+import type { CustomContext } from '../types';
 import { Helpers } from './helpers.mjs';
 
 export interface BaseHelpers {
@@ -23,7 +23,7 @@ export abstract class CFBase<T extends BaseHelpers = BaseHelpers> extends Helper
 					req: {
 						raw: incomingContext.request,
 					},
-					env: incomingContext.env as EnvVars,
+					env: incomingContext.env,
 					executionCtx: incomingContext.ctx as ExecutionContext,
 				},
 			};
