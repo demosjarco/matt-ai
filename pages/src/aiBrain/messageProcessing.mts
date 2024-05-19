@@ -66,7 +66,7 @@ export class MessageProcessing extends CFBase {
 					},
 				],
 			})
-				.then((response: AiTextGenerationOutput) => {
+				.then((response) => {
 					if (MessageProcessing.isNotReadableStream(response)) {
 						const parsedResponseRaw = response.response!.trim().toLowerCase();
 						const [parsedResponse] = parsedResponseRaw.split(/\s+/, 2);
