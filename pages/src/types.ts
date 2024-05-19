@@ -1,3 +1,4 @@
+import type { modelMappings } from '@cloudflare/ai';
 import type { randomUUID } from 'node:crypto';
 import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 import type Helper from '../../worker/src/index';
@@ -28,6 +29,9 @@ export interface CustomContext {
 	env: EnvVars;
 	executionCtx: ExecutionContext;
 }
+
+export type modelTypes = keyof typeof modelMappings;
+export type modelPossibilities = (typeof modelMappings)[modelTypes]['models'][number][];
 
 export interface UuidExport {
 	utf8: ReturnType<typeof randomUUID>;
