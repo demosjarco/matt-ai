@@ -29,7 +29,7 @@ export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
 	return runningLocally(platform.request);
 });
 export const serverNodeEnv = server$(function () {
-	return (this.platform.env as EnvVars).NODE_ENV;
+	return this.platform.env.NODE_ENV;
 });
 
 export const serverParams = server$(function () {
@@ -75,7 +75,7 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 			const ip = request.headers.get('CF-Connecting-IP');
 
 			const formData = new FormData();
-			formData.append('secret', (platform.env as EnvVars).TURNSTILE_SECRET_KEY);
+			formData.append('secret', platform.env.TURNSTILE_SECRET_KEY);
 			formData.append('response', incomingFormData['cf-turnstile-response']);
 			if (ip) formData.append('remoteip', ip);
 
