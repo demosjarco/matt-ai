@@ -35,8 +35,8 @@ export const useTurnstileKey = routeLoader$(({ platform, request }) => {
 export const useLocalEdgeCheck = routeLoader$(({ request }) => {
 	return runningLocally(request);
 });
-export const serverNodeEnv = server$(function () {
-	return this.platform.env.NODE_ENV;
+export const useNodeEnv = routeLoader$(({ platform }) => {
+	return platform.env.NODE_ENV;
 });
 
 export const serverParams = server$(function () {
