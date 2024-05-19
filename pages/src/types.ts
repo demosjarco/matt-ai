@@ -4,9 +4,11 @@ import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 import type Helper from '../../worker/src/index';
 import type { IDBMessage } from './IDB/schemas/v2';
 
-export interface EnvVars extends Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
+export interface EnvVars extends Secrets, Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
+}
 
+interface Secrets {
 	TURNSTILE_SECRET_KEY: string;
 }
 
