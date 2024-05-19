@@ -198,7 +198,7 @@ export class MessageProcessing extends CFBase {
 	public summarize(messages: RoleScopedChatInput['content'][], model: (typeof modelMappings)['summarization']['models'][number]) {
 		return this.helpers.c.env.AI.run(model, {
 			input_text: messages.join('\n'),
-			max_length: 12,
+			max_length: 10,
 		}).then((response) => response.summary);
 	}
 
