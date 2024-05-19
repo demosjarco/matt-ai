@@ -124,7 +124,7 @@ export default component$<{ id: number; title: string; onClick$: QRL<(id: number
 				{deleteState.value ? deleteStateLayout : undefined}
 				{editState.value || deleteState.value ? undefined : (
 					<>
-						<span class="ms-2 py-1.5 text-sm">{title}</span>
+						<span class="ms-2 truncate py-1.5 text-sm">{title}</span>
 						{touchScreen.value || mouseOver.value ? (
 							<>
 								{/* Spacer to allow button to go all the way to the right */}
