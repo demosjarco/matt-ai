@@ -7,7 +7,7 @@ import Image from './image';
 import SafetyBanner from './safetyBanner';
 import Text from './text';
 
-export default component$((props: { message: IDBMessage }) => {
+export default component$<{ message: IDBMessage }>((props) => {
 	const nodeEnv = useSignal<Awaited<ReturnType<typeof serverNodeEnv>>>();
 
 	useTask$(async () => {
