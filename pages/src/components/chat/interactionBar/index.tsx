@@ -335,13 +335,21 @@ export default component$(() => {
 																if (messagesToSummary.length > 0) {
 																	savingPromises.push(
 																		messageSummary(messagesToSummary, '@cf/facebook/bart-large-cnn')
-																			.then((summary) =>
-																				new IDBConversations().updateConversation({
+																			.then((summary) => {
+																				const newName = summary.trim();
+
+																				const conversation = conversations.find((conversation) => conversation.key === (userMessage.conversation_id || aiMessage.conversation_id));
+																				if (conversation) {
+																					// Change UI
+																					conversation.name = newName;
+																				}
+																				// Change in storage
+																				return new IDBConversations().updateConversation({
 																					key: userMessage.conversation_id || aiMessage.conversation_id,
 																					name: summary,
 																					ctime: new Date(),
-																				}),
-																			)
+																				});
+																			})
 																			.catch(console.error),
 																	);
 																}
