@@ -78,7 +78,6 @@ export default component$<{ message: IDBMessage }>(({ message }) => {
 											<FaChevronDownSolid />
 										</button>
 										<div ref={dropdownMenu} id="dropdown" class={`z-10 hidden w-48 divide-y divide-gray-100 rounded-lg bg-gradient-to-b from-green-700 to-green-600 shadow-lg shadow-gray-900 dark:divide-gray-600`}>
-											{/* border-1 peer block h-10 w-full appearance-none rounded-xl border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-white dark:focus:border-blue-500 */}
 											<input class="block w-full appearance-none rounded-t-lg border-x-0 border-b border-t-0 border-b-gray-100 bg-green-800 px-2.5 pb-2.5 pt-4 text-sm text-white shadow-inner outline-none ring-0 placeholder:text-white placeholder:opacity-65 focus:appearance-none focus:border-x-0 focus:border-b focus:border-t-0 focus:border-b-gray-100 focus:outline-none focus:ring-0 dark:border-b-gray-300 dark:placeholder:text-white focus:dark:border-b-gray-300" type="search" placeholder="search" enterKeyHint="search" autoCapitalize="off" autocomplete="off" autoCorrect="off" autoFocus={true} onInput$={(_event, element) => (modelSearchText.value = element.value.trim())} />
 											<ul class={`max-h-48 overflow-y-auto text-sm text-gray-700 dark:text-gray-200`} aria-labelledby="dropdownButton">
 												{Object.entries(modelSelection).map(([type, models]) => (
