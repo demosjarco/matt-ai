@@ -25,6 +25,9 @@ const messageText = server$(async function* (...args: Parameters<MessageProcessi
 		yield chunk;
 	}
 });
+const messageSummary = server$(function (...args: Parameters<MessageProcessing['summarize']>) {
+	return new MessageProcessing(this.platform).summarize(...args);
+});
 const messageActionImage = server$(function (...args: Parameters<MessageProcessing['imageGenerate']>) {
 	return new MessageProcessing(this.platform).imageGenerate(...args);
 });
@@ -316,12 +319,35 @@ export default component$(() => {
 																// Remove all status
 																messageHistory[aiMessage.key!]!.status = true;
 
-																// Final save
-																new IDBMessages()
-																	.updateMessage({
+																const messagesToSummary: string[] = [];
+																const userTextContentIndex = messageHistory[userMessage.key!]!.content.findIndex((record) => 'text' in record);
+																if (userTextContentIndex > -1) messagesToSummary.push(messageHistory[userMessage.key!]!.content[userTextContentIndex]!.text!);
+																const aiTextContentIndex = messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
+																if (aiTextContentIndex > -1) messagesToSummary.push(messageHistory[aiMessage.key!]!.content[aiTextContentIndex]!.text!);
+
+																const savingPromises: Promise<any>[] = [
+																	new IDBMessages().updateMessage({
 																		key: aiMessage.key!,
 																		status: true,
-																	})
+																	}),
+																];
+
+																if (messagesToSummary.length > 0) {
+																	savingPromises.push(
+																		messageSummary(messagesToSummary, '@cf/facebook/bart-large-cnn')
+																			.then((summary) =>
+																				new IDBConversations().updateConversation({
+																					key: userMessage.conversation_id || aiMessage.conversation_id,
+																					name: summary,
+																					ctime: new Date(),
+																				}),
+																			)
+																			.catch(console.error),
+																	);
+																}
+
+																// Final save
+																Promise.allSettled(savingPromises)
 																	.then(() => mainResolve())
 																	.catch(mainReject);
 															});
