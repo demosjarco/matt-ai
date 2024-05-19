@@ -1,6 +1,6 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useSignal, useTask$ } from '@builder.io/qwik';
 import type { IDBMessage } from '../../../../IDB/schemas/v2';
-import { useNodeEnv } from '../../../../routes/layout';
+import { serverNodeEnv } from '../../../../routes/layout';
 import Card from './card';
 import Debug from './debug';
 import Image from './image';
@@ -8,7 +8,11 @@ import SafetyBanner from './safetyBanner';
 import Text from './text';
 
 export default component$<{ message: IDBMessage }>(({ message }) => {
-	const nodeEnv = useNodeEnv();
+	const nodeEnv = useSignal<Awaited<ReturnType<typeof serverNodeEnv>>>();
+
+	useTask$(async () => {
+		nodeEnv.value = await serverNodeEnv();
+	});
 
 	const isMe = message.role === 'user' ? true : false;
 
