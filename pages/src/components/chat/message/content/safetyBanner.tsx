@@ -1,13 +1,13 @@
 import { component$, useTask$ } from '@builder.io/qwik';
 import { FaCircleExclamationSolid, FaTriangleExclamationSolid } from '@qwikest/icons/font-awesome';
 
-export default component$((props: { knownBad: boolean }) => {
+export default component$<{ knownBad: boolean }>(({ knownBad }) => {
 	useTask$(({ track }) => {
 		// Needs to be retracked
-		track(() => props.knownBad);
+		track(() => knownBad);
 	});
 
-	if (props.knownBad) {
+	if (knownBad) {
 		return (
 			<div class="mt-4 flex items-center rounded-lg border border-red-300 bg-transparent p-3 text-sm text-red-600 dark:border-red-600 dark:text-red-400" role="alert">
 				<FaCircleExclamationSolid />
