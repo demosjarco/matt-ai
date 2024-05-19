@@ -5,7 +5,7 @@ import { FaBarsSolid } from '@qwikest/icons/font-awesome';
 import Sidebar from '../components/sidebar';
 import { runningLocally } from '../extras';
 import { ConversationsContext, MessagesContext } from '../extras/context';
-import type { ChatFormSubmit, EnvVars, TurnstileResponse } from '../types';
+import { TurnstileDummySecretkey, TurnstileDummySitekey, type ChatFormSubmit, type TurnstileResponse } from '../types';
 
 export const useFormSubmissionWithTurnstile = routeAction$(
 	(data, { params, fail, status }) => {
@@ -25,8 +25,15 @@ export const useFormSubmissionWithTurnstile = routeAction$(
 	}),
 );
 
-export const useLocalEdgeCheck = routeLoader$(function ({ platform }) {
-	return runningLocally(platform.request);
+export const useTurnstileKey = routeLoader$(({ platform, request }) => {
+	if (runningLocally(request)) {
+		return TurnstileDummySitekey.Invisible.passes;
+	} else {
+		return platform.env.TURNSTILE_SITE_KEY;
+	}
+});
+export const useLocalEdgeCheck = routeLoader$(({ request }) => {
+	return runningLocally(request);
 });
 export const serverNodeEnv = server$(function () {
 	return this.platform.env.NODE_ENV;
@@ -75,7 +82,11 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 			const ip = request.headers.get('CF-Connecting-IP');
 
 			const formData = new FormData();
-			formData.append('secret', platform.env.TURNSTILE_SECRET_KEY);
+			if (runningLocally(request)) {
+				formData.append('secret', TurnstileDummySecretkey.passes);
+			} else {
+				formData.append('secret', platform.env.TURNSTILE_SECRET_KEY);
+			}
 			formData.append('response', incomingFormData['cf-turnstile-response']);
 			if (ip) formData.append('remoteip', ip);
 
