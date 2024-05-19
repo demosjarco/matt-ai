@@ -3,17 +3,13 @@ import { modelMappings } from '@cloudflare/ai';
 import { FaArrowsRotateSolid, FaChevronDownSolid } from '@qwikest/icons/font-awesome';
 import { Dropdown } from 'flowbite';
 import type { IDBMessage } from '../../../IDB/schemas/v2';
-import { serverNodeEnv } from '../../../routes/layout';
+import { useNodeEnv } from '../../../routes/layout';
 import type { modelPossibilities, modelTypes } from '../../../types';
 import Avatar from '../Avatar';
 import Content from './content';
 
 export default component$<{ message: IDBMessage }>(({ message }) => {
-	const nodeEnv = useSignal<Awaited<ReturnType<typeof serverNodeEnv>>>();
-
-	useTask$(async () => {
-		nodeEnv.value = await serverNodeEnv();
-	});
+	const nodeEnv = useNodeEnv();
 
 	const isMe = message.role === 'user' ? true : false;
 
