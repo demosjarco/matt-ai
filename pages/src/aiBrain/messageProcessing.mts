@@ -195,6 +195,13 @@ export class MessageProcessing extends CFBase {
 		}
 	}
 
+	public summarize(messages: RoleScopedChatInput['content'][], model: (typeof modelMappings)['summarization']['models'][number]) {
+		return this.helpers.c.env.AI.run(model, {
+			input_text: messages.join('\n'),
+			max_length: 12,
+		}).then((response) => response.summary);
+	}
+
 	private image(prompt: AiTextToImageInput['prompt'], model: (typeof modelMappings)['text-to-image']['models'][number], num_steps: AiTextToImageInput['num_steps'] = 20) {
 		return new Promise<{ raw: ReturnType<Buffer['toString']>; model: typeof model }>((resolve, reject) => {
 			// @ts-expect-error todo: specify that it is image only

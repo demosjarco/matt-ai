@@ -28,6 +28,8 @@ export default component$(() => {
 		if (conversationId) {
 			const savedMessages = await new IDBMessages().getMessagesForConversation(conversationId);
 
+			console.debug('Found', savedMessages.length, 'messages for conversation id', conversationId);
+
 			const potentialPromise: ReturnType<IDBConversations['updateConversation']>[] = [];
 			if (savedMessages.length) {
 				potentialPromise.push(
