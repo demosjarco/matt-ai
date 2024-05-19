@@ -8,14 +8,14 @@ import type { modelPossibilities, modelTypes } from '../../../types';
 import Avatar from '../Avatar';
 import Content from './content';
 
-export default component$<{ message: IDBMessage }>((props) => {
+export default component$<{ message: IDBMessage }>(({ message }) => {
 	const nodeEnv = useSignal<Awaited<ReturnType<typeof serverNodeEnv>>>();
 
 	useTask$(async () => {
 		nodeEnv.value = await serverNodeEnv();
 	});
 
-	const isMe = props.message.role === 'user' ? true : false;
+	const isMe = message.role === 'user' ? true : false;
 
 	const originalModels = (['text-generation', 'text-to-image'] as modelTypes[]).reduce(
 		(acc, type) => {
@@ -59,13 +59,13 @@ export default component$<{ message: IDBMessage }>((props) => {
 			<div class={`${isMe ? 'col-start-1 col-end-13 sm:col-start-6' : 'col-start-1 col-end-13 sm:col-end-8'} rounded-lg p-3`}>
 				<div class={`${isMe ? 'flex flex-row-reverse justify-start' : 'flex flex-row items-center'}`}>
 					<div class={`${isMe ? 'ml-2' : ' mr-2'}`}>
-						<Avatar username={props.message.role} />
+						<Avatar username={message.role} />
 					</div>
 
 					<div class="flex w-full flex-col gap-1">
 						<div class={`flex items-center space-x-2 rtl:space-x-reverse ${isMe ? 'justify-end' : ''}`}>
-							<span class="text-sm font-semibold text-gray-900 dark:text-white">{props.message.role}</span>
-							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{props.message.btime.toLocaleString(navigator.language || navigator.languages[0])}</span>
+							<span class="text-sm font-semibold text-gray-900 dark:text-white">{message.role}</span>
+							<span class="text-sm font-normal text-gray-500 dark:text-gray-400">{message.btime.toLocaleString(navigator.language || navigator.languages[0])}</span>
 							{isMe && nodeEnv.value === 'development' ? undefined : (
 								<>
 									{/* Spacer to allow button to go all the way to the right */}
@@ -103,8 +103,8 @@ export default component$<{ message: IDBMessage }>((props) => {
 								</>
 							)}
 						</div>
-						<Content key={`messageContent-${props.message.key}`} message={props.message} />
-						{isMe ? undefined : <span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400`}>{Array.isArray(props.message.status) ? props.message.status.join(', ') : props.message.status ? 'Done' : 'Received'}</span>}
+						<Content key={`messageContent-${message.key}`} message={message} />
+						{isMe ? undefined : <span class={`flex text-sm font-normal text-gray-500 dark:text-gray-400`}>{Array.isArray(message.status) ? message.status.join(', ') : message.status ? 'Done' : 'Received'}</span>}
 					</div>
 				</div>
 			</div>

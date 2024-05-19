@@ -10,7 +10,7 @@ import markedBidi from 'marked-bidi';
 // @ts-expect-error
 import extendedTables from 'marked-extended-tables';
 
-export default component$((props: { text?: IDBMessageContentText }) => {
+export default component$<{ text?: IDBMessageContentText }>(({ text }) => {
 	const divRef = useSignal<HTMLDivElement>();
 	const pRef = useSignal<HTMLParagraphElement>();
 
@@ -18,9 +18,9 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 		track(() => divRef.value);
 		track(() => pRef.value);
 		// Needs to be retracked
-		track(() => props.text);
+		track(() => text);
 
-		if (props.text) {
+		if (text) {
 			if (divRef.value) {
 				try {
 					const markdownHtml = await new Marked({
@@ -31,7 +31,7 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 						.use(markedBidi())
 						.use(extendedTables())
 						.use(markedFootnote())
-						.parse(props.text);
+						.parse(text);
 					divRef.value.innerHTML = DOMPurify.sanitize(markdownHtml);
 				} catch (error) {
 					console.error('markdown error', error);
@@ -39,12 +39,12 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 					divRef.value.hidden = true;
 					if (pRef.value) {
 						pRef.value.hidden = false;
-						pRef.value.innerText = props.text;
+						pRef.value.innerText = text;
 					}
 				}
 			} else if (pRef.value) {
 				pRef.value.hidden = false;
-				pRef.value.innerText = props.text;
+				pRef.value.innerText = text;
 			}
 		}
 
@@ -53,7 +53,7 @@ export default component$((props: { text?: IDBMessageContentText }) => {
 		});
 	});
 
-	if (props.text) {
+	if (text) {
 		return (
 			<>
 				<div ref={divRef} class="text-balance text-gray-900 dark:text-white"></div>
