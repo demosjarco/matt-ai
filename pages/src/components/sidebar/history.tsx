@@ -9,12 +9,12 @@ export default component$(() => {
 
 	// Initial load
 	useVisibleTask$(async () => {
-		if (conversations.value.length === 0) conversations.value = await new IDBConversations().conversations;
+		if (conversations.length === 0) conversations.push(...(await new IDBConversations().conversations));
 	});
 
 	useTask$(({ track }) => {
 		// Track for UI updates
-		track(() => conversations.value);
+		track(() => conversations);
 	});
 
 	const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default component$(() => {
 
 	return (
 		<ul class="space-y-2 font-medium">
-			{conversations.value.map((conversation) => (
+			{conversations.map((conversation) => (
 				<Item onClick$={(id) => (conversationId.value = id)} key={`conversation-${conversation.key}`} id={conversation.key!} title={conversation.name} />
 			))}
 		</ul>

@@ -1,4 +1,4 @@
-import { Slot, component$, useContextProvider, useSignal, useStore } from '@builder.io/qwik';
+import { Slot, component$, useContextProvider, useStore } from '@builder.io/qwik';
 import type { DocumentHead, RequestHandler } from '@builder.io/qwik-city';
 import { routeAction$, routeLoader$, server$, z, zod$ } from '@builder.io/qwik-city';
 import { FaBarsSolid } from '@qwikest/icons/font-awesome';
@@ -123,7 +123,7 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 
 export default component$(() => {
 	// Setup contexts
-	useContextProvider(ConversationsContext, useSignal([]));
+	useContextProvider(ConversationsContext, useStore([], { deep: true }));
 	useContextProvider(MessagesContext, useStore({}, { deep: true }));
 
 	// UI
