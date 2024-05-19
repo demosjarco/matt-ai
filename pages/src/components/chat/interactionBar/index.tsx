@@ -220,7 +220,7 @@ export default component$(() => {
 												 * @todo typechat translation
 												 */
 
-												Promise.all(actions)
+												Promise.allSettled(actions)
 													.catch(mainReject)
 													.finally(() => {
 														const finalActions: Promise<void>[] = [
@@ -310,7 +310,7 @@ export default component$(() => {
 														}
 
 														// Finally done with everything
-														Promise.all(finalActions)
+														Promise.allSettled(finalActions)
 															.catch(mainReject)
 															.finally(() => {
 																// Remove all status
