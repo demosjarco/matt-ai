@@ -257,8 +257,8 @@ class CSPGenerator {
 	}
 }
 
-export const onRequest: RequestHandler = ({ platform, sharedMap, headers }) => {
-	if (isDev || runningLocally(platform.request)) return; // Will not return CSP headers in dev mode
+export const onRequest: RequestHandler = ({ request, sharedMap, headers }) => {
+	if (isDev || runningLocally(request)) return; // Will not return CSP headers in dev mode
 
 	const csp = new CSPGenerator();
 	sharedMap.set('@nonce', csp.nonce);
