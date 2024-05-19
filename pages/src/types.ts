@@ -32,7 +32,7 @@ export interface CustomContext {
 export interface UuidExport {
 	utf8: ReturnType<typeof randomUUID>;
 	hex: string;
-	blob: Buffer;
+	blob: (typeof Uint8Array)['prototype']['buffer'];
 }
 
 export interface ChatFormSubmit {
