@@ -22,7 +22,7 @@
 	"dependencies": {},
 	"devDependencies": {
 		"@swc/core": "^1.5.7",
-		"@types/node": "^20.12.12",
+		"@types/node": "^20.12.13",
 		"ts-node": "^10.9.2"
 	}
 }
