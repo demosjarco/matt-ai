@@ -24,7 +24,7 @@
 		"@cloudflare/ai": "^1.2.2",
 		"@cloudflare/workers-types": "^4.20240529.0",
 		"@demosjarco/prettier-config": "^1.0.1",
-		"prettier": "^3.2.5",
+		"prettier": "^3.3.0",
 		"typescript": "^5.4.5",
 		"wrangler": "^3.57.1"
 	}
