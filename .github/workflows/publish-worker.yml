@@ -33,7 +33,7 @@ jobs:
     environment:
       name: ${{ inputs.environment || github.ref_name }}
     steps:
-      - uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
+      - uses: step-security/harden-runner@f086349bfa2bd1361f7909c78558e816508cdc10 # v2.8.0
         with:
           disable-sudo: true
           egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
@@ -50,7 +50,7 @@ jobs:
       - run: npm -w worker run build
       - run: echo "wrangler_version=$(npm ls wrangler --depth=0 --json | jq -r '.dependencies.wrangler.version')" >> $GITHUB_OUTPUT
         id: npm_wrangler_version
-      - uses: cloudflare/wrangler-action@a84dcc6dd36c8769fbff7e622308c8050fc41f4f # v3.5.0
+      - uses: cloudflare/wrangler-action@a08dc762e87e8754e0d56a16a35a70b406bc869f # v3.6.1
         id: wrangler
         with:
           wranglerVersion: ${{ steps.npm_wrangler_version.outputs.wrangler_version }}
