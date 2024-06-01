@@ -50,7 +50,7 @@ updates:
       # Currently breaks `onSubmitCompleted()`
       - dependency-name: '@builder.io/qwik*'
         versions:
-          - "1.5.5"
+          - '1.5.5'
     groups:
       cloudflare:
         patterns:
