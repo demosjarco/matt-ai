@@ -203,7 +203,7 @@ export class MessageProcessing extends CFBase {
 	}
 
 	private image(prompt: AiTextToImageInput['prompt'], model: (typeof modelMappings)['text-to-image']['models'][number], num_steps: AiTextToImageInput['num_steps'] = 20) {
-		return new Promise<{ raw: ReturnType<Buffer['toString']>; model: typeof model }>((resolve, reject) => {
+		return new Promise<{ raw: ReturnType<(typeof Buffer)['toString']>; model: typeof model }>((resolve, reject) => {
 			// @ts-expect-error todo: specify that it is image only
 			this.helpers.c.env.AI.run(model, { prompt, num_steps })
 				.then(async (imageGeneration: AiTextToImageOutput | NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
