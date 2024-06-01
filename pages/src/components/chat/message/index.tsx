@@ -58,7 +58,7 @@ export default component$<{ message: IDBMessage }>(({ message }) => {
 		<>
 			<div class={`${isMe ? 'col-start-1 col-end-13 sm:col-start-6' : 'col-start-1 col-end-13 sm:col-end-8'} rounded-lg p-3`}>
 				<div class={`${isMe ? 'flex flex-row-reverse justify-start' : 'flex flex-row items-center'}`}>
-					<div class={`${isMe ? 'ml-2' : ' mr-2'}`}>
+					<div class={`${isMe ? 'ml-2' : 'mr-2'}`}>
 						<Avatar username={message.role} />
 					</div>
 
