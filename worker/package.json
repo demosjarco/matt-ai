@@ -21,7 +21,7 @@
 	"homepage": "https://github.com/demosjarco/matt-ai#readme",
 	"dependencies": {},
 	"devDependencies": {
-		"@swc/core": "^1.5.24",
+		"@swc/core": "^1.5.28",
 		"@types/node": "^20.13.0",
 		"ts-node": "^10.9.2"
 	}
