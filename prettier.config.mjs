@@ -8,7 +8,7 @@ export default {
 		{
 			files: 'pages/**',
 			options: {
-				plugins: ['prettier-plugin-tailwindcss'],
+				plugins: [...(baseConfig.plugins ?? []), 'prettier-plugin-tailwindcss'],
 			},
 		},
 	],
