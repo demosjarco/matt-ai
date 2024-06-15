@@ -7,6 +7,10 @@
   Referrer-Policy: strict-origin
   Expect-CT: max-age=86400, enforce
 
+/*service-worker.js
+  Cache-Control: no-store
+  Content-Type: application/javascript
+
 /build/*
   Cache-Control: no-cache, no-store
 
