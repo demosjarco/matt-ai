@@ -3,11 +3,21 @@
 	"tasks": [
 		{
 			"label": "Build",
-			"dependsOn": ["TypeChat Types", "TypeChat Compile", "Qwik Types", "Qwik Client", "Qwik Server", "Qwik Lint"],
+			"dependsOn": ["Lint", "TypeChat Types", "TypeChat Compile", "Qwik Types", "Qwik Client", "Qwik Server"],
 			"isBackground": true,
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			}
+		},
+		{
+			"label": "Lint",
+			"type": "npm",
+			"script": "lint:fix",
+			"problemMatcher": "$eslint-stylish",
+			"icon": {
+				"id": "lightbulb-autofix",
+				"color": "terminal.ansiGreen"
 			}
 		},
 		{
@@ -91,23 +101,6 @@
 			},
 			"icon": {
 				"id": "server-process"
-			}
-		},
-		{
-			"label": "Qwik Lint",
-			"dependsOn": ["Qwik Client", "Qwik Server"],
-			"type": "npm",
-			"script": "lint:fix",
-			"problemMatcher": "$eslint-stylish",
-			"presentation": {
-				"group": "pages.compile"
-			},
-			"options": {
-				"cwd": "${workspaceFolder}/pages"
-			},
-			"icon": {
-				"id": "lightbulb-autofix",
-				"color": "terminal.ansiGreen"
 			}
 		}
 	]
