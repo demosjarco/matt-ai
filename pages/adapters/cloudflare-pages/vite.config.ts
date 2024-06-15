@@ -11,6 +11,14 @@ export default extendConfig(baseConfig, () => {
 			ssrManifest: true,
 			ssr: true,
 		},
-		plugins: [cloudflarePagesAdapter()],
+		plugins: [
+			cloudflarePagesAdapter({
+				ssg: {
+					include: ['/*'],
+					origin: 'https://matt-ai.pages.dev',
+					sitemapOutFile: 'sitemap.xml',
+				},
+			}),
+		],
 	};
 });
