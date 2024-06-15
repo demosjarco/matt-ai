@@ -13,7 +13,7 @@
 		"lint:fix": "npm run lint -- --fix",
 		"preview": "qwik build preview && vite preview --open",
 		"preview:lhci": "qwik build preview && vite preview --port 8080",
-		"clean": "npx -y rimraf@latest --glob ./**/.wrangler ./dist ./server ./tmp",
+		"clean": "npx -y rimraf@latest ./dist ./server ./tmp",
 		"start": "wrangler pages dev dist --live-reload true --persist-to ../.wrangler/state",
 		"qwik": "qwik"
 	},
