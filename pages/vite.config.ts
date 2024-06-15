@@ -3,21 +3,12 @@ import { qwikVite } from '@builder.io/qwik/optimizer';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { defineConfig, type UserConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import pkg from './package.json';
 import type { EnvVars } from './src/types';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { dependencies = {}, devDependencies = {} } = pkg as any as {
-	dependencies: Record<string, string>;
-	devDependencies: Record<string, string>;
-	[key: string]: unknown;
-};
 
 // https://developers.cloudflare.com/workers/runtime-apis/nodejs
 const cloudflareNodeRuntimes: `node:${string}`[] = ['node:assert', 'node:async_hooks', 'node:buffer', 'node:crypto', 'node:diagnostics_channel', 'node:events', 'node:path', 'node:process', 'node:stream', 'node:string_decoder', 'node:test', 'node:util'];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default defineConfig(({ command, mode }): UserConfig => {
+export default defineConfig((): UserConfig => {
 	return {
 		plugins: [
 			qwikCity(),
