@@ -1,29 +1,22 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# ESLint is a tool for identifying and reporting on patterns
-# found in ECMAScript/JavaScript code.
-# More details at https://github.com/eslint/eslint
-# and https://eslint.org
-
 name: ESLint
 
 on:
   push:
     paths:
       - '.github/workflows/eslint.yml'
-      - 'pages/.eslintrc.cjs'
+      - '.eslintrc.cjs'
+      - '**/.eslintrc.cjs'
       - 'package*.json'
-      - 'pages/package*.json'
-      - 'pages/**.ts*'
+      - '**/package*.json'
+      - '**/*.ts*'
   pull_request:
     paths:
       - '.github/workflows/eslint.yml'
-      - 'pages/.eslintrc.cjs'
+      - '.eslintrc.cjs'
+      - '**/.eslintrc.cjs'
       - 'package*.json'
-      - 'pages/package*.json'
-      - 'pages/**.ts*'
+      - '**/package*.json'
+      - '**/*.ts*'
   workflow_dispatch:
 
 concurrency:
@@ -48,9 +41,8 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: 'npm'
-      - run: npm -w pages install -D eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-qwik
-      - run: npm -w pages run lint:fix
-        working-directory: pages
+      - run: npm install -D eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-qwik
+      - run: npm run lint:fix
         continue-on-error: true
       - name: Check for Changes
         id: changes
@@ -72,17 +64,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      - run: git commit -m "Ran eslint"
+      - run: git commit -m "Ran linter"
         if: steps.changes.outputs.changes == 'true'
         continue-on-error: true
       - run: git push
         if: steps.changes.outputs.changes == 'true'
         continue-on-error: true
       - run: npm install -D @microsoft/eslint-formatter-sarif
-      - run: npx -w pages eslint . --ext .js,.jsx,.ts,.tsx --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
-        working-directory: pages
+      - run: npm run lint -- --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
         continue-on-error: true
       - uses: github/codeql-action/upload-sarif@f079b8493333aace61c81488f8bd40919487bd9f # v3.25.7
         with:
-          sarif_file: pages/eslint-results.sarif
-          wait-for-processing: true
+          sarif_file: eslint-results.sarif
