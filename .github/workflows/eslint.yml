@@ -65,7 +65,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      - run: git commit -m "Ran eslint"
+      - run: git commit -m "Ran linter"
         if: steps.changes.outputs.changes == 'true'
         continue-on-error: true
       - run: git push
