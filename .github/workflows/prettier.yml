@@ -68,7 +68,7 @@ jobs:
           check-latest: true
           cache: 'npm'
       - run: npm ci --include-workspace-root --workspaces
-      - run: npm run fmt
+      - run: npm run fmt:fix
       - name: Check for Changes
         id: changes
         run: |
