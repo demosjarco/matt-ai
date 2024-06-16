@@ -77,5 +77,4 @@ jobs:
         continue-on-error: true
       - uses: github/codeql-action/upload-sarif@f079b8493333aace61c81488f8bd40919487bd9f # v3.25.7
         with:
-          sarif_file: pages/eslint-results.sarif
-          wait-for-processing: true
+          sarif_file: eslint-results.sarif
