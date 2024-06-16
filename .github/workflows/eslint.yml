@@ -4,17 +4,19 @@ on:
   push:
     paths:
       - '.github/workflows/eslint.yml'
-      - 'pages/.eslintrc.cjs'
+      - '.eslintrc.cjs'
+      - '**/.eslintrc.cjs'
       - 'package*.json'
-      - 'pages/package*.json'
-      - 'pages/**.ts*'
+      - '**/package*.json'
+      - '**/*.ts*'
   pull_request:
     paths:
       - '.github/workflows/eslint.yml'
-      - 'pages/.eslintrc.cjs'
+      - '.eslintrc.cjs'
+      - '**/.eslintrc.cjs'
       - 'package*.json'
-      - 'pages/package*.json'
-      - 'pages/**.ts*'
+      - '**/package*.json'
+      - '**/*.ts*'
   workflow_dispatch:
 
 concurrency:
