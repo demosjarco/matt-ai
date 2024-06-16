@@ -1,7 +1,9 @@
 {
 	"scripts": {
-		"fmt": "prettier --write .",
-		"fmt.check": "prettier --check .",
+		"fmt": "prettier --check .",
+		"fmt:fix": "prettier --write .",
+		"lint": "eslint \"**/*.ts*\"",
+		"lint:fix": "npm run lint -- --fix",
 		"build:local": "cd worker/aiTypes && npm -w worker run build:types && cd ../../ && npm -w worker run build && npm -w pages run build",
 		"build:pages": "npm ci --include-workspace-root --workspace pages --workspace worker --include dev && cd worker/aiTypes && npm -w worker run build:types && cd ../../ && npm -w worker run build && npm -w pages run build",
 		"preclean": "npx -y rimraf@latest --glob ./**/.wrangler",
