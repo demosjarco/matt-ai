@@ -1,4 +1,4 @@
-import { type PromptSection, type TypeChatLanguageModel } from './model.js';
+import type { PromptSection, TypeChatLanguageModel } from './model.js';
 import { error, success, type Result } from './result.js';
 
 /**
@@ -125,7 +125,7 @@ export function createJsonTranslator<T extends object>(model: TypeChatLanguageMo
 
 	async function translate(request: string, promptPreamble?: string | PromptSection[]) {
 		const preamble: PromptSection[] = typeof promptPreamble === 'string' ? [{ role: 'user', content: promptPreamble }] : promptPreamble ?? [];
-		let prompt: PromptSection[] = [...preamble, { role: 'user', content: typeChat.createRequestPrompt(request) }];
+		const prompt: PromptSection[] = [...preamble, { role: 'user', content: typeChat.createRequestPrompt(request) }];
 		let attemptJsonRepair = typeChat.attemptJsonRepair;
 		let attemptRepair = typeChat.attemptRepair;
 		while (true) {

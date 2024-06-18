@@ -1,0 +1,79 @@
+name: SuperAi Catalog
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ai-catalog.yml'
+      - 'shared/workers-ai-catalog.ts'
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CATALOG_FILE: shared/workers-ai-catalog.ts
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          disable-sudo: true
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - name: Hit API endpoints and process results
+        run: |
+          # Get models
+          result1=$(curl -s -H "Authorization: Bearer ${{ secrets.WORKERS_AI_API_KEY }}" https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/ai/models/search | jq '.result')
+
+          # Group models by task.name and remove the task field from each model
+          grouped_models=$(echo "$result1" | jq '
+            group_by(.task.name) |
+            map({
+              (.[0].task.name): {
+                id: .[0].task.id,
+                description: .[0].task.description,
+                models: map(
+                  del(.task) |
+                  . + {
+                    beta: ([
+                      .properties[] | select(.property_id == "beta") | .value == "true"
+                    ] | any),
+                    properties: [
+                      .properties[] | select(.property_id != "beta")
+                    ]
+                  }
+                )
+              }
+            }) | add
+          ')
+
+          # Get loras
+          result2=$(curl -s -H "Authorization: Bearer ${{ secrets.WORKERS_AI_API_KEY }}" https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/ai/finetunes/public | jq '.result')
+
+          # Create the final JSON structure
+          final_json=$(jq -n --argjson modelGroups "$grouped_models" --argjson loras "$result2" '{"modelGroups": $modelGroups, "loras": $loras}')
+
+          # Create the TypeScript file with a single export
+          echo "export const workersAiCatalog = $final_json as const" > ${{ env.CATALOG_FILE }}
+        shell: bash
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: 'npm'
+      - run: npm install -D prettier @demosjarco/prettier-config
+      - run: npx prettier --write ${{ env.CATALOG_FILE }}
+      - name: Git Setup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - run: git add ${{ env.CATALOG_FILE }}
+      - run: git commit -m "Updated model catalog" || echo "model catalog not touched"
+      - run: git push
