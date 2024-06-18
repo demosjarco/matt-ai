@@ -1,11 +1,11 @@
-import type { modelMappings } from '@cloudflare/ai';
+import type { modelPossibilities } from '../src/types';
 import { error, success, type Result } from './result.js';
 
 export type ExcludeType<UnionType, ExcludedType> = UnionType extends ExcludedType ? never : UnionType;
 
 export interface ModelSelector {
 	binding: Ai;
-	model: (typeof modelMappings)['text-generation']['models'][number];
+	model: modelPossibilities<'Text Generation'>;
 	maxTokens?: AiTextGenerationInput['max_tokens'];
 	stream?: AiTextGenerationInput['stream'];
 }
