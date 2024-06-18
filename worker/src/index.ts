@@ -1,10 +1,9 @@
-import type { modelMappings } from '@cloudflare/ai';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import type { MessageAction } from '../aiTypes/MessageAction.js';
 import types from '../aiTypes/types.json';
 import { createJsonTranslator, createLanguageModel } from '../typechat/index.js';
 import { createTypeScriptJsonValidator } from '../typechat/ts/index.js';
-import type { EnvVars } from './types.js';
+import type { EnvVars, modelPossibilities } from './types.js';
 
 // Re-export since workerd can only find from from `wrangler.toml`'s `main` file
 export { QueueCallbackHandler } from '../../do/QueueCallbackHandler.mjs';
@@ -34,7 +33,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 		}
 	}
 
-	async messageAction(message: string, model: (typeof modelMappings)['text-generation']['models'][number]) {
+	async messageAction(message: string, model: modelPossibilities<'Text Generation'>) {
 		// const urlRegex = /https:\/\/(?:[a-z0-9-]+\.)+[a-z0-9-]+(?:\/[^\s]*)?/gi;
 		// console.debug('URLs detected', args.message.match(urlRegex));
 
