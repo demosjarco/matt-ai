@@ -1,11 +1,10 @@
-import type { modelMappings } from '@cloudflare/ai';
 import { addMetadata } from 'meta-png';
 import { Buffer } from 'node:buffer';
 import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type Worker from '../../../worker/src/index';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../extras/base.mjs';
-import type { MessageActionTaken, MessageContextValue } from '../types';
+import type { MessageActionTaken, MessageContextValue, modelPossibilities } from '../types';
 
 export class MessageProcessing extends CFBase {
 	static isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
@@ -133,11 +132,7 @@ export class MessageProcessing extends CFBase {
 		return fetch(ddgApi).then((response) => response.json<NonNullable<MessageContextValue['webSearchInfo']>>());
 	}
 
-	/**
-	 * @link https://github.com/demosjarco/matt-ai/blob/production/pages/src/components/chat/index.tsx#L108-L254
-	 */
-
-	public async *textResponse(model: (typeof modelMappings)['text-generation']['models'][number], messages: NonNullable<AiTextGenerationInput['messages']>, previousActions?: MessageActionTaken, context?: MessageContextValue) {
+	public async *textResponse(model: modelPossibilities<'Text Generation'>, messages: NonNullable<AiTextGenerationInput['messages']>, previousActions?: MessageActionTaken, context?: MessageContextValue) {
 		const systemMessages: RoleScopedChatInput[] = [{ role: 'system', content: `You are a helpful assistant. The current datetime is ${new Date().toISOString()}` }];
 		if (previousActions) systemMessages.push({ role: 'system', content: `You are the last step in a chain of ai prompts. The previous actions already done are ${JSON.stringify(previousActions)}.` + (context ? `The following context is now available due to those previous actions: ${JSON.stringify(context)}` : '') });
 
@@ -195,16 +190,15 @@ export class MessageProcessing extends CFBase {
 		}
 	}
 
-	public summarize(messages: RoleScopedChatInput['content'][], model: (typeof modelMappings)['summarization']['models'][number]) {
+	public summarize(messages: RoleScopedChatInput['content'][], model: modelPossibilities<'Summarization'>) {
 		return this.helpers.c.env.AI.run(model, {
 			input_text: messages.join('\n'),
 			max_length: 10,
 		}).then((response) => response.summary);
 	}
 
-	private image(prompt: AiTextToImageInput['prompt'], model: (typeof modelMappings)['text-to-image']['models'][number], num_steps: AiTextToImageInput['num_steps'] = 20) {
+	private image(prompt: AiTextToImageInput['prompt'], model: modelPossibilities<'Text-to-Image'>, num_steps: AiTextToImageInput['num_steps'] = 20) {
 		return new Promise<{ raw: ReturnType<(typeof Buffer)['toString']>; model: typeof model }>((resolve, reject) => {
-			// @ts-expect-error todo: specify that it is image only
 			this.helpers.c.env.AI.run(model, { prompt, num_steps })
 				.then(async (imageGeneration: AiTextToImageOutput | NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
 					if (imageGeneration instanceof ReadableStream) {
@@ -232,11 +226,7 @@ export class MessageProcessing extends CFBase {
 					.catch(() =>
 						this.image(prompt, '@cf/bytedance/stable-diffusion-xl-lightning', num_steps)
 							.then(resolve)
-							.catch(() =>
-								this.image(prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps)
-									.then(resolve)
-									.catch(() => this.image(prompt, '@cf/stabilityai/stable-diffusion-xl-turbo').then(resolve).catch(reject)),
-							),
+							.catch(() => this.image(prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps).then(resolve).catch(reject)),
 					),
 			);
 		} else {

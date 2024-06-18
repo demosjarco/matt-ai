@@ -1,5 +1,5 @@
-import type { modelMappings } from '@cloudflare/ai';
 import type { randomUUID } from 'node:crypto';
+import type { workersAiCatalog } from '../../shared/workers-ai-catalog';
 import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 import type Helper from '../../worker/src/index';
 import type { IDBMessage } from './IDB/schemas/v2';
@@ -33,8 +33,8 @@ export interface CustomContext {
 	executionCtx: ExecutionContext;
 }
 
-export type modelTypes = keyof typeof modelMappings;
-export type modelPossibilities = (typeof modelMappings)[modelTypes]['models'][number][];
+export type modelTypes = keyof typeof workersAiCatalog.modelGroups;
+export type modelPossibilities<M extends modelTypes = modelTypes> = (typeof workersAiCatalog.modelGroups)[M]['models'][number]['name'];
 
 export interface UuidExport {
 	utf8: ReturnType<typeof randomUUID>;
