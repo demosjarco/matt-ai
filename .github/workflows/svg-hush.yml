@@ -17,11 +17,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: step-security/harden-runner@f086349bfa2bd1361f7909c78558e816508cdc10 # v2.8.0
+      - uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
         with:
           disable-sudo: true
           egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
-      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       # https://github.com/actions/cache/blob/main/examples.md#rust---cargo
       # https://github.com/rust-lang/cargo/issues/4725
       # https://doc.rust-lang.org/cargo/reference/environment-variables.html
@@ -40,14 +40,7 @@ jobs:
       - run: cargo install svg-hush --force
       - name: Clean SVGs in `src`
         run: |
-          for file in $(find ${{ github.workspace }}/pages/src -iname '*.svg'); do
-            echo "Sanitizing: $file"
-            svg-hush $file > ${file}.tmp
-            mv -f ${file}.tmp $file
-          done
-      - name: Clean SVGs in `public`
-        run: |
-          for file in $(find ${{ github.workspace }}/pages/public -iname '*.svg'); do
+          for file in $(find ${{ github.workspace }}/pages -iname '*.svg'); do
             echo "Sanitizing: $file"
             svg-hush $file > ${file}.tmp
             mv -f ${file}.tmp $file
