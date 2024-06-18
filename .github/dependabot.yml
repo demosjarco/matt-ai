@@ -59,7 +59,6 @@ updates:
         patterns:
           - '@cloudflare/*'
           - 'wrangler'
-          - 'base64-js'
         exclude-patterns:
           - '@cloudflare/workers-types'
       code-management:
