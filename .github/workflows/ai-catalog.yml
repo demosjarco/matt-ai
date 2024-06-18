@@ -14,7 +14,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CATALOG_FILE: shared/workers-ai-catalog.ts
+  CATALOG_FILE_TS: shared/workers-ai-catalog.ts
+  CATALOG_FILE_JSON: shared/workers-ai-catalog.json
 
 jobs:
   regenerate:
@@ -61,7 +62,8 @@ jobs:
           final_json=$(jq -n --argjson modelGroups "$grouped_models" --argjson loras "$result2" '{"modelGroups": $modelGroups, "loras": $loras}')
 
           # Create the TypeScript file with a single export
-          echo "export const workersAiCatalog = $final_json as const" > ${{ env.CATALOG_FILE }}
+          echo "export const workersAiCatalog = $final_json as const" > ${{ env.CATALOG_FILE_TS }}
+          echo "$final_json" > ${{ env.CATALOG_FILE_JSON }}
         shell: bash
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
@@ -69,11 +71,12 @@ jobs:
           check-latest: true
           cache: 'npm'
       - run: npm install -D prettier @demosjarco/prettier-config
-      - run: npx prettier --write ${{ env.CATALOG_FILE }}
+      - run: npx prettier --write ${{ env.CATALOG_FILE_TS }} ${{ env.CATALOG_FILE_JSON }}
       - name: Git Setup
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      - run: git add ${{ env.CATALOG_FILE }}
+      - run: git add ${{ env.CATALOG_FILE_TS }}
+      - run: git add ${{ env.CATALOG_FILE_JSON }}
       - run: git commit -m "Updated model catalog" || echo "model catalog not touched"
       - run: git push
