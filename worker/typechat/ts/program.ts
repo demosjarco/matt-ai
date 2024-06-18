@@ -1,4 +1,4 @@
-import { type TypeChatLanguageModel } from '../model.js';
+import type { TypeChatLanguageModel } from '../model.js';
 import { error, success, type Result } from '../result.js';
 import { createJsonTranslator, type TypeChatJsonTranslator } from '../typechat.js';
 import { createTypeScriptJsonValidator } from './validate.js';
