@@ -1,10 +1,6 @@
 name: Update `workerd` runtime
 
 on:
-  # workflow_run:
-  #   workflows: ['Fix dependabot npm workspaces']
-  #   types:
-  #     - completed
   pull_request_target:
     types:
       - opened
@@ -15,7 +11,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -54,5 +50,5 @@ jobs:
           git config user.name "dependabot[bot]"
           git config user.email "dependabot[bot]@users.noreply.github.com"
       - run: find . -maxdepth 2 -name "wrangler.toml" -print0 | xargs -0 git add
-      - run: git commit -m "Update compatibility_date in wrangler.toml file"
+      - run: git commit -m "Update \`compatibility_date\` in \`wrangler.toml\`"
       - run: git push

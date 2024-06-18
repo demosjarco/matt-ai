@@ -1,11 +1,9 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"incremental": true,
 		"lib": ["ESNext", "DOM", "WebWorker", "DOM.Iterable"],
 		"jsx": "react-jsx",
 		"jsxImportSource": "@builder.io/qwik",
-		"moduleResolution": "Node",
 		"paths": {
 			"~/*": ["./src/*"]
 		},
@@ -13,6 +11,6 @@
 		"inlineSourceMap": true,
 		"outDir": "tmp"
 	},
-	"files": ["./.eslintrc.cjs"],
-	"include": ["src", "./*.d.ts", "./*.config.ts"]
+	"files": ["./.eslintrc.cjs", "./prettier.config.mjs", "./postcss.config.cjs", "./tailwind.config.cjs"],
+	"include": ["src", "adapters", "./*.d.ts", "./*.config.ts"]
 }

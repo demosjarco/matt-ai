@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { error, success } from '../result.js';
-import { type TypeChatJsonValidator } from '../typechat.js';
+import type { TypeChatJsonValidator } from '../typechat.js';
 
 /**
  * Returns a JSON validator for a given Zod schema. The schema is supplied as an object where each property provides
@@ -77,7 +77,7 @@ export function getZodSchemaAsTypeScript(schema: Record<string, z.ZodType>): str
 	let startOfLine = true;
 	let indent = 0;
 	const entries = Array.from(Object.entries(schema));
-	let namedTypes = new Map<object, string>(entries.map(([name, type]) => [getTypeIdentity(type), name]));
+	const namedTypes = new Map<object, string>(entries.map(([name, type]) => [getTypeIdentity(type), name]));
 	for (const [name, type] of entries) {
 		if (result) {
 			appendNewLine();
@@ -206,7 +206,7 @@ export function getZodSchemaAsTypeScript(schema: Record<string, z.ZodType>): str
 	function appendTupleType(tupleType: z.ZodType) {
 		append('[');
 		let first = true;
-		for (let type of (tupleType._def as z.ZodTupleDef<z.ZodTupleItems, z.ZodType>).items) {
+		for (const type of (tupleType._def as z.ZodTupleDef<z.ZodTupleItems, z.ZodType>).items) {
 			if (!first) append(', ');
 			if (getTypeKind(type) === z.ZodFirstPartyTypeKind.ZodOptional) {
 				appendType((type._def as z.ZodOptionalDef).innerType, TypePrecedence.Object);

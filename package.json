@@ -1,10 +1,13 @@
 {
 	"scripts": {
-		"fmt": "prettier --write .",
-		"fmt.check": "prettier --check .",
+		"fmt": "prettier --check .",
+		"fmt:fix": "prettier --write .",
+		"lint": "eslint \"**/*.ts*\"",
+		"lint:fix": "npm run lint -- --fix",
 		"build:local": "cd worker/aiTypes && npm -w worker run build:types && cd ../../ && npm -w worker run build && npm -w pages run build",
 		"build:pages": "npm ci --include-workspace-root --workspace pages --workspace worker --include dev && cd worker/aiTypes && npm -w worker run build:types && cd ../../ && npm -w worker run build && npm -w pages run build",
-		"clean": "npx -y rimraf@latest --glob ./**/.wrangler ./pages/dist ./pages/server ./pages/tmp ./worker/aiTypes/*.d.ts ./worker/aiTypes/types.json"
+		"preclean": "npx -y rimraf@latest --glob ./**/.wrangler",
+		"clean": "npm -w pages -w worker run clean"
 	},
 	"repository": {
 		"type": "git",

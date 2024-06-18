@@ -1,4 +1,5 @@
 {
 	"extends": "../tsconfig.json",
+	"files": ["./.eslintrc.cjs", "prettier.config.mjs"],
 	"include": ["aiTypes", "rpc", "typechat", "../do"]
 }
