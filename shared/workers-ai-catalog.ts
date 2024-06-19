@@ -14,7 +14,6 @@ export const workersAiCatalog = {
 						beta: false,
 						info: 'https://openai.com/research/whisper',
 					},
-					beta: false,
 				},
 				{
 					id: '2169496d-9c0e-4e49-8399-c44ee66bff7d',
@@ -25,7 +24,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 			],
 		},
@@ -43,7 +41,6 @@ export const workersAiCatalog = {
 						beta: false,
 						info: 'https://www.microsoft.com/en-us/research/blog/microsoft-vision-model-resnet-50-combines-web-scale-data-and-multi-task-learning-to-achieve-state-of-the-art/',
 					},
-					beta: false,
 				},
 			],
 		},
@@ -60,7 +57,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 				{
 					id: '3dca5889-db3e-4973-aa0c-3a4a6bd22d29',
@@ -72,7 +68,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://www.unum.cloud/',
 					},
-					beta: true,
 				},
 			],
 		},
@@ -89,7 +84,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 			],
 		},
@@ -106,7 +100,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 			],
 		},
@@ -124,7 +117,6 @@ export const workersAiCatalog = {
 						beta: false,
 						info: 'https://huggingface.co/Intel/distilbert-base-uncased-finetuned-sst-2-english-int8-static',
 					},
-					beta: false,
 				},
 			],
 		},
@@ -144,7 +136,6 @@ export const workersAiCatalog = {
 						max_input_tokens: 512,
 						output_dimensions: 384,
 					},
-					beta: false,
 				},
 				{
 					id: '429b9e8b-d99e-44de-91ad-706cf8183658',
@@ -158,7 +149,6 @@ export const workersAiCatalog = {
 						max_input_tokens: 512,
 						output_dimensions: 768,
 					},
-					beta: false,
 				},
 				{
 					id: '01bc2fb0-4bca-4598-b985-d2584a3f46c0',
@@ -172,7 +162,6 @@ export const workersAiCatalog = {
 						max_input_tokens: 512,
 						output_dimensions: 1024,
 					},
-					beta: false,
 				},
 			],
 		},
@@ -190,7 +179,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/qwen/qwen1.5-0.5b-chat',
 					},
-					beta: true,
 				},
 				{
 					id: 'e8e8abe4-a372-4c13-815f-4688ba655c8e',
@@ -202,7 +190,6 @@ export const workersAiCatalog = {
 						beta: true,
 						lora: true,
 					},
-					beta: true,
 				},
 				{
 					id: 'e5ca943b-720f-4e66-aa8f-40e3d2770933',
@@ -217,7 +204,6 @@ export const workersAiCatalog = {
 						max_input_length: 3072,
 						max_total_tokens: 4096,
 					},
-					beta: true,
 				},
 				{
 					id: 'e11d8f45-7b08-499a-9eeb-71d4d3c8cbf9',
@@ -230,7 +216,6 @@ export const workersAiCatalog = {
 						info: 'https://llama.meta.com',
 						terms: 'https://llama.meta.com/llama3/license/#',
 					},
-					beta: true,
 				},
 				{
 					id: 'd9b7a55c-cefa-4208-8ab3-11497a2b046c',
@@ -241,7 +226,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 				{
 					id: 'd2ba5c6b-bbb7-49d6-b466-900654870cd6',
@@ -252,7 +236,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 				{
 					id: 'ca54bcd6-0d98-4739-9b3b-5c8b4402193d',
@@ -267,7 +250,6 @@ export const workersAiCatalog = {
 						sequence_length_limit: 2500,
 						terms: 'https://ai.meta.com/resources/models-and-libraries/llama-downloads/',
 					},
-					beta: false,
 				},
 				{
 					id: 'c907d0f9-d69d-4e93-b501-4daeb4fd69eb',
@@ -280,7 +262,6 @@ export const workersAiCatalog = {
 						info: 'https://mistral.ai/news/announcing-mistral-7b/',
 						lora: true,
 					},
-					beta: false,
 				},
 				{
 					id: 'c58c317b-0c15-4bda-abb6-93e275f282d9',
@@ -292,7 +273,6 @@ export const workersAiCatalog = {
 						beta: true,
 						lora: true,
 					},
-					beta: true,
 				},
 				{
 					id: 'bf6ddd21-6477-4681-bbbe-24c3d5423e78',
@@ -304,7 +284,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0',
 					},
-					beta: true,
 				},
 				{
 					id: 'b97d7069-48d9-461c-80dd-445d20a632eb',
@@ -320,7 +299,6 @@ export const workersAiCatalog = {
 						max_input_length: 3072,
 						max_total_tokens: 4096,
 					},
-					beta: true,
 				},
 				{
 					id: 'b7fe7ad2-aeaf-47d2-8bfa-7a5ae22a2ab4',
@@ -331,7 +309,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 				{
 					id: '9d2ab560-065e-4d0d-a789-d4bc7468d33e',
@@ -343,7 +320,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/TheBloke/DiscoLM_German_7b_v1-AWQ',
 					},
-					beta: true,
 				},
 				{
 					id: '9c95c39d-45b3-4163-9631-22f0c0dc3b14',
@@ -359,7 +335,6 @@ export const workersAiCatalog = {
 						sequence_length_limit: 1800,
 						terms: 'https://ai.meta.com/resources/models-and-libraries/llama-downloads/',
 					},
-					beta: false,
 				},
 				{
 					id: '980ec5e9-33c2-483a-a2d8-cd092fdf273f',
@@ -371,7 +346,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-AWQ',
 					},
-					beta: true,
 				},
 				{
 					id: '90a20ae7-7cf4-4eb3-8672-8fc4ee580635',
@@ -383,7 +357,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/qwen/qwen1.5-7b-chat-awq',
 					},
-					beta: true,
 				},
 				{
 					id: '85c5a3c6-24b0-45e7-b23a-023182578822',
@@ -395,7 +368,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/TheBloke/Llama-2-13B-chat-AWQ',
 					},
-					beta: true,
 				},
 				{
 					id: '7f180530-2e16-4116-9d26-f49fbed9d372',
@@ -407,7 +379,6 @@ export const workersAiCatalog = {
 						beta: true,
 						terms: 'https://huggingface.co/TheBloke/deepseek-coder-6.7B-base-AWQ',
 					},
-					beta: true,
 				},
 				{
 					id: '7ed8d8e8-6040-4680-843a-aef402d6b013',
@@ -419,7 +390,6 @@ export const workersAiCatalog = {
 						beta: true,
 						lora: true,
 					},
-					beta: true,
 				},
 				{
 					id: '673c56cc-8553-49a1-b179-dd549ec9209a',
@@ -430,7 +400,6 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 					},
-					beta: true,
 				},
 				{
 					id: '610e6b36-a090-4a2f-8548-eace1aac6598',
@@ -443,7 +412,6 @@ export const workersAiCatalog = {
 						info: 'https://mistral.ai/news/announcing-mistral-7b/',
 						lora: true,
 					},
-					beta: false,
 				},
 				{
 					id: '60474554-f03b-4ff4-8ecc-c1b7c71d7b29',
@@ -455,7 +423,6 @@ export const workersAiCatalog = {
 						beta: true,
 						terms: 'https://huggingface.co/TheBloke/deepseek-coder-6.7B-instruct-AWQ',
 					},
-					beta: true,
 				},
 				{
 					id: '4c3a544e-da47-4336-9cea-c7cbfab33f16',
@@ -468,7 +435,6 @@ export const workersAiCatalog = {
 						info: 'https://huggingface.co/deepseek-ai/deepseek-math-7b-instruct',
 						terms: 'https://github.com/deepseek-ai/DeepSeek-Math/blob/main/LICENSE-MODEL',
 					},
-					beta: true,
 				},
 				{
 					id: '48dd2443-0c61-43b2-8894-22abddf1b081',
@@ -480,7 +446,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/tiiuae/falcon-7b-instruct',
 					},
-					beta: true,
 				},
 				{
 					id: '44774b85-08c8-4bb8-8d2a-b06ebc538a79',
@@ -496,7 +461,6 @@ export const workersAiCatalog = {
 						max_input_length: 3072,
 						max_total_tokens: 4096,
 					},
-					beta: true,
 				},
 				{
 					id: '3976bab8-3810-4ad8-8580-ab1e22de7823',
@@ -508,7 +472,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/TheBloke/zephyr-7B-beta-AWQ',
 					},
-					beta: true,
 				},
 				{
 					id: '337170b7-bd2f-4631-9a57-688b579cf6d3',
@@ -520,7 +483,6 @@ export const workersAiCatalog = {
 						beta: true,
 						lora: true,
 					},
-					beta: true,
 				},
 				{
 					id: '3222ddb3-e211-4fd9-9a6d-79a80e47b3a6',
@@ -532,7 +494,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/qwen/qwen1.5-1.8b-chat',
 					},
-					beta: true,
 				},
 				{
 					id: '31097538-a3ff-4e6e-bb56-ad0e1f428b61',
@@ -545,7 +506,6 @@ export const workersAiCatalog = {
 						info: 'https://llama.meta.com',
 						terms: 'https://llama.meta.com/llama3/license/#',
 					},
-					beta: true,
 				},
 				{
 					id: '1dc9e589-df6b-4e66-ac9f-ceff42d64983',
@@ -558,7 +518,6 @@ export const workersAiCatalog = {
 						info: 'https://huggingface.co/defog/sqlcoder-7b-2',
 						terms: 'https://creativecommons.org/licenses/by-sa/4.0/deed.en',
 					},
-					beta: true,
 				},
 				{
 					id: '1d933df3-680f-4280-940d-da87435edb07',
@@ -570,7 +529,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/microsoft/phi-2',
 					},
-					beta: true,
 				},
 				{
 					id: '1a7b6ad6-9987-4bd3-a329-20ee8de93296',
@@ -579,7 +537,6 @@ export const workersAiCatalog = {
 					description: 'Generation over generation, Meta Llama 3 demonstrates state-of-the-art performance on a wide range of industry benchmarks and offers new capabilities, including improved reasoning.\t',
 					tags: [],
 					properties: {},
-					beta: false,
 				},
 				{
 					id: '0f002249-7d86-4698-aabf-8529ed86cefb',
@@ -596,7 +553,6 @@ export const workersAiCatalog = {
 						max_total_tokens: 2048,
 						terms: 'https://ai.google.dev/gemma/terms',
 					},
-					beta: true,
 				},
 				{
 					id: '09d113a9-03c4-420e-b6f2-52ad4b3bed45',
@@ -608,7 +564,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/qwen/qwen1.5-14b-chat-awq',
 					},
-					beta: true,
 				},
 				{
 					id: '081054cd-a254-4349-855e-6dc0996277fa',
@@ -620,7 +575,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/openchat/openchat-3.5-0106',
 					},
-					beta: true,
 				},
 			],
 		},
@@ -639,7 +593,6 @@ export const workersAiCatalog = {
 						info: 'https://huggingface.co/runwayml/stable-diffusion-inpainting',
 						terms: 'https://github.com/runwayml/stable-diffusion/blob/main/LICENSE',
 					},
-					beta: true,
 				},
 				{
 					id: '7f797b20-3eb0-44fd-b571-6cbbaa3c423b',
@@ -651,7 +604,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/ByteDance/SDXL-Lightning',
 					},
-					beta: true,
 				},
 				{
 					id: '7912c0ab-542e-44b9-b9ee-3113d226a8b5',
@@ -663,7 +615,6 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://huggingface.co/Lykon/DreamShaper',
 					},
-					beta: true,
 				},
 				{
 					id: '6d52253a-b731-4a03-b203-cde2d4fae871',
@@ -676,7 +627,6 @@ export const workersAiCatalog = {
 						info: 'https://stability.ai/stable-diffusion',
 						terms: 'https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/LICENSE.md',
 					},
-					beta: true,
 				},
 				{
 					id: '19547f04-7a6a-4f87-bf2c-f5e32fb12dc5',
@@ -689,7 +639,6 @@ export const workersAiCatalog = {
 						info: 'https://huggingface.co/runwayml/stable-diffusion-v1-5',
 						terms: 'https://github.com/runwayml/stable-diffusion/blob/main/LICENSE',
 					},
-					beta: true,
 				},
 			],
 		},
@@ -709,7 +658,6 @@ export const workersAiCatalog = {
 						languages: 'english, chinese, french, spanish, arabic, russian, german, japanese, portuguese, hindi',
 						terms: 'https://github.com/facebookresearch/fairseq/blob/main/LICENSE',
 					},
-					beta: false,
 				},
 			],
 		},
