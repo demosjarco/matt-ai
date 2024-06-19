@@ -48,7 +48,7 @@ jobs:
                     ] | any),
                     properties: (reduce .properties[] as $prop ({}; .[$prop.property_id] = (
                       if $prop.value | test("^(true|false)$") then ($prop.value | test("true"))
-                      else if $prop.value | test("^\\d+$") then ($prop.value | tonumber)
+                      elif $prop.value | test("^\\d+$") then ($prop.value | tonumber)
                       else $prop.value
                       end
                     )))
