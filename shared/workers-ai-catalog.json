@@ -10,13 +10,10 @@
 					"name": "@cf/openai/whisper",
 					"description": "Automatic speech recognition (ASR) system trained on 680,000 hours of multilingual and multitask supervised data",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://openai.com/research/whisper"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://openai.com/research/whisper"
+					}
 				},
 				{
 					"id": "2169496d-9c0e-4e49-8399-c44ee66bff7d",
@@ -24,8 +21,9 @@
 					"name": "@cf/openai/whisper-tiny-en",
 					"description": "Whisper is a pre-trained model for automatic speech recognition (ASR) and speech translation. Trained on 680k hours of labelled data, Whisper models demonstrate a strong ability to generalize to many datasets and domains without the need for fine-tuning. This is the English-only version of the Whisper Tiny model which was trained on the task of speech recognition.",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				}
 			]
 		},
@@ -39,13 +37,10 @@
 					"name": "@cf/microsoft/resnet-50",
 					"description": "50 layers deep image classification CNN trained on more than 1M images from ImageNet",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://www.microsoft.com/en-us/research/blog/microsoft-vision-model-resnet-50-combines-web-scale-data-and-multi-task-learning-to-achieve-state-of-the-art/"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://www.microsoft.com/en-us/research/blog/microsoft-vision-model-resnet-50-combines-web-scale-data-and-multi-task-learning-to-achieve-state-of-the-art/"
+					}
 				}
 			]
 		},
@@ -59,8 +54,9 @@
 					"name": "@cf/llava-hf/llava-1.5-7b-hf",
 					"description": "LLaVA is an open-source chatbot trained by fine-tuning LLaMA/Vicuna on GPT-generated multimodal instruction-following data. It is an auto-regressive language model, based on the transformer architecture.",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				},
 				{
 					"id": "3dca5889-db3e-4973-aa0c-3a4a6bd22d29",
@@ -68,13 +64,10 @@
 					"name": "@cf/unum/uform-gen2-qwen-500m",
 					"description": "UForm-Gen is a small generative vision-language model primarily designed for Image Captioning and Visual Question Answering. The model was pre-trained on the internal image captioning dataset and fine-tuned on public instructions datasets: SVIT, LVIS, VQAs datasets.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://www.unum.cloud/"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://www.unum.cloud/"
+					}
 				}
 			]
 		},
@@ -88,8 +81,9 @@
 					"name": "@cf/facebook/detr-resnet-50",
 					"description": "DEtection TRansformer (DETR) model trained end-to-end on COCO 2017 object detection (118k annotated images).",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				}
 			]
 		},
@@ -103,8 +97,9 @@
 					"name": "@cf/facebook/bart-large-cnn",
 					"description": "BART is a transformer encoder-encoder (seq2seq) model with a bidirectional (BERT-like) encoder and an autoregressive (GPT-like) decoder. You can use this model for text summarization.",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				}
 			]
 		},
@@ -118,13 +113,10 @@
 					"name": "@cf/huggingface/distilbert-sst-2-int8",
 					"description": "Distilled BERT model that was finetuned on SST-2 for sentiment classification",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/Intel/distilbert-base-uncased-finetuned-sst-2-english-int8-static"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://huggingface.co/Intel/distilbert-base-uncased-finetuned-sst-2-english-int8-static"
+					}
 				}
 			]
 		},
@@ -138,21 +130,12 @@
 					"name": "@cf/baai/bge-small-en-v1.5",
 					"description": "BAAI general embedding (bge) models transform any given text into a compact vector",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/BAAI/bge-base-en-v1.5"
-						},
-						{
-							"property_id": "max_input_tokens",
-							"value": "512"
-						},
-						{
-							"property_id": "output_dimensions",
-							"value": "384"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://huggingface.co/BAAI/bge-base-en-v1.5",
+						"max_input_tokens": 512,
+						"output_dimensions": 384
+					}
 				},
 				{
 					"id": "429b9e8b-d99e-44de-91ad-706cf8183658",
@@ -160,21 +143,12 @@
 					"name": "@cf/baai/bge-base-en-v1.5",
 					"description": "BAAI general embedding (bge) models transform any given text into a compact vector",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/BAAI/bge-base-en-v1.5"
-						},
-						{
-							"property_id": "max_input_tokens",
-							"value": "512"
-						},
-						{
-							"property_id": "output_dimensions",
-							"value": "768"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://huggingface.co/BAAI/bge-base-en-v1.5",
+						"max_input_tokens": 512,
+						"output_dimensions": 768
+					}
 				},
 				{
 					"id": "01bc2fb0-4bca-4598-b985-d2584a3f46c0",
@@ -182,21 +156,12 @@
 					"name": "@cf/baai/bge-large-en-v1.5",
 					"description": "BAAI general embedding (bge) models transform any given text into a compact vector",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/BAAI/bge-base-en-v1.5"
-						},
-						{
-							"property_id": "max_input_tokens",
-							"value": "512"
-						},
-						{
-							"property_id": "output_dimensions",
-							"value": "1024"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://huggingface.co/BAAI/bge-base-en-v1.5",
+						"max_input_tokens": 512,
+						"output_dimensions": 1024
+					}
 				}
 			]
 		},
@@ -210,13 +175,10 @@
 					"name": "@cf/qwen/qwen1.5-0.5b-chat",
 					"description": "Qwen1.5 is the improved version of Qwen, the large language model series developed by Alibaba Cloud.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/qwen/qwen1.5-0.5b-chat"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/qwen/qwen1.5-0.5b-chat"
+					}
 				},
 				{
 					"id": "e8e8abe4-a372-4c13-815f-4688ba655c8e",
@@ -224,13 +186,10 @@
 					"name": "@cf/google/gemma-2b-it-lora",
 					"description": "This is a Gemma-2B base model that Cloudflare dedicates for inference with LoRA adapters. Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "lora",
-							"value": "true"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"lora": true
+					}
 				},
 				{
 					"id": "e5ca943b-720f-4e66-aa8f-40e3d2770933",
@@ -238,25 +197,13 @@
 					"name": "@hf/nexusflow/starling-lm-7b-beta",
 					"description": "We introduce Starling-LM-7B-beta, an open large language model (LLM) trained by Reinforcement Learning from AI Feedback (RLAIF). Starling-LM-7B-beta is trained from Openchat-3.5-0106 with our new reward model Nexusflow/Starling-RM-34B and policy optimization method Fine-Tuning Language Models from Human Preferences (PPO).",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/Nexusflow/Starling-LM-7B-beta"
-						},
-						{
-							"property_id": "max_batch_prefill_tokens",
-							"value": "8192"
-						},
-						{
-							"property_id": "max_input_length",
-							"value": "3072"
-						},
-						{
-							"property_id": "max_total_tokens",
-							"value": "4096"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/Nexusflow/Starling-LM-7B-beta",
+						"max_batch_prefill_tokens": 8192,
+						"max_input_length": 3072,
+						"max_total_tokens": 4096
+					}
 				},
 				{
 					"id": "e11d8f45-7b08-499a-9eeb-71d4d3c8cbf9",
@@ -264,17 +211,11 @@
 					"name": "@cf/meta/llama-3-8b-instruct",
 					"description": "Generation over generation, Meta Llama 3 demonstrates state-of-the-art performance on a wide range of industry benchmarks and offers new capabilities, including improved reasoning.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://llama.meta.com"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://llama.meta.com/llama3/license/#"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://llama.meta.com",
+						"terms": "https://llama.meta.com/llama3/license/#"
+					}
 				},
 				{
 					"id": "d9b7a55c-cefa-4208-8ab3-11497a2b046c",
@@ -282,8 +223,9 @@
 					"name": "@hf/thebloke/llamaguard-7b-awq",
 					"description": "Llama Guard is a model for classifying the safety of LLM prompts and responses, using a taxonomy of safety risks.\n",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				},
 				{
 					"id": "d2ba5c6b-bbb7-49d6-b466-900654870cd6",
@@ -291,8 +233,9 @@
 					"name": "@hf/thebloke/neural-chat-7b-v3-1-awq",
 					"description": "This model is a fine-tuned 7B parameter LLM on the Intel Gaudi 2 processor from the mistralai/Mistral-7B-v0.1 on the open source dataset Open-Orca/SlimOrca.",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				},
 				{
 					"id": "ca54bcd6-0d98-4739-9b3b-5c8b4402193d",
@@ -300,25 +243,13 @@
 					"name": "@cf/meta/llama-2-7b-chat-fp16",
 					"description": "Full precision (fp16) generative text model with 7 billion parameters from Meta",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "context_length_limit",
-							"value": "3072"
-						},
-						{
-							"property_id": "info",
-							"value": "https://ai.meta.com/llama/"
-						},
-						{
-							"property_id": "sequence_length_limit",
-							"value": "2500"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"context_length_limit": 3072,
+						"info": "https://ai.meta.com/llama/",
+						"sequence_length_limit": 2500,
+						"terms": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/"
+					}
 				},
 				{
 					"id": "c907d0f9-d69d-4e93-b501-4daeb4fd69eb",
@@ -326,17 +257,11 @@
 					"name": "@cf/mistral/mistral-7b-instruct-v0.1",
 					"description": "Instruct fine-tuned version of the Mistral-7b generative text model with 7 billion parameters",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://mistral.ai/news/announcing-mistral-7b/"
-						},
-						{
-							"property_id": "lora",
-							"value": "true"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://mistral.ai/news/announcing-mistral-7b/",
+						"lora": true
+					}
 				},
 				{
 					"id": "c58c317b-0c15-4bda-abb6-93e275f282d9",
@@ -344,13 +269,10 @@
 					"name": "@cf/mistral/mistral-7b-instruct-v0.2-lora",
 					"description": "The Mistral-7B-Instruct-v0.2 Large Language Model (LLM) is an instruct fine-tuned version of the Mistral-7B-v0.2.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "lora",
-							"value": "true"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"lora": true
+					}
 				},
 				{
 					"id": "bf6ddd21-6477-4681-bbbe-24c3d5423e78",
@@ -358,13 +280,10 @@
 					"name": "@cf/tinyllama/tinyllama-1.1b-chat-v1.0",
 					"description": "The TinyLlama project aims to pretrain a 1.1B Llama model on 3 trillion tokens. This is the chat model finetuned on top of TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+					}
 				},
 				{
 					"id": "b97d7069-48d9-461c-80dd-445d20a632eb",
@@ -372,29 +291,14 @@
 					"name": "@hf/mistral/mistral-7b-instruct-v0.2",
 					"description": "The Mistral-7B-Instruct-v0.2 Large Language Model (LLM) is an instruct fine-tuned version of the Mistral-7B-v0.2. Mistral-7B-v0.2 has the following changes compared to Mistral-7B-v0.1: 32k context window (vs 8k context in v0.1), rope-theta = 1e6, and no Sliding-Window Attention.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2"
-						},
-						{
-							"property_id": "lora",
-							"value": "true"
-						},
-						{
-							"property_id": "max_batch_prefill_tokens",
-							"value": "8192"
-						},
-						{
-							"property_id": "max_input_length",
-							"value": "3072"
-						},
-						{
-							"property_id": "max_total_tokens",
-							"value": "4096"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2",
+						"lora": true,
+						"max_batch_prefill_tokens": 8192,
+						"max_input_length": 3072,
+						"max_total_tokens": 4096
+					}
 				},
 				{
 					"id": "b7fe7ad2-aeaf-47d2-8bfa-7a5ae22a2ab4",
@@ -402,8 +306,9 @@
 					"name": "@cf/fblgit/una-cybertron-7b-v2-bf16",
 					"description": "Cybertron 7B v2 is a 7B MistralAI based model, best on it's series. It was trained with SFT, DPO and UNA (Unified Neural Alignment) on multiple datasets.",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				},
 				{
 					"id": "9d2ab560-065e-4d0d-a789-d4bc7468d33e",
@@ -411,13 +316,10 @@
 					"name": "@cf/thebloke/discolm-german-7b-v1-awq",
 					"description": "DiscoLM German 7b is a Mistral-based large language model with a focus on German-language applications. AWQ is an efficient, accurate and blazing-fast low-bit weight quantization method, currently supporting 4-bit quantization.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/TheBloke/DiscoLM_German_7b_v1-AWQ"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/TheBloke/DiscoLM_German_7b_v1-AWQ"
+					}
 				},
 				{
 					"id": "9c95c39d-45b3-4163-9631-22f0c0dc3b14",
@@ -425,29 +327,14 @@
 					"name": "@cf/meta/llama-2-7b-chat-int8",
 					"description": "Quantized (int8) generative text model with 7 billion parameters from Meta",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "context_length_limit",
-							"value": "2048"
-						},
-						{
-							"property_id": "info",
-							"value": "https://ai.meta.com/llama/"
-						},
-						{
-							"property_id": "planned_deprecation_date",
-							"value": "2024-06-30"
-						},
-						{
-							"property_id": "sequence_length_limit",
-							"value": "1800"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"context_length_limit": 2048,
+						"info": "https://ai.meta.com/llama/",
+						"planned_deprecation_date": "2024-06-30",
+						"sequence_length_limit": 1800,
+						"terms": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/"
+					}
 				},
 				{
 					"id": "980ec5e9-33c2-483a-a2d8-cd092fdf273f",
@@ -455,13 +342,10 @@
 					"name": "@hf/thebloke/mistral-7b-instruct-v0.1-awq",
 					"description": "Mistral 7B Instruct v0.1 AWQ is an efficient, accurate and blazing-fast low-bit weight quantized Mistral variant.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-AWQ"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-AWQ"
+					}
 				},
 				{
 					"id": "90a20ae7-7cf4-4eb3-8672-8fc4ee580635",
@@ -469,13 +353,10 @@
 					"name": "@cf/qwen/qwen1.5-7b-chat-awq",
 					"description": "Qwen1.5 is the improved version of Qwen, the large language model series developed by Alibaba Cloud. AWQ is an efficient, accurate and blazing-fast low-bit weight quantization method, currently supporting 4-bit quantization.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/qwen/qwen1.5-7b-chat-awq"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/qwen/qwen1.5-7b-chat-awq"
+					}
 				},
 				{
 					"id": "85c5a3c6-24b0-45e7-b23a-023182578822",
@@ -483,13 +364,10 @@
 					"name": "@hf/thebloke/llama-2-13b-chat-awq",
 					"description": "Llama 2 13B Chat AWQ is an efficient, accurate and blazing-fast low-bit weight quantized Llama 2 variant.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/TheBloke/Llama-2-13B-chat-AWQ"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/TheBloke/Llama-2-13B-chat-AWQ"
+					}
 				},
 				{
 					"id": "7f180530-2e16-4116-9d26-f49fbed9d372",
@@ -497,13 +375,10 @@
 					"name": "@hf/thebloke/deepseek-coder-6.7b-base-awq",
 					"description": "Deepseek Coder is composed of a series of code language models, each trained from scratch on 2T tokens, with a composition of 87% code and 13% natural language in both English and Chinese.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "terms",
-							"value": "https://huggingface.co/TheBloke/deepseek-coder-6.7B-base-AWQ"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"terms": "https://huggingface.co/TheBloke/deepseek-coder-6.7B-base-AWQ"
+					}
 				},
 				{
 					"id": "7ed8d8e8-6040-4680-843a-aef402d6b013",
@@ -511,13 +386,10 @@
 					"name": "@cf/meta-llama/llama-2-7b-chat-hf-lora",
 					"description": "This is a Llama2 base model that Cloudflare dedicated for inference with LoRA adapters. Llama 2 is a collection of pretrained and fine-tuned generative text models ranging in scale from 7 billion to 70 billion parameters. This is the repository for the 7B fine-tuned model, optimized for dialogue use cases and converted for the Hugging Face Transformers format. ",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "lora",
-							"value": "true"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"lora": true
+					}
 				},
 				{
 					"id": "673c56cc-8553-49a1-b179-dd549ec9209a",
@@ -525,8 +397,9 @@
 					"name": "@hf/thebloke/openhermes-2.5-mistral-7b-awq",
 					"description": "OpenHermes 2.5 Mistral 7B is a state of the art Mistral Fine-tune, a continuation of OpenHermes 2 model, which trained on additional code datasets.",
 					"tags": [],
-					"properties": [],
-					"beta": true
+					"properties": {
+						"beta": true
+					}
 				},
 				{
 					"id": "610e6b36-a090-4a2f-8548-eace1aac6598",
@@ -534,17 +407,11 @@
 					"name": "@cf/mistral/mistral-7b-instruct-v0.1-vllm",
 					"description": "Instruct fine-tuned version of the Mistral-7b generative text model with 7 billion parameters.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://mistral.ai/news/announcing-mistral-7b/"
-						},
-						{
-							"property_id": "lora",
-							"value": "true"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://mistral.ai/news/announcing-mistral-7b/",
+						"lora": true
+					}
 				},
 				{
 					"id": "60474554-f03b-4ff4-8ecc-c1b7c71d7b29",
@@ -552,13 +419,10 @@
 					"name": "@hf/thebloke/deepseek-coder-6.7b-instruct-awq",
 					"description": "Deepseek Coder is composed of a series of code language models, each trained from scratch on 2T tokens, with a composition of 87% code and 13% natural language in both English and Chinese.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "terms",
-							"value": "https://huggingface.co/TheBloke/deepseek-coder-6.7B-instruct-AWQ"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"terms": "https://huggingface.co/TheBloke/deepseek-coder-6.7B-instruct-AWQ"
+					}
 				},
 				{
 					"id": "4c3a544e-da47-4336-9cea-c7cbfab33f16",
@@ -566,17 +430,11 @@
 					"name": "@cf/deepseek-ai/deepseek-math-7b-instruct",
 					"description": "DeepSeekMath-Instruct 7B is a mathematically instructed tuning model derived from DeepSeekMath-Base 7B. DeepSeekMath is initialized with DeepSeek-Coder-v1.5 7B and continues pre-training on math-related tokens sourced from Common Crawl, together with natural language and code data for 500B tokens.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/deepseek-ai/deepseek-math-7b-instruct"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://github.com/deepseek-ai/DeepSeek-Math/blob/main/LICENSE-MODEL"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/deepseek-ai/deepseek-math-7b-instruct",
+						"terms": "https://github.com/deepseek-ai/DeepSeek-Math/blob/main/LICENSE-MODEL"
+					}
 				},
 				{
 					"id": "48dd2443-0c61-43b2-8894-22abddf1b081",
@@ -584,13 +442,10 @@
 					"name": "@cf/tiiuae/falcon-7b-instruct",
 					"description": "Falcon-7B-Instruct is a 7B parameters causal decoder-only model built by TII based on Falcon-7B and finetuned on a mixture of chat/instruct datasets.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/tiiuae/falcon-7b-instruct"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/tiiuae/falcon-7b-instruct"
+					}
 				},
 				{
 					"id": "44774b85-08c8-4bb8-8d2a-b06ebc538a79",
@@ -598,29 +453,14 @@
 					"name": "@hf/nousresearch/hermes-2-pro-mistral-7b",
 					"description": "Hermes 2 Pro on Mistral 7B is the new flagship 7B Hermes! Hermes 2 Pro is an upgraded, retrained version of Nous Hermes 2, consisting of an updated and cleaned version of the OpenHermes 2.5 Dataset, as well as a newly introduced Function Calling and JSON Mode dataset developed in-house.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "function_calling",
-							"value": "true"
-						},
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/NousResearch/Hermes-2-Pro-Mistral-7B"
-						},
-						{
-							"property_id": "max_batch_prefill_tokens",
-							"value": "8192"
-						},
-						{
-							"property_id": "max_input_length",
-							"value": "3072"
-						},
-						{
-							"property_id": "max_total_tokens",
-							"value": "4096"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"function_calling": true,
+						"info": "https://huggingface.co/NousResearch/Hermes-2-Pro-Mistral-7B",
+						"max_batch_prefill_tokens": 8192,
+						"max_input_length": 3072,
+						"max_total_tokens": 4096
+					}
 				},
 				{
 					"id": "3976bab8-3810-4ad8-8580-ab1e22de7823",
@@ -628,13 +468,10 @@
 					"name": "@hf/thebloke/zephyr-7b-beta-awq",
 					"description": "Zephyr 7B Beta AWQ is an efficient, accurate and blazing-fast low-bit weight quantized Zephyr model variant.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/TheBloke/zephyr-7B-beta-AWQ"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/TheBloke/zephyr-7B-beta-AWQ"
+					}
 				},
 				{
 					"id": "337170b7-bd2f-4631-9a57-688b579cf6d3",
@@ -642,13 +479,10 @@
 					"name": "@cf/google/gemma-7b-it-lora",
 					"description": "  This is a Gemma-7B base model that Cloudflare dedicates for inference with LoRA adapters. Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "lora",
-							"value": "true"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"lora": true
+					}
 				},
 				{
 					"id": "3222ddb3-e211-4fd9-9a6d-79a80e47b3a6",
@@ -656,13 +490,10 @@
 					"name": "@cf/qwen/qwen1.5-1.8b-chat",
 					"description": "Qwen1.5 is the improved version of Qwen, the large language model series developed by Alibaba Cloud.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/qwen/qwen1.5-1.8b-chat"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/qwen/qwen1.5-1.8b-chat"
+					}
 				},
 				{
 					"id": "31097538-a3ff-4e6e-bb56-ad0e1f428b61",
@@ -670,17 +501,11 @@
 					"name": "@cf/meta/llama-3-8b-instruct-awq",
 					"description": "Quantized (int4) generative text model with 8 billion parameters from Meta.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://llama.meta.com"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://llama.meta.com/llama3/license/#"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://llama.meta.com",
+						"terms": "https://llama.meta.com/llama3/license/#"
+					}
 				},
 				{
 					"id": "1dc9e589-df6b-4e66-ac9f-ceff42d64983",
@@ -688,17 +513,11 @@
 					"name": "@cf/defog/sqlcoder-7b-2",
 					"description": "This model is intended to be used by non-technical users to understand data inside their SQL databases. ",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/defog/sqlcoder-7b-2"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://creativecommons.org/licenses/by-sa/4.0/deed.en"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/defog/sqlcoder-7b-2",
+						"terms": "https://creativecommons.org/licenses/by-sa/4.0/deed.en"
+					}
 				},
 				{
 					"id": "1d933df3-680f-4280-940d-da87435edb07",
@@ -706,13 +525,10 @@
 					"name": "@cf/microsoft/phi-2",
 					"description": "Phi-2 is a Transformer-based model with a next-word prediction objective, trained on 1.4T tokens from multiple passes on a mixture of Synthetic and Web datasets for NLP and coding.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/microsoft/phi-2"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/microsoft/phi-2"
+					}
 				},
 				{
 					"id": "1a7b6ad6-9987-4bd3-a329-20ee8de93296",
@@ -720,8 +536,7 @@
 					"name": "@hf/meta-llama/meta-llama-3-8b-instruct",
 					"description": "Generation over generation, Meta Llama 3 demonstrates state-of-the-art performance on a wide range of industry benchmarks and offers new capabilities, including improved reasoning.\t",
 					"tags": [],
-					"properties": [],
-					"beta": false
+					"properties": {}
 				},
 				{
 					"id": "0f002249-7d86-4698-aabf-8529ed86cefb",
@@ -729,33 +544,15 @@
 					"name": "@hf/google/gemma-7b-it",
 					"description": "Gemma is a family of lightweight, state-of-the-art open models from Google, built from the same research and technology used to create the Gemini models. They are text-to-text, decoder-only large language models, available in English, with open weights, pre-trained variants, and instruction-tuned variants.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://ai.google.dev/gemma/docs"
-						},
-						{
-							"property_id": "lora",
-							"value": "true"
-						},
-						{
-							"property_id": "max_batch_prefill_tokens",
-							"value": "2048"
-						},
-						{
-							"property_id": "max_input_length",
-							"value": "1512"
-						},
-						{
-							"property_id": "max_total_tokens",
-							"value": "2048"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://ai.google.dev/gemma/terms"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://ai.google.dev/gemma/docs",
+						"lora": true,
+						"max_batch_prefill_tokens": 2048,
+						"max_input_length": 1512,
+						"max_total_tokens": 2048,
+						"terms": "https://ai.google.dev/gemma/terms"
+					}
 				},
 				{
 					"id": "09d113a9-03c4-420e-b6f2-52ad4b3bed45",
@@ -763,13 +560,10 @@
 					"name": "@cf/qwen/qwen1.5-14b-chat-awq",
 					"description": "Qwen1.5 is the improved version of Qwen, the large language model series developed by Alibaba Cloud. AWQ is an efficient, accurate and blazing-fast low-bit weight quantization method, currently supporting 4-bit quantization.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/qwen/qwen1.5-14b-chat-awq"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/qwen/qwen1.5-14b-chat-awq"
+					}
 				},
 				{
 					"id": "081054cd-a254-4349-855e-6dc0996277fa",
@@ -777,13 +571,10 @@
 					"name": "@cf/openchat/openchat-3.5-0106",
 					"description": "OpenChat is an innovative library of open-source language models, fine-tuned with C-RLFT - a strategy inspired by offline reinforcement learning.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/openchat/openchat-3.5-0106"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/openchat/openchat-3.5-0106"
+					}
 				}
 			]
 		},
@@ -797,17 +588,11 @@
 					"name": "@cf/runwayml/stable-diffusion-v1-5-inpainting",
 					"description": "Stable Diffusion Inpainting is a latent text-to-image diffusion model capable of generating photo-realistic images given any text input, with the extra capability of inpainting the pictures by using a mask.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/runwayml/stable-diffusion-inpainting"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://github.com/runwayml/stable-diffusion/blob/main/LICENSE"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/runwayml/stable-diffusion-inpainting",
+						"terms": "https://github.com/runwayml/stable-diffusion/blob/main/LICENSE"
+					}
 				},
 				{
 					"id": "7f797b20-3eb0-44fd-b571-6cbbaa3c423b",
@@ -815,13 +600,10 @@
 					"name": "@cf/bytedance/stable-diffusion-xl-lightning",
 					"description": "SDXL-Lightning is a lightning-fast text-to-image generation model. It can generate high-quality 1024px images in a few steps.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/ByteDance/SDXL-Lightning"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/ByteDance/SDXL-Lightning"
+					}
 				},
 				{
 					"id": "7912c0ab-542e-44b9-b9ee-3113d226a8b5",
@@ -829,13 +611,10 @@
 					"name": "@cf/lykon/dreamshaper-8-lcm",
 					"description": "Stable Diffusion model that has been fine-tuned to be better at photorealism without sacrificing range.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/Lykon/DreamShaper"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/Lykon/DreamShaper"
+					}
 				},
 				{
 					"id": "6d52253a-b731-4a03-b203-cde2d4fae871",
@@ -843,17 +622,11 @@
 					"name": "@cf/stabilityai/stable-diffusion-xl-base-1.0",
 					"description": "Diffusion-based text-to-image generative model by Stability AI. Generates and modify images based on text prompts.",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://stability.ai/stable-diffusion"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/LICENSE.md"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://stability.ai/stable-diffusion",
+						"terms": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/LICENSE.md"
+					}
 				},
 				{
 					"id": "19547f04-7a6a-4f87-bf2c-f5e32fb12dc5",
@@ -861,17 +634,11 @@
 					"name": "@cf/runwayml/stable-diffusion-v1-5-img2img",
 					"description": "Stable Diffusion is a latent text-to-image diffusion model capable of generating photo-realistic images. Img2img generate a new image from an input image with Stable Diffusion. ",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://huggingface.co/runwayml/stable-diffusion-v1-5"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://github.com/runwayml/stable-diffusion/blob/main/LICENSE"
-						}
-					],
-					"beta": true
+					"properties": {
+						"beta": true,
+						"info": "https://huggingface.co/runwayml/stable-diffusion-v1-5",
+						"terms": "https://github.com/runwayml/stable-diffusion/blob/main/LICENSE"
+					}
 				}
 			]
 		},
@@ -885,21 +652,12 @@
 					"name": "@cf/meta/m2m100-1.2b",
 					"description": "Multilingual encoder-decoder (seq-to-seq) model trained for Many-to-Many multilingual translation",
 					"tags": [],
-					"properties": [
-						{
-							"property_id": "info",
-							"value": "https://github.com/facebookresearch/fairseq/tree/main/examples/m2m_100"
-						},
-						{
-							"property_id": "languages",
-							"value": "english, chinese, french, spanish, arabic, russian, german, japanese, portuguese, hindi"
-						},
-						{
-							"property_id": "terms",
-							"value": "https://github.com/facebookresearch/fairseq/blob/main/LICENSE"
-						}
-					],
-					"beta": false
+					"properties": {
+						"beta": false,
+						"info": "https://github.com/facebookresearch/fairseq/tree/main/examples/m2m_100",
+						"languages": "english, chinese, french, spanish, arabic, russian, german, japanese, portuguese, hindi",
+						"terms": "https://github.com/facebookresearch/fairseq/blob/main/LICENSE"
+					}
 				}
 			]
 		}

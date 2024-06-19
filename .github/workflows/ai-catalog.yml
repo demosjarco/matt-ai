@@ -43,12 +43,12 @@ jobs:
                 models: map(
                   del(.task) |
                   . + {
-                    beta: ([
-                      .properties[] | select(.property_id == "beta") | .value == "true"
-                    ] | any),
-                    properties: [
-                      .properties[] | select(.property_id != "beta")
-                    ]
+                    properties: (reduce .properties[] as $prop ({}; .[$prop.property_id] = (
+                      if $prop.value | test("^(true|false)$") then ($prop.value | test("true"))
+                      elif $prop.value | test("^\\d+$") then ($prop.value | tonumber)
+                      else $prop.value
+                      end
+                    )))
                   }
                 )
               }
