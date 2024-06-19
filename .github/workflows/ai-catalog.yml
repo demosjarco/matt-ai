@@ -58,7 +58,6 @@ jobs:
             }) | add
           ')
 
-
           # Get loras
           result2=$(curl -s -H "Authorization: Bearer ${{ secrets.WORKERS_AI_API_KEY }}" https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/ai/finetunes/public | jq '.result')
 
