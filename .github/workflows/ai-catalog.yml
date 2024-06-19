@@ -46,9 +46,7 @@ jobs:
                     beta: ([
                       .properties[] | select(.property_id == "beta") | .value == "true"
                     ] | any),
-                    properties: [
-                      .properties[] | select(.property_id != "beta")
-                    ]
+                    properties: (reduce .properties[] as $prop ({}; .[$prop.property_id] = $prop.value))
                   }
                 )
               }
