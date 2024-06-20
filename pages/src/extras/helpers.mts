@@ -62,9 +62,18 @@ export class Helpers {
 		}
 	}
 
-	public static async getHash(algorithm: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512', input: string) {
-		const data = new TextEncoder().encode(input);
-		const hashBuffer = await crypto.subtle.digest(algorithm, data);
-		return this.bufferToHex(hashBuffer);
+	public static getHash(algorithm: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512', input: string | ArrayBufferLike) {
+		return crypto.subtle.digest(algorithm, typeof input === 'string' ? new TextEncoder().encode(input) : input).then((hashBuffer) => this.bufferToHex(hashBuffer));
+	}
+
+	/**
+	 * @returns Fully formatted (double quote encapsulated) `ETag` header value
+	 * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag#etag_value
+	 */
+	public static generateETag(response: Response, algorithm: Parameters<typeof this.getHash>[0] = 'SHA-512') {
+		return response
+			.clone()
+			.arrayBuffer()
+			.then((buffer) => this.getHash(algorithm, buffer).then((hex) => `"${hex}"`));
 	}
 }
