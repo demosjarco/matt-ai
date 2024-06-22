@@ -26,6 +26,22 @@ export class Helpers {
 		};
 	}
 
+	public static randomText(length: number) {
+		const LOWER_CHAR_SET = 'abcdefghijklmnopqrstuvwxyz' as const;
+		const NUMBER_CHAR_SET = '0123456789' as const;
+		const CHAR_SET = `${LOWER_CHAR_SET.toUpperCase()}${LOWER_CHAR_SET}${NUMBER_CHAR_SET}` as const;
+
+		const randomBytes = new Uint8Array(length);
+		crypto.getRandomValues(randomBytes);
+		let randomText = '';
+		for (const byte of randomBytes) {
+			// Map each byte to a character in the character set
+			const charIndex = byte % CHAR_SET.length;
+			randomText += CHAR_SET.charAt(charIndex);
+		}
+		return randomText;
+	}
+
 	public static uuidConvert(input: UuidExport['blob']): UuidExport;
 	public static uuidConvert(input: UuidExport['utf8']): UuidExport;
 	public static uuidConvert(input: UuidExport['hex']): UuidExport;
