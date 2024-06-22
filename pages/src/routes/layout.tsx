@@ -83,12 +83,12 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 
 			const formData = new FormData();
 			if (runningLocally(request)) {
-				formData.append('secret', TurnstileDummySecretkey.passes);
+				formData.set('secret', TurnstileDummySecretkey.passes);
 			} else {
-				formData.append('secret', platform.env.TURNSTILE_SECRET_KEY);
+				formData.set('secret', platform.env.TURNSTILE_SECRET_KEY);
 			}
-			formData.append('response', incomingFormData['cf-turnstile-response']);
-			if (ip) formData.append('remoteip', ip);
+			formData.set('response', incomingFormData['cf-turnstile-response']);
+			if (ip) formData.set('remoteip', ip);
 
 			let turnstileSuccess: boolean = false;
 
