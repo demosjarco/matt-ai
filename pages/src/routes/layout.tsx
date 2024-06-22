@@ -7,6 +7,15 @@ import { runningLocally } from '../extras';
 import { ConversationsContext, MessagesContext } from '../extras/context';
 import { TurnstileDummySecretkey, TurnstileDummySitekey, type ChatFormSubmit, type TurnstileResponse } from '../types';
 
+export const useSetTurnstileIdempotency = routeAction$(
+	(data, { sharedMap }) => {
+		sharedMap.set('turnstileIdempotency', data.idempotencyKey);
+	},
+	zod$({
+		idempotencyKey: z.string().uuid(),
+	}),
+);
+
 export const useFormSubmissionWithTurnstile = routeAction$(
 	(data, { params, fail, status }) => {
 		if (status() >= 200 && status() < 300) {
@@ -74,7 +83,7 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 	});
 };
 
-export const onPost: RequestHandler = async ({ platform, request, parseBody, status }) => {
+export const onPost: RequestHandler = async ({ platform, request, parseBody, status, sharedMap }) => {
 	const incomingFormData = (await parseBody()) as ChatFormSubmit | null;
 
 	if (incomingFormData) {
@@ -89,6 +98,7 @@ export const onPost: RequestHandler = async ({ platform, request, parseBody, sta
 			}
 			formData.set('response', incomingFormData['cf-turnstile-response']);
 			if (ip) formData.set('remoteip', ip);
+			if (sharedMap.has('turnstileIdempotency')) formData.set('idempotency_key', sharedMap.get('turnstileIdempotency'));
 
 			let turnstileSuccess: boolean = false;
 

@@ -394,9 +394,6 @@ export default component$(() => {
 			onSubmitCompleted$={() =>
 				new Promise<void>((resolve, reject) => {
 					if (submitMessageWithTurnstile.status && submitMessageWithTurnstile.status >= 200 && submitMessageWithTurnstile.status < 300) {
-						// Turnstile has been consumed, reset manually (doesn't automatically get reset due to SPA)
-						window.turnstile.reset();
-
 						if (submitMessageWithTurnstile.value && submitMessageWithTurnstile.value.sanitizedMessage) {
 							sendMessage(submitMessageWithTurnstile.value.sanitizedMessage, (conversation_id) => {
 								window.history.replaceState({}, '', `/${['c', conversation_id].join('/')}`);
