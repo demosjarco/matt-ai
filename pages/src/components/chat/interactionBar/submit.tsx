@@ -1,10 +1,11 @@
 import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { FaPaperPlaneRegular } from '@qwikest/icons/font-awesome';
-import { useTurnstileKey } from '../../../routes/layout';
+import { useSetTurnstileIdempotency, useTurnstileKey } from '../../../routes/layout';
 
 export default component$(() => {
 	const turnstileSiteKey = useTurnstileKey();
 	const turnstileWidget = useSignal<HTMLDivElement>();
+	const turnstileIdempotency = useSetTurnstileIdempotency();
 
 	useVisibleTask$(({ track, cleanup }) => {
 		track(() => turnstileWidget.value);
@@ -13,6 +14,7 @@ export default component$(() => {
 			window.turnstile.render(turnstileWidget.value, {
 				sitekey: turnstileSiteKey.value,
 				action: 'send-chat-message',
+				callback: () => turnstileIdempotency.submit({ idempotencyKey: crypto.randomUUID() }),
 				'error-callback': (errorCode) => {
 					console.error('turnstile', 'error-callback', errorCode);
 					window.turnstile.reset(turnstileWidget.value);

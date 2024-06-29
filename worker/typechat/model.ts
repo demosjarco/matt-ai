@@ -100,13 +100,11 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 									const eventField = 'data';
 									const contentPrefix = `${eventField}: `;
 
-									let numTokens = 0;
 									let rawAccumulatedData = '';
 									let newlineCounter = 0;
 									let streamError = false;
 									// @ts-ignore
 									for await (const chunk of streamingResponse) {
-										numTokens++;
 										const decodedChunk = new TextDecoder('utf-8').decode(chunk, { stream: true });
 										rawAccumulatedData += decodedChunk;
 
@@ -137,6 +135,7 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 														}
 
 														const outputValue = output[key as keyof typeof output];
+														// @ts-ignore
 														output[key as keyof typeof output] = outputValue ? outputValue + value : value;
 													}
 												} catch (error) {
