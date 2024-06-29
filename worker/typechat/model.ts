@@ -137,6 +137,7 @@ function createBindingLanguageModel(binding: ModelSelector['binding'], model: Mo
 														}
 
 														const outputValue = output[key as keyof typeof output];
+														// @ts-ignore
 														output[key as keyof typeof output] = outputValue ? outputValue + value : value;
 													}
 												} catch (error) {
