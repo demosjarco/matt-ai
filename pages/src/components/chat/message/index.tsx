@@ -1,4 +1,4 @@
-import { component$, noSerialize, useSignal, useStore, useTask$, type NoSerialize } from '@builder.io/qwik';
+import { component$, noSerialize, useSignal, useStore, useTask$, useVisibleTask$, type NoSerialize } from '@builder.io/qwik';
 import { FaArrowsRotateSolid, FaChevronDownSolid } from '@qwikest/icons/font-awesome';
 import { Dropdown } from 'flowbite';
 import { workersAiCatalog } from '../../../../../shared/workers-ai-catalog';
@@ -43,7 +43,7 @@ export default component$<{ message: IDBMessage }>(({ message }) => {
 	const dropdownMenu = useSignal<HTMLDivElement>();
 	const dropdown = useSignal<NoSerialize<Dropdown>>();
 
-	useTask$(({ track, cleanup }) => {
+	useVisibleTask$(({ track, cleanup }) => {
 		track(() => dropdownButton.value);
 		track(() => dropdownMenu.value);
 
