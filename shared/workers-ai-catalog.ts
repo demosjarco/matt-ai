@@ -458,8 +458,8 @@ export const workersAiCatalog = {
 						function_calling: true,
 						info: 'https://huggingface.co/NousResearch/Hermes-2-Pro-Mistral-7B',
 						max_batch_prefill_tokens: 8192,
-						max_input_length: 3072,
-						max_total_tokens: 4096,
+						max_input_length: 4096,
+						max_total_tokens: 8192,
 					},
 				},
 				{
