@@ -19,6 +19,20 @@ export const newMessageText = server$(async function* (model: filteredModelPossi
 					function: async () => new Date().toISOString(),
 				},
 				{
+					name: 'incoming-connection',
+					description: 'Information about the incoming http connection from the end user',
+					function: async () =>
+						JSON.stringify({
+							cf: this.platform.request.cf,
+							headers: Object.fromEntries(this.platform.request.headers),
+							integrity: this.platform.request.integrity,
+							method: this.platform.request.method,
+							redirect: this.platform.request.redirect,
+							signal: this.platform.request.signal,
+							url: this.platform.request.url,
+						}),
+				},
+				{
 					name: 'translate',
 					description: 'Multilingual translation',
 					parameters: {
