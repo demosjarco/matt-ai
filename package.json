@@ -29,5 +29,8 @@
 		"prettier": "^3.3.2",
 		"typescript": "^5.5.2",
 		"wrangler": "^3.62.0"
+	},
+	"dependencies": {
+		"@cloudflare/ai-utils": "^1.0.1"
 	}
 }
