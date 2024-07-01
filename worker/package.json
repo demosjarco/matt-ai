@@ -20,7 +20,9 @@
 		"url": "https://github.com/demosjarco/matt-ai/issues"
 	},
 	"homepage": "https://github.com/demosjarco/matt-ai#readme",
-	"dependencies": {},
+	"dependencies": {
+		"@cloudflare/puppeteer": "^0.0.11"
+	},
 	"devDependencies": {
 		"@swc/core": "^1.6.6",
 		"ts-node": "^10.9.2"
