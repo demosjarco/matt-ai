@@ -2,6 +2,7 @@
 	"name": "pages",
 	"scripts": {
 		"build": "qwik build",
+		"build:pages": "cd .. && npm run build:pages",
 		"build.client": "vite build",
 		"build.preview": "vite build --ssr src/entry.cloudflare-pages.tsx",
 		"build.server": "vite build -c adapters/cloudflare-pages/vite.config.ts",
