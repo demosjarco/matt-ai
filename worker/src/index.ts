@@ -79,6 +79,11 @@ export default class extends WorkerEntrypoint<EnvVars> {
 	}
 	public webBrowse(url: string | URL) {
 		if (this.env.BROWSER) {
+			/**
+			 * @todo 1.1.1.1 secure resolver lookup (and possibly block if bad site)
+			 * @todo check robots.txt to see if allowed to visit in first place
+			 * @todo add toggle between raw mode and summary (`bart-large-cnn`) mode
+			 */
 			return this.getRandomSession(this.env.BROWSER).then(async (sessionId) => {
 				let browser: Browser | undefined;
 
@@ -95,10 +100,15 @@ export default class extends WorkerEntrypoint<EnvVars> {
 					browser = await launch(this.env.BROWSER!);
 				}
 
-				return browser
-					.newPage()
-					.then((page) => page.goto(new URL(url).toString()).then((response) => response!.text()))
-					.finally(() => browser.disconnect());
+				return (
+					browser
+						.newPage()
+						/**
+						 * @todo Check header if json and do .json() wrapped by JSON.stringify to remove whitespace
+						 */
+						.then((page) => page.goto(new URL(url).toString()).then((response) => response!.text()))
+						.finally(() => browser.disconnect())
+				);
 			});
 		} else {
 			throw new Error('Browser Rendering not available');
