@@ -19,6 +19,7 @@ durable_objects.bindings = [
     { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
 ]
 migrations = [{ tag = "v1", new_classes = ["QueueCallbackHandler"] }]
+browser = { binding = "BROWSER" }
 
 [vars]
 NODE_ENV = "development"
@@ -45,6 +46,7 @@ durable_objects.bindings = [
     { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
 ]
 migrations = [{ tag = "v1", new_classes = ["QueueCallbackHandler"] }]
+browser = { binding = "BROWSER" }
 
 [env.production.vars]
 NODE_ENV = "production"
