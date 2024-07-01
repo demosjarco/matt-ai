@@ -34,7 +34,13 @@ export interface CustomContext {
 }
 
 export type modelTypes = keyof typeof workersAiCatalog.modelGroups;
-export type modelPossibilities<M extends modelTypes = modelTypes> = (typeof workersAiCatalog.modelGroups)[M]['models'][number]['name'];
+export type modelPossibilities<M extends modelTypes = modelTypes> = (typeof workersAiCatalog.modelGroups)[M]['models'][number];
+export type modelPossibilitiesName<M extends modelTypes = modelTypes> = modelPossibilities<M>['name'];
+
+type ModelProperties<Model> = Model extends { properties: infer Props } ? keyof Props : never;
+type modelPossibilitiesProperties<M extends modelTypes = modelTypes> = ModelProperties<modelPossibilities<M>>;
+export type filteredModelPossibilities<M extends modelTypes = modelTypes, K extends modelPossibilitiesProperties<M> = modelPossibilitiesProperties<M>, V extends modelPossibilities<M>['properties'][K] = any> = modelPossibilities<M> extends infer Model ? (Model extends { properties: Record<K, V> } ? Model : never) : never;
+export type filteredModelPossibilitiesName<M extends modelTypes = modelTypes, K extends modelPossibilitiesProperties<M> = modelPossibilitiesProperties<M>, V extends modelPossibilities<M>['properties'][K] = any> = filteredModelPossibilities<M, K, V>['name'];
 
 export interface UuidExport {
 	utf8: ReturnType<typeof randomUUID>;
