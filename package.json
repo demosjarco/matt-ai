@@ -4,8 +4,9 @@
 		"fmt:fix": "prettier --write .",
 		"lint": "eslint \"**/*.ts*\"",
 		"lint:fix": "npm run lint -- --fix",
-		"build:local": "cd worker/aiTypes && npm -w worker run build:types && cd ../../ && npm -w worker run build && npm -w pages run build",
-		"build:pages": "npm ci --include-workspace-root --workspace pages --workspace worker --include dev && cd worker/aiTypes && npm -w worker run build:types && cd ../../ && npm -w worker run build && npm -w pages run build",
+		"prebuild:pages": "npm ci --include-workspace-root --workspace pages --workspace worker --include dev",
+		"build:pages": "npm run build",
+		"build": "npm -w worker run build && npm -w pages run build",
 		"preclean": "npx -y rimraf@latest --glob ./**/.wrangler",
 		"clean": "npm -w pages -w worker run clean"
 	},
@@ -23,6 +24,9 @@
 		"pages",
 		"worker"
 	],
+	"dependencies": {
+		"@cloudflare/ai-utils": "^1.0.1"
+	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240620.0",
 		"@demosjarco/prettier-config": "^1.0.1",
