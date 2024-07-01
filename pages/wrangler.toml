@@ -1,5 +1,5 @@
 name = "matt-ai"
-pages_build_output_dir = "pages/dist"
+pages_build_output_dir = "dist"
 compatibility_date = "2024-06-20"
 compatibility_flags = ["nodejs_compat"]
 ai = { binding = "AI" }
