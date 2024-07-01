@@ -43,6 +43,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           check-latest: true
           cache: 'npm'
-      - run: echo "${{ steps.sn.outputs.node-version }}" > .nvmrc
+      - run: echo "${{ steps.sn.outputs.node-version }}" > pages/.nvmrc
       - run: git commit .nvmrc -m "Set version to ${{ matrix.branch-suffix }}" || echo "nv change not needed"
       - run: git push

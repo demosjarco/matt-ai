@@ -44,7 +44,7 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: 'npm'
-      - run: echo "${{ steps.sn.outputs.node-version }}" > .nvmrc
+      - run: echo "${{ steps.sn.outputs.node-version }}" > pages/.nvmrc
       - name: Git Setup
         run: |
           git config user.name "github-actions[bot]"
