@@ -8,6 +8,7 @@ export interface EnvVars extends Bindings, Record<string, any> {
 interface Bindings {
 	AI: Ai;
 	QUEUE_CALLBACK_HANDLER: DurableObjectNamespace<QueueCallbackHandler>;
+	BROWSER: Fetcher;
 }
 
 export type modelTypes = keyof typeof workersAiCatalog.modelGroups;
