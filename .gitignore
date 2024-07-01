@@ -142,6 +142,8 @@ dist
 .mf
 .rollup.cache
 tsconfig.tsbuildinfo
+*.config.d.mts
+*eslint*.d.cts
 
 .idea
 .DS_Store
