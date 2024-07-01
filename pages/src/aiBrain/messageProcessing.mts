@@ -4,7 +4,7 @@ import type { MessageAction } from '../../../worker/aiTypes/MessageAction';
 import type Worker from '../../../worker/src/index';
 import type { IDBMessageContent } from '../IDB/schemas/v2';
 import { CFBase } from '../extras/base.mjs';
-import type { MessageActionTaken, MessageContextValue, modelPossibilities } from '../types';
+import type { MessageActionTaken, MessageContextValue, modelPossibilitiesName } from '../types';
 
 export class MessageProcessing extends CFBase {
 	static isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
@@ -132,7 +132,7 @@ export class MessageProcessing extends CFBase {
 		return fetch(ddgApi).then((response) => response.json<NonNullable<MessageContextValue['webSearchInfo']>>());
 	}
 
-	public async *textResponse(model: modelPossibilities<'Text Generation'>, messages: NonNullable<AiTextGenerationInput['messages']>, previousActions?: MessageActionTaken, context?: MessageContextValue) {
+	public async *textResponse(model: modelPossibilitiesName<'Text Generation'>, messages: NonNullable<AiTextGenerationInput['messages']>, previousActions?: MessageActionTaken, context?: MessageContextValue) {
 		const systemMessages: RoleScopedChatInput[] = [{ role: 'system', content: `You are a helpful assistant. The current datetime is ${new Date().toISOString()}` }];
 		if (previousActions) systemMessages.push({ role: 'system', content: `You are the last step in a chain of ai prompts. The previous actions already done are ${JSON.stringify(previousActions)}.` + (context ? `The following context is now available due to those previous actions: ${JSON.stringify(context)}` : '') });
 
@@ -190,14 +190,14 @@ export class MessageProcessing extends CFBase {
 		}
 	}
 
-	public summarize(messages: RoleScopedChatInput['content'][], model: modelPossibilities<'Summarization'>) {
+	public summarize(messages: RoleScopedChatInput['content'][], model: modelPossibilitiesName<'Summarization'>) {
 		return this.helpers.c.env.AI.run(model, {
 			input_text: messages.join('\n'),
 			max_length: 10,
 		}).then((response) => response.summary);
 	}
 
-	private image(prompt: AiTextToImageInput['prompt'], model: modelPossibilities<'Text-to-Image'>, num_steps: AiTextToImageInput['num_steps'] = 20) {
+	private image(prompt: AiTextToImageInput['prompt'], model: modelPossibilitiesName<'Text-to-Image'>, num_steps: AiTextToImageInput['num_steps'] = 20) {
 		return new Promise<{ raw: ReturnType<(typeof Buffer)['toString']>; model: typeof model }>((resolve, reject) => {
 			this.helpers.c.env.AI.run(model, { prompt, num_steps })
 				.then(async (imageGeneration: AiTextToImageOutput | NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {

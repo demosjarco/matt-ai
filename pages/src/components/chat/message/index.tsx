@@ -4,7 +4,7 @@ import { Dropdown } from 'flowbite';
 import { workersAiCatalog } from '../../../../../shared/workers-ai-catalog';
 import type { IDBMessage } from '../../../IDB/schemas/v2';
 import { serverNodeEnv } from '../../../routes/layout';
-import type { modelPossibilities, modelTypes } from '../../../types';
+import type { modelPossibilitiesName, modelTypes } from '../../../types';
 import Avatar from '../Avatar';
 import Content from './content';
 
@@ -22,10 +22,10 @@ export default component$<{ message: IDBMessage }>(({ message }) => {
 			acc[type] = workersAiCatalog.modelGroups['Text Generation'].models.map((model) => model.name);
 			return acc;
 		},
-		{} as Record<modelTypes, modelPossibilities[]>,
+		{} as Record<modelTypes, modelPossibilitiesName[]>,
 	);
 	// Must use `structuredClone()` to deep copy or else search issues
-	const modelSelection = useStore<Record<modelTypes, modelPossibilities[]>>(structuredClone(originalModels), { deep: true });
+	const modelSelection = useStore<Record<modelTypes, modelPossibilitiesName[]>>(structuredClone(originalModels), { deep: true });
 	const modelSearchText = useSignal<string>('');
 
 	useTask$(({ track }) => {
