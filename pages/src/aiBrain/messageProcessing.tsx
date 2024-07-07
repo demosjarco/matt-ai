@@ -3,7 +3,7 @@ import { autoTrimTools, runWithTools } from '@cloudflare/ai-utils';
 import type { AiTextGenerationInput, AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/workers-types';
 import type { filteredModelPossibilitiesName } from '../types';
 
-export const newMessageText = server$(async function* (model: filteredModelPossibilitiesName<'Text Generation', 'function_calling', true>, messages: NonNullable<AiTextGenerationInput['messages']>) {
+export const messageText = server$(async function* (model: filteredModelPossibilitiesName<'Text Generation', 'function_calling', true>, messages: NonNullable<AiTextGenerationInput['messages']>) {
 	const systemMessages: RoleScopedChatInput[] = [{ role: 'system', content: `You are a helpful assistant` }];
 
 	const stream = await runWithTools(

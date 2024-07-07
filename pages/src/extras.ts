@@ -1,5 +1,4 @@
-import type { MessageAction } from '../../worker/aiTypes/MessageAction';
-import type { AsyncFunctionWithParams, MessageActionTaken } from './types';
+import type { AsyncFunctionWithParams } from './types';
 
 export function isLocal(incoming: string | URL | Request): boolean {
 	let incomingUrl: URL;
@@ -64,15 +63,6 @@ export function deepMerge<T>(base: T, incoming: Partial<T>): T {
 	}
 
 	return output;
-}
-
-export function calculateActionTaken(action: MessageAction): MessageActionTaken {
-	return {
-		translation: action.translation !== null && action.translation.userRequestLanguage !== action.translation.preferredResponseLanguage,
-		previousMessageKeywordSearch: action.previousMessageKeywordSearch !== null && action.previousMessageKeywordSearch.length > 0,
-		webSearchTerms: action.webSearchTerms !== null && action.webSearchTerms.length > 0,
-		imageGenerate: action.imageGenerate !== null && action.imageGenerate.trim().length > 0,
-	};
 }
 
 export function retryWithSelectiveRemoval<P1, P2, P3, R, T>(func: AsyncFunctionWithParams<P1, P2, P3, R, T>, param1: P1, items: T[], param2: P2, param3: P3): Promise<R> {

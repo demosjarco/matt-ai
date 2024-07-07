@@ -1,9 +1,8 @@
 import { component$, useTask$ } from '@builder.io/qwik';
 import { FaDownloadSolid, FaImageSolid } from '@qwikest/icons/font-awesome';
-import type { MessageAction } from '../../../../../../worker/aiTypes/MessageAction';
 import type { IDBMessageContentImage } from '../../../../IDB/schemas/v2';
 
-export default component$<{ imageAction?: NonNullable<MessageAction['imageGenerate']>; image?: IDBMessageContentImage }>(({ imageAction, image }) => {
+export default component$<{ imageAction?: string; image?: IDBMessageContentImage }>(({ imageAction, image }) => {
 	useTask$(({ track }) => {
 		// Needs to be retracked
 		track(() => imageAction);
