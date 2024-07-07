@@ -3,8 +3,7 @@ import { Form, server$, useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
-import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
-import { newMessageText } from '../../../aiBrain/newMessageProcessing';
+import { messageText } from '../../../aiBrain/messageProcessing';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
@@ -14,22 +13,8 @@ import Submit from './submit';
 const messageGuard = server$(function (...args: Parameters<MessageProcessing['guard']>) {
 	return new MessageProcessing(this.platform).guard(...args);
 });
-const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
-	return new MessageProcessing(this.platform).actionDecide(...args);
-});
-const messageActionDdg = server$(function (...args: Parameters<MessageProcessing['ddg']>) {
-	return new MessageProcessing(this.platform).ddg(...args);
-});
-const messageText = server$(async function* (...args: Parameters<MessageProcessing['textResponse']>) {
-	for await (const chunk of new MessageProcessing(this.platform).textResponse(...args)) {
-		yield chunk;
-	}
-});
 const messageSummary = server$(function (...args: Parameters<MessageProcessing['summarize']>) {
 	return new MessageProcessing(this.platform).summarize(...args);
-});
-const messageActionImage = server$(function (...args: Parameters<MessageProcessing['imageGenerate']>) {
-	return new MessageProcessing(this.platform).imageGenerate(...args);
 });
 
 export default component$(() => {
@@ -124,8 +109,8 @@ export default component$(() => {
 										// Add typing status
 										(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
 
-										const model: Parameters<typeof newMessageText>[0] = '@hf/nousresearch/hermes-2-pro-mistral-7b';
-										newMessageText(model, [{ role: 'user', content: message }])
+										const model: Parameters<typeof messageText>[0] = '@hf/nousresearch/hermes-2-pro-mistral-7b';
+										messageText(model, [{ role: 'user', content: message }])
 											.then(async (chatResponse) => {
 												const composedInsert: IDBMessageContent = {
 													text: '',

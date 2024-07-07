@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"label": "Build",
-			"dependsOn": ["Lint", "TypeChat Types", "TypeChat Compile", "Qwik Types", "Qwik Client", "Qwik Server"],
+			"dependsOn": ["Lint", "Qwik Types", "Qwik Client", "Qwik Server"],
 			"isBackground": true,
 			"group": {
 				"kind": "build",
@@ -18,41 +18,6 @@
 			"icon": {
 				"id": "lightbulb-autofix",
 				"color": "terminal.ansiGreen"
-			}
-		},
-		{
-			"label": "TypeChat Types",
-			"type": "typescript",
-			"tsconfig": "worker/aiTypes/tsconfig.json",
-			"option": "watch",
-			"problemMatcher": ["$tsc-watch"],
-			"isBackground": true,
-			"presentation": {
-				"group": "worker.compile"
-			},
-			"options": {
-				"cwd": "${workspaceFolder}/worker/aiTypes"
-			},
-			"icon": {
-				"id": "symbol-type-parameter",
-				"color": "terminal.ansiBlue"
-			}
-		},
-		{
-			"label": "TypeChat Compile",
-			"dependsOn": ["TypeChat Types"],
-			"type": "npm",
-			"script": "build",
-			"path": "${workspaceFolder}/worker",
-			"presentation": {
-				"group": "worker.compile"
-			},
-			"options": {
-				"cwd": "${workspaceFolder}/worker"
-			},
-			"icon": {
-				"id": "json",
-				"color": "terminal.ansiYellow"
 			}
 		},
 		{

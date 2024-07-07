@@ -1,5 +1,4 @@
 import type { DBSchema, IDBPDatabase } from 'idb';
-import type { MessageAction } from '../../../../worker/aiTypes/MessageAction';
 import type { modelPossibilitiesName } from '../../types';
 
 export interface AiLocalSchema extends DBSchema {
@@ -86,7 +85,7 @@ export interface IDBMessageContentChips extends Record<string, any> {}
 export interface IDBMessageContentReferences extends Record<string, any> {}
 
 export interface IDBMessageContent {
-	action?: MessageAction;
+	action?: Record<string, any>;
 	text?: IDBMessageContentText;
 	image?: IDBMessageContentImage;
 	card?: IDBMessageContentCard;

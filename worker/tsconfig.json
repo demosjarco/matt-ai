@@ -1,5 +1,5 @@
 {
 	"extends": "../tsconfig.json",
 	"files": ["./.eslintrc.cjs", "prettier.config.mjs"],
-	"include": ["../shared", "../do", "aiTypes", "rpc", "typechat"]
+	"include": ["../do", "src"]
 }
