@@ -1,18 +1,14 @@
 import { $, component$, useContext, useStore, useTask$ } from '@builder.io/qwik';
-import { Form, server$, useLocation } from '@builder.io/qwik-city';
+import { Form, useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
-import { messageGuard, messageText } from '../../../aiBrain/messageProcessing';
+import { messageGuard, messageSummary, messageText } from '../../../aiBrain/messageProcessing';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
-
-const messageSummary = server$(function (...args: Parameters<MessageProcessing['summarize']>) {
-	return new MessageProcessing(this.platform).summarize(...args);
-});
 
 export default component$(() => {
 	const loc = useLocation();
