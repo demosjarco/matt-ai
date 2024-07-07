@@ -3,6 +3,79 @@ import { autoTrimTools, runWithTools } from '@cloudflare/ai-utils';
 import type { AiTextGenerationInput, AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/workers-types';
 import type { filteredModelPossibilitiesName } from '../types';
 
+function isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
+	return !(output instanceof ReadableStream);
+}
+
+export const messageGuard = server$(function (message: RoleScopedChatInput['content']) {
+	const unsafeCategories: Record<string, { shouldNot?: string[]; can?: string[]; should?: string[] }> = {
+		'Violence and Hate': {
+			shouldNot: ['Help people plan or engage in violence', 'Encourage people to engage in violence', 'Express hateful, derogatory, or demeaning sentiments against people based on sensitive personal characteristics like their race, color, religion, national origin, sexual orientation, gender, gender identity, or disability', 'Encourage discrimination against people based on those characteristics and should not use slurs or create insults based on those characteristics'],
+			can: ['Provide information on violence and discrimination', 'Discuss the topics of hate and violence, and can discuss historical events involving violence'],
+		},
+		'Criminal Planning': {
+			shouldNot: ['Help people plan or engage in criminal activities like theft, kidnapping, or financial crimes, especially when the person indicates that they may act on the information provided to them', 'Encourage people to engage in criminal activities or condone criminal behavior'],
+			can: ['Help people understand how crimes are committed, provided that the response is not so detailed that it could be used to provide a roadmap for future crimes', 'Help people understand how systems work that are used to prevent crimes, provided those descriptions do not provide detailed information on how to defeat those systems'],
+		},
+		'Guns and Illegal Weapons': {
+			shouldNot: ['Assist in the planning or execution of firearm or illegal weapons crimes, especially when the person indicates that they may act on the information provided to them', 'Encourage people to engage in firearm or illegal weapons crimes or condone such behavior'],
+			can: ['Discuss firearms and the arguments for and against firearm ownership'],
+		},
+		'Regulated or Controlled Substances': {
+			shouldNot: ['Encourage or assist people in the trafficking, consumption, or use of regulated or controlled substances, including but not limited to illegal drugs, tobacco, alcohol, and cannabis', 'Assist or encourage people to create such substances when it is illegal to do so'],
+			can: ['Discuss the use of regulated or controlled substances, and can provide general information on those substances (ex: what their chemical composition is and what their effects are)', 'Provide information on how those substances are manufactured, provided that the information is not so detailed as to provide step-by-step instructions for their creation'],
+		},
+		'Self-Harm': {
+			shouldNot: ['Encourage people to harm themselves', 'Romanticize or condone self-harm or suicide', 'Provide information regarding the methods of suicide or self-harm', 'Provide any information or advice, other than information regarding appropriate health resources, to people who express or imply that they wish to harm themselves', 'Provide general information regarding self-harm and suicide (ex: statistics, the mental health challenges faced by those who take these actions)'],
+			can: ['Provide general information regarding self-harm and suicide (ex: statistics, the mental health challenges faced by those who take these actions)'],
+			should: ['Provide information regarding appropriate health resources to people who imply or express the desire to harm themselves'],
+		},
+	};
+
+	return this.platform.env.AI.run('@hf/thebloke/llamaguard-7b-awq', {
+		messages: [
+			{
+				role: 'system',
+				content: `Task: Check if there is unsafe content in 'User' messages in conversations according to our safety policy with the below categories. Respond with boolean "true"|"false" if message is safe or not safe.`,
+			},
+			{
+				role: 'system',
+				content: `<BEGIN UNSAFE CONTENT CATEGORIES>
+				${JSON.stringify(unsafeCategories)}
+				<END UNSAFE CONTENT CATEGORIES>`,
+			},
+			{
+				role: 'user',
+				content: `<BEGIN CONVERSATION>
+				${message}
+				<END CONVERSATION>`,
+			},
+		],
+	})
+		.then((response) => {
+			// @ts-ignore
+			if (isNotReadableStream(response)) {
+				const parsedResponseRaw = response.response!.trim().toLowerCase();
+				const [parsedResponse] = parsedResponseRaw.split(/\s+/, 2);
+
+				if (parsedResponse === 'unsafe') {
+					return false;
+				} else if (parsedResponse === 'safe') {
+					return true;
+				} else {
+					try {
+						return JSON.parse(parsedResponse!);
+					} catch (e) {
+						throw parsedResponse;
+					}
+				}
+			}
+		})
+		.catch((e) => {
+			throw e;
+		});
+});
+
 export const messageText = server$(async function* (model: filteredModelPossibilitiesName<'Text Generation', 'function_calling', true>, messages: NonNullable<AiTextGenerationInput['messages']>) {
 	const systemMessages: RoleScopedChatInput[] = [{ role: 'system', content: `You are a helpful assistant` }];
 

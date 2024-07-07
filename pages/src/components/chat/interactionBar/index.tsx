@@ -3,16 +3,13 @@ import { Form, server$, useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
-import { messageText } from '../../../aiBrain/messageProcessing';
+import { messageGuard, messageText } from '../../../aiBrain/messageProcessing';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
 
-const messageGuard = server$(function (...args: Parameters<MessageProcessing['guard']>) {
-	return new MessageProcessing(this.platform).guard(...args);
-});
 const messageSummary = server$(function (...args: Parameters<MessageProcessing['summarize']>) {
 	return new MessageProcessing(this.platform).summarize(...args);
 });
