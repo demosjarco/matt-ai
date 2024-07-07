@@ -1,7 +1,7 @@
 import { server$ } from '@builder.io/qwik-city';
 import { autoTrimTools, runWithTools } from '@cloudflare/ai-utils';
 import type { AiTextGenerationInput, AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/workers-types';
-import type { filteredModelPossibilitiesName } from '../types';
+import type { filteredModelPossibilitiesName, modelPossibilitiesName } from '../types';
 
 function isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
 	return !(output instanceof ReadableStream);
@@ -212,4 +212,11 @@ export const messageText = server$(async function* (model: filteredModelPossibil
 		// Stop processing response all together
 		if (streamError) break;
 	}
+});
+
+export const messageSummary = server$(function (messages: RoleScopedChatInput['content'][], model: modelPossibilitiesName<'Summarization'>) {
+	return this.platform.env.AI.run(model, {
+		input_text: messages.join('\n'),
+		max_length: 10,
+	}).then((response) => response.summary);
 });
