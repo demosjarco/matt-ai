@@ -1,6 +1,7 @@
 import { server$ } from '@builder.io/qwik-city';
 import { autoTrimTools, runWithTools } from '@cloudflare/ai-utils';
 import type { AiTextGenerationInput, AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/workers-types';
+import { addMetadata } from 'meta-png';
 import type { filteredModelPossibilitiesName, modelPossibilitiesName } from '../types';
 
 function isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
@@ -219,4 +220,39 @@ export const messageSummary = server$(function (messages: RoleScopedChatInput['c
 		input_text: messages.join('\n'),
 		max_length: 10,
 	}).then((response) => response.summary);
+});
+
+function image(ai: Ai, prompt: AiTextToImageInput['prompt'], model: modelPossibilitiesName<'Text-to-Image'>, num_steps: AiTextToImageInput['num_steps'] = 20) {
+	return ai
+		.run(model, { prompt, num_steps })
+		.then(async (imageGeneration: AiTextToImageOutput | NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
+			if (imageGeneration instanceof ReadableStream) {
+				imageGeneration = new Uint8Array(await new Response(imageGeneration).arrayBuffer());
+			}
+
+			const imageGenerationWithmetadata1 = addMetadata(imageGeneration, 'Title', prompt);
+			const imageGenerationWithmetadata2 = addMetadata(imageGenerationWithmetadata1, 'Software', model.split('/').slice(1).join('/'));
+			const imageGenerationWithmetadata3 = addMetadata(imageGenerationWithmetadata2, 'Author', `M.A.T.T. AI${this.helpers.c.env.CF_PAGES_COMMIT_SHA ? ` v${this.helpers.c.env.CF_PAGES_COMMIT_SHA}` : ''}`);
+
+			return {
+				raw: Buffer.from(imageGenerationWithmetadata3.buffer).toString('base64'),
+				model,
+			};
+		})
+		.catch((e) => {
+			throw e;
+		});
+}
+export const messageActionImage = server$(function (prompt: Parameters<typeof image>[1], model?: Parameters<typeof image>[2], num_steps?: Parameters<typeof image>[3]) {
+	if (model === undefined) {
+		return image(this.platform.env.AI, prompt, '@cf/stabilityai/stable-diffusion-xl-base-1.0', num_steps).catch(() =>
+			image(this.platform.env.AI, prompt, '@cf/bytedance/stable-diffusion-xl-lightning', num_steps).catch(() =>
+				image(this.platform.env.AI, prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps).catch((e) => {
+					throw e;
+				}),
+			),
+		);
+	} else {
+		return image(this.platform.env.AI, prompt, model, num_steps);
+	}
 });
