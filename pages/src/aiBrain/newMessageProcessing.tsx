@@ -20,7 +20,7 @@ export const newMessageText = server$(async function* (model: filteredModelPossi
 				},
 				{
 					name: 'incoming-connection',
-					description: 'Information about the incoming http connection from the end user',
+					description: 'Information about the incoming http connection from the chatting user',
 					function: async () =>
 						JSON.stringify({
 							cf: this.platform.request.cf,
