@@ -96,6 +96,7 @@ export type IDBMessageContentText = string;
 export interface IDBMessageContentCard extends Record<string, any> {}
 export type IDBMessageContentImage = AiTextToImageOutput;
 
+// @ts-expect-error
 export class AiLocal extends AiLocalBase {
 	public static override upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
 		// Just nuke it, whole new ORM and stuff
