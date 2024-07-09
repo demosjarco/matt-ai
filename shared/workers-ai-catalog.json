@@ -245,9 +245,7 @@
 					"tags": [],
 					"properties": {
 						"beta": false,
-						"context_length_limit": 3072,
 						"info": "https://ai.meta.com/llama/",
-						"sequence_length_limit": 2500,
 						"terms": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/"
 					}
 				},
@@ -458,8 +456,8 @@
 						"function_calling": true,
 						"info": "https://huggingface.co/NousResearch/Hermes-2-Pro-Mistral-7B",
 						"max_batch_prefill_tokens": 8192,
-						"max_input_length": 3072,
-						"max_total_tokens": 4096
+						"max_input_length": 4096,
+						"max_total_tokens": 8192
 					}
 				},
 				{
