@@ -4,9 +4,13 @@ FROM python:3-alpine@sha256:b7662fc33e07f05fb2f579c3634e1e4d2e30c02553397c6c24f7
 
 FROM alpine:3@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0
 
+# Update packge lists
 RUN --mount=type=cache,target=/var/cache/apk apk update
+# Upgrade packages (non-breaking)
 RUN --mount=type=cache,target=/var/cache/apk apk upgrade
+# Clean up cache (reduce image size)
 RUN --mount=type=cache,target=/var/cache/apk apk cache clean
+# Delete packages not used anymore
 RUN --mount=type=cache,target=/var/cache/apk apk del --purge
 
 LABEL org.opencontainers.image.source="https://github.com/demosjarco/matt-ai.git"
