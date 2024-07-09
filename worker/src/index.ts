@@ -2,32 +2,10 @@ import { connect, launch, sessions, type Browser, type BrowserWorker } from '@cl
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import type { EnvVars } from './types.js';
 
-// Re-export since workerd can only find from from `wrangler.toml`'s `main` file
-export { QueueCallbackHandler } from '../../do/QueueCallbackHandler.mjs';
-
 export default class extends WorkerEntrypoint<EnvVars> {
 	// Dummy entry point, crashes without it
 	override async fetch(request: Request) {
 		return new Response('Hello world');
-	}
-
-	override queue(batch: MessageBatch<unknown>) {
-		if (batch.queue.startsWith('mattai-deferred-tasks-dlq')) {
-			/**
-			 * @todo
-			 * Connect to ws
-			 * Tell the client "yea, it ain't happening"
-			 * End all WS and DO
-			 */
-		} else if (batch.queue.startsWith('mattai-deferred-tasks')) {
-			/**
-			 * @todo
-			 * Do Browser rendering stuff
-			 * @link https://platform.openai.com/docs/plugins/bot Follow similar practices
-			 * @link https://developers.cloudflare.com/bots/reference/verified-bots-policy/ eventually (once used enough) verify bot
-			 * Ws content back
-			 */
-		}
 	}
 
 	private getRandomSession(endpoint: BrowserWorker) {
