@@ -33,7 +33,7 @@ COPY --from=pythonbase /usr/local/include /usr/local/include
 # Add symlinks to "node" and "npm"
 RUN ln -s /usr/local/bin/node /usr/bin/node
 RUN ln -s /usr/local/bin/npm /usr/bin/npm
-# Add symlink for python3
+# # Add symlink for python3
 RUN ln -s /usr/local/bin/python3 /usr/bin/python3
 # Verify installations
 RUN node --version
@@ -41,11 +41,13 @@ RUN npm --version
 RUN python3 --version
 
 # Cache locations reference
+# RUN npm config get cache
 # /root/.npm
+# RUN pip cache dir
 # /root/.cache/pip
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install autotrain-advanced
-# # Installing PyTorch with CUDA 12.1 support
+# Installing PyTorch with CUDA 12.1 support
 RUN --mount=type=cache,target=/root/.cache/pip pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121
 RUN --mount=type=cache,target=/root/.cache/pip pip install xformers
 # Download necessary NLTK data
