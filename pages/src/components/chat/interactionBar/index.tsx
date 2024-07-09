@@ -117,6 +117,9 @@ export default component$(() => {
 													// Add to UI
 													messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
 												}
+												// Cleanup artifacts
+												composedInsert.text = composedInsert.text?.replaceAll('<|im_start|>', '');
+												composedInsert.text = composedInsert.text?.replaceAll('<|im_end|>', '');
 												// Cleanup whitespace
 												composedInsert.text = composedInsert.text?.trim();
 												messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
