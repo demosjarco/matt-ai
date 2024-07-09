@@ -29,14 +29,6 @@ RUN --mount=type=cache,target=/var/cache/apt apt-get clean
 # Delete packages not used anymore
 RUN --mount=type=cache,target=/var/cache/apt apt-get autoremove -y
 
-# Setup PLP user
-RUN groupadd --gid 1000 runner && useradd --uid 1000 --gid runner --shell /bin/bash --create-home runner
-USER runner
-
-# Setup sudo
-RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node
-RUN chmod 0440 /etc/sudoers.d/node
-
 # Copy Node.js
 COPY --from=nodebase /usr/local/bin /usr/local/bin
 COPY --from=nodebase /usr/local/lib /usr/local/lib
@@ -54,6 +46,14 @@ RUN ln -s /usr/local/bin/python3 /usr/bin/python3
 RUN node --version
 RUN npm --version
 RUN python3 --version
+
+# Setup PLP user
+RUN groupadd --gid 1000 runner && useradd --uid 1000 --gid runner --shell /bin/bash --create-home runner
+USER runner
+
+# Setup sudo
+RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node
+RUN chmod 0440 /etc/sudoers.d/node
 
 # Cache locations reference
 # RUN npm config get cache
