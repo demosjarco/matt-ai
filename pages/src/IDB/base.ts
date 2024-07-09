@@ -1,6 +1,6 @@
 import { openDB, type IDBPDatabase } from 'idb';
 import { AiLocal as AiLocalV2 } from './schemas/v2';
-import AiLocalV3, { type AiLocalSchema as AiLocalSchemaV3 } from './schemas/v3';
+import { AiLocal as AiLocalV3, type AiLocalSchema as AiLocalSchemaV3 } from './schemas/v3';
 
 export abstract class IDBBase {
 	private static readonly LOWER_CHAR_SET = 'abcdefghijklmnopqrstuvwxyz';
