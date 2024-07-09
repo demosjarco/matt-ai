@@ -1,21 +1,26 @@
 # syntax=docker/dockerfile:1
-FROM node:lts-alpine@sha256:692b5239da8cf4b4b5ea25d966d83e2911f389d9fef88ac9ffbe76b2d48ef135 AS nodebase
-FROM python:3-alpine@sha256:b7662fc33e07f05fb2f579c3634e1e4d2e30c02553397c6c24f775cb360dbc03 AS pythonbase
+FROM node:lts-slim@sha256:e20529ad3c8865301387ca9f4dbe65e7b6a0f1bb7fd700b9ba90d560f21f2314 AS nodebase
+FROM python:3-slim@sha256:d5f16749562233aa4bd26538771d76bf0dfd0a0ea7ea8771985e267451397ae4 AS pythonbase
 
-FROM alpine:3@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0
-
-# Update packge lists
-RUN --mount=type=cache,target=/var/cache/apk apk update
-# Upgrade packages (non-breaking)
-RUN --mount=type=cache,target=/var/cache/apk apk upgrade
-# Install additional
-RUN --mount=type=cache,target=/var/cache/apk apk add libstdc++ ca-certificates
-# Clean up cache (reduce image size)
-RUN --mount=type=cache,target=/var/cache/apk apk cache clean
-# Delete packages not used anymore
-RUN --mount=type=cache,target=/var/cache/apk apk del --purge
+FROM debian:stable-slim@sha256:f8bbfa052db81e5b8ac12e4a1d8310a85d1509d4d0d5579148059c0e8b717d4e
 
 LABEL org.opencontainers.image.source="https://github.com/demosjarco/matt-ai.git"
+
+ENV DEBIAN_FRONTEND=noninteractive
+# Update packge lists
+RUN --mount=type=cache,target=/var/cache/apt apt-get update
+# Upgrade packages (non-breaking)
+RUN --mount=type=cache,target=/var/cache/apt apt-get upgrade -y
+# Install additional
+RUN --mount=type=cache,target=/var/cache/apt apt-get install -y sudo libstdc++ ca-certificates
+# Clean up cache (reduce image size)
+RUN --mount=type=cache,target=/var/cache/apt apt-get clean
+# Delete packages not used anymore
+RUN --mount=type=cache,target=/var/cache/apt apt-get autoremove -y
+
+# Setup sudo
+RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node
+RUN chmod 0440 /etc/sudoers.d/node
 
 # Copy Node.js
 COPY --from=nodebase /usr/local/bin /usr/local/bin
