@@ -49,11 +49,12 @@ RUN python3 --version
 
 # Setup PLP user
 RUN groupadd --gid 1000 runner && useradd --uid 1000 --gid runner --shell /bin/bash --create-home runner
-USER runner
 
 # Setup sudo
 RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node
 RUN chmod 0440 /etc/sudoers.d/node
+
+USER runner
 
 # Cache locations reference
 # RUN npm config get cache
