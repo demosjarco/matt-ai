@@ -39,5 +39,16 @@ RUN python3 --version
 # /root/.npm
 # /root/.cache/pip
 
+RUN --mount=type=cache,target=/root/.cache/pip pip install autotrain-advanced
+# # Installing PyTorch with CUDA 12.1 support
+RUN --mount=type=cache,target=/root/.cache/pip pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121
+RUN --mount=type=cache,target=/root/.cache/pip pip install xformers
+# Download necessary NLTK data
+RUN --mount=type=cache,target=/root/.cache/pip python -m nltk.downloader punkt
+# Install flash-attn with no build isolation
+# RUN --mount=type=cache,target=/root/.cache/pip pip install flash-attn --no-build-isolation
+# Install deepspeed for distributed training optimizations
+# RUN --mount=type=cache,target=/root/.cache/pip pip install deepspeed
+
 # Set the default command
 CMD ["/bin/sh"]
