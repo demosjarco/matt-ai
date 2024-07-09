@@ -1,5 +1,5 @@
 import { component$, useTask$ } from '@builder.io/qwik';
-import type { IDBMessageContent } from '../../../../IDB/schemas/v2';
+import type { IDBMessageContent } from '../../../../IDB/schemas/v3';
 
 export default component$<{ action?: IDBMessageContent }>(({ action }) => {
 	useTask$(async ({ track }) => {

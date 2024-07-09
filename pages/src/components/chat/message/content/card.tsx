@@ -1,5 +1,5 @@
 import { component$, useTask$ } from '@builder.io/qwik';
-import type { IDBMessageContentCard } from '../../../../IDB/schemas/v2';
+import type { IDBMessageContentCard } from '../../../../IDB/schemas/v3';
 
 export default component$<{ card?: IDBMessageContentCard }>(({ card }) => {
 	useTask$(({ track }) => {

@@ -1,10 +1,11 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import { AiLocal as AiLocalV2, type AiLocalSchema as AiLocalSchemaV2 } from './schemas/v2';
+import { AiLocal as AiLocalV2 } from './schemas/v2';
+import AiLocalV3, { type AiLocalSchema as AiLocalSchemaV3 } from './schemas/v3';
 
 export abstract class IDBBase {
 	private static readonly LOWER_CHAR_SET = 'abcdefghijklmnopqrstuvwxyz';
 	private static readonly NUMBER_CHAR_SET = '0123456789';
-	private static readonly CHAR_SET = `${IDBBase.LOWER_CHAR_SET.toUpperCase()}${IDBBase.LOWER_CHAR_SET}${IDBBase.NUMBER_CHAR_SET}`;
+	private static readonly CHAR_SET = `${IDBBase.LOWER_CHAR_SET}${IDBBase.NUMBER_CHAR_SET}${IDBBase.LOWER_CHAR_SET.toUpperCase()}`;
 
 	protected static randomText(length: number) {
 		const randomBytes = new Uint8Array(length);
@@ -19,11 +20,14 @@ export abstract class IDBBase {
 	}
 
 	protected get db() {
-		return openDB<AiLocalSchemaV2>('ailocal', 2, {
+		return openDB<AiLocalSchemaV3>('ailocal', 3, {
 			upgrade(database, oldVersion) {
 				// Ignore v1 as it was before ORM
 				if (oldVersion < 2) {
 					AiLocalV2.upgrade(database as unknown as IDBPDatabase, database);
+				}
+				if (oldVersion < 3) {
+					AiLocalV3.upgrade(database as unknown as IDBPDatabase, database);
 				}
 				/**
 				 * @link https://github.com/jakearchibald/idb?tab=readme-ov-file#opting-out-of-types

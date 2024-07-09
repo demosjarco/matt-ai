@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 import { Marked } from 'marked';
 import markedAlert from 'marked-alert';
 import markedFootnote from 'marked-footnote';
-import type { IDBMessageContentText } from '../../../../IDB/schemas/v2';
+import type { IDBMessageContentText } from '../../../../IDB/schemas/v3';
 
 // @ts-expect-error
 import markedBidi from 'marked-bidi';
