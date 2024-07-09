@@ -8,6 +8,8 @@ FROM alpine:3@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4
 RUN --mount=type=cache,target=/var/cache/apk apk update
 # Upgrade packages (non-breaking)
 RUN --mount=type=cache,target=/var/cache/apk apk upgrade
+# Install additional
+RUN --mount=type=cache,target=/var/cache/apk apk add libstdc++ ca-certificates
 # Clean up cache (reduce image size)
 RUN --mount=type=cache,target=/var/cache/apk apk cache clean
 # Delete packages not used anymore
@@ -23,16 +25,15 @@ COPY --from=pythonbase /usr/local/bin /usr/local/bin
 COPY --from=pythonbase /usr/local/lib /usr/local/lib
 COPY --from=pythonbase /usr/local/include /usr/local/include
 
-RUN apk add --no-cache libstdc++ ca-certificates && \
-    # Add symlinks to "node" and "npm"
-    ln -s /usr/local/bin/node /usr/bin/node && \
-    ln -s /usr/local/bin/npm /usr/bin/npm && \
-    # Add symlink for python3
-    ln -s /usr/local/bin/python3 /usr/bin/python3 && \
-    # Verify installations
-    node --version && \
-    npm --version && \
-    python3 --version
+# Add symlinks to "node" and "npm"
+RUN ln -s /usr/local/bin/node /usr/bin/node
+RUN ln -s /usr/local/bin/npm /usr/bin/npm
+# Add symlink for python3
+RUN ln -s /usr/local/bin/python3 /usr/bin/python3
+# Verify installations
+RUN node --version
+RUN npm --version
+RUN python3 --version
 
 # Set the default command
 CMD ["/bin/sh"]
