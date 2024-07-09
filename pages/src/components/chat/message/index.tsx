@@ -2,7 +2,7 @@ import { component$, noSerialize, useSignal, useStore, useTask$, useVisibleTask$
 import { FaArrowsRotateSolid, FaChevronDownSolid } from '@qwikest/icons/font-awesome';
 import { Dropdown } from 'flowbite';
 import { workersAiCatalog } from '../../../../../shared/workers-ai-catalog';
-import type { IDBMessage } from '../../../IDB/schemas/v2';
+import type { IDBMessage } from '../../../IDB/schemas/v3';
 import { serverNodeEnv } from '../../../routes/layout';
 import type { modelPossibilitiesName, modelTypes } from '../../../types';
 import Avatar from '../Avatar';

@@ -245,9 +245,7 @@ export const workersAiCatalog = {
 					tags: [],
 					properties: {
 						beta: false,
-						context_length_limit: 3072,
 						info: 'https://ai.meta.com/llama/',
-						sequence_length_limit: 2500,
 						terms: 'https://ai.meta.com/resources/models-and-libraries/llama-downloads/',
 					},
 				},

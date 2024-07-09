@@ -1,24 +1,10 @@
 name = "mattai-worker-preview"
 main = "src/index.ts"
-compatibility_date = "2024-06-20"
+compatibility_date = "2024-07-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 minify = true
 ai = { binding = "AI" }
-queues.producers = [
-    { binding = "DEFERRED_TASKS", queue = "mattai-deferred-tasks-preview" },
-]
-# https://developers.cloudflare.com/queues/platform/limits/#limits
-queues.consumers = [
-    # Max per batch, but other limits respect https://developers.cloudflare.com/browser-rendering/platform/limits/
-    { queue = "mattai-deferred-tasks-preview", max_batch_size = 100, max_batch_timeout = 2, dead_letter_queue = "mattai-deferred-tasks-dlq-preview", max_concurrency = 2 },
-    # Just max to terminate WS as fast as possible
-    { queue = "mattai-deferred-tasks-dlq-preview", max_batch_size = 100, max_batch_timeout = 2, max_concurrency = 20 },
-]
-durable_objects.bindings = [
-    { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
-]
-migrations = [{ tag = "v1", new_classes = ["QueueCallbackHandler"] }]
 browser = { binding = "BROWSER" }
 
 [vars]
@@ -30,22 +16,11 @@ mode = "smart"
 
 [env.production]
 name = "mattai-worker"
-compatibility_date = "2024-06-20"
+compatibility_date = "2024-07-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 minify = true
 ai = { binding = "AI" }
-queues.producers = [
-    { binding = "DEFERRED_TASKS", queue = "mattai-deferred-tasks" },
-]
-queues.consumers = [
-    { queue = "mattai-deferred-tasks", max_batch_size = 100, max_batch_timeout = 2, dead_letter_queue = "mattai-deferred-tasks-dlq", max_concurrency = 2 },
-    { queue = "mattai-deferred-tasks-dlq", max_batch_size = 100, max_batch_timeout = 2, max_concurrency = 20 },
-]
-durable_objects.bindings = [
-    { name = "QUEUE_CALLBACK_HANDLER", class_name = "QueueCallbackHandler" },
-]
-migrations = [{ tag = "v1", new_classes = ["QueueCallbackHandler"] }]
 browser = { binding = "BROWSER" }
 
 [env.production.vars]

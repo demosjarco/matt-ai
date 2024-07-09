@@ -2,11 +2,9 @@
 	"name": "worker",
 	"type": "module",
 	"scripts": {
-		"build:types": "tsc --project aiTypes/tsconfig.json",
-		"prebuild": "cd aiTypes && npm run build:types && cd ..",
-		"build": "node --disallow-code-generation-from-strings --use-largepages=silent --loader ts-node/esm aiTypes/convert.mts",
-		"clean": "npx -y rimraf@latest --glob ./aiTypes/*.d.ts ./aiTypes/types.json",
-		"start": "wrangler dev --persist-to ../.wrangler/state"
+		"clean": "",
+		"build": "",
+		"start": "wrangler dev --remote --persist-to ../.wrangler/state"
 	},
 	"repository": {
 		"type": "git",
@@ -22,9 +20,5 @@
 	"homepage": "https://github.com/demosjarco/matt-ai#readme",
 	"dependencies": {
 		"@cloudflare/puppeteer": "^0.0.11"
-	},
-	"devDependencies": {
-		"@swc/core": "^1.6.6",
-		"ts-node": "^10.9.2"
 	}
 }

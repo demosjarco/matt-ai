@@ -1,36 +1,14 @@
 import { $, component$, useContext, useStore, useTask$ } from '@builder.io/qwik';
-import { Form, server$, useLocation } from '@builder.io/qwik-city';
+import { Form, useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
-import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
-import { MessageProcessing } from '../../../aiBrain/messageProcessing.mjs';
-import { calculateActionTaken, retryWithSelectiveRemoval } from '../../../extras';
+import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v3';
+import { messageGuard, messageSummary, messageText } from '../../../aiBrain/messageProcessing';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
 import ChatBox from './chatBox';
 import Submit from './submit';
-
-const messageGuard = server$(function (...args: Parameters<MessageProcessing['guard']>) {
-	return new MessageProcessing(this.platform).guard(...args);
-});
-const messageActionDecide = server$(function (...args: Parameters<MessageProcessing['actionDecide']>) {
-	return new MessageProcessing(this.platform).actionDecide(...args);
-});
-const messageActionDdg = server$(function (...args: Parameters<MessageProcessing['ddg']>) {
-	return new MessageProcessing(this.platform).ddg(...args);
-});
-const messageText = server$(async function* (...args: Parameters<MessageProcessing['textResponse']>) {
-	for await (const chunk of new MessageProcessing(this.platform).textResponse(...args)) {
-		yield chunk;
-	}
-});
-const messageSummary = server$(function (...args: Parameters<MessageProcessing['summarize']>) {
-	return new MessageProcessing(this.platform).summarize(...args);
-});
-const messageActionImage = server$(function (...args: Parameters<MessageProcessing['imageGenerate']>) {
-	return new MessageProcessing(this.platform).imageGenerate(...args);
-});
 
 export default component$(() => {
 	const loc = useLocation();
@@ -120,248 +98,82 @@ export default component$(() => {
 										}),
 								)
 									// llamaguard pass
-									.then(() => {
-										// Add typechat status
-										(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('deciding');
+									.then(async () => {
+										// Add typing status
+										(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
 
-										messageActionDecide(message)
-											.then((userMessageAction) => {
-												// Remove typechat status
-												if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
-													messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'deciding');
-												}
-
-												const actions: Promise<any>[] = [];
-
-												const actionInsert: IDBMessageContent = {
-													action: userMessageAction.action,
-													model_used: userMessageAction.modelUsed,
+										const model: Parameters<typeof messageText>[0] = '@hf/nousresearch/hermes-2-pro-mistral-7b';
+										messageText(model, [{ role: 'user', content: message }])
+											.then(async (chatResponse) => {
+												const composedInsert: IDBMessageContent = {
+													text: '',
+													model_used: model,
 												};
-
 												// Add to UI
-												messageHistory[aiMessage.key!]!.content.push(actionInsert);
+												// push() returns new length and since it's the last item, just subtract 1
+												const previousText = messageHistory[aiMessage.key!]!.content.push(composedInsert) - 1;
+												for await (const chatResponseChunk of chatResponse) {
+													composedInsert.text += chatResponseChunk ?? '';
+													// Add to UI
+													messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+												}
+												// Cleanup artifacts
+												composedInsert.text = composedInsert.text?.replaceAll('<|im_start|>', '');
+												composedInsert.text = composedInsert.text?.replaceAll('<|im_end|>', '');
+												// Cleanup whitespace
+												composedInsert.text = composedInsert.text?.trim();
+												messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+												// Remove typing status
+												if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
+													messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'typing');
+												}
 												// Add to storage
-												actions.push(
+												return new IDBMessages().updateMessage({
+													key: aiMessage.key!,
+													content: [composedInsert],
+													status: messageHistory[aiMessage.key!]!.status,
+												});
+											})
+											.catch(mainReject)
+											.finally(() => {
+												// Remove all status
+												messageHistory[aiMessage.key!]!.status = true;
+												const messagesToSummary: string[] = [];
+												const userTextContentIndex = messageHistory[userMessage.key!]!.content.findIndex((record) => 'text' in record);
+												if (userTextContentIndex > -1) messagesToSummary.push(messageHistory[userMessage.key!]!.content[userTextContentIndex]!.text!);
+												const aiTextContentIndex = messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
+												if (aiTextContentIndex > -1) messagesToSummary.push(messageHistory[aiMessage.key!]!.content[aiTextContentIndex]!.text!);
+												const savingPromises: Promise<any>[] = [
 													new IDBMessages().updateMessage({
 														key: aiMessage.key!,
-														content: [actionInsert],
-														status: messageHistory[aiMessage.key!]!.status,
+														status: true,
 													}),
-												);
-
-												// Setup message context
-												if (userMessageAction.action.previousMessageKeywordSearch || userMessageAction.action.webSearchTerms) {
-													messageContext[aiMessage.key!] = {};
-												}
-
-												const previousMessages: Parameters<typeof messageText>[1] = [];
-												if (userMessageAction.action.previousMessageKeywordSearch) {
-													// Add history search status
-													(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('historySearching');
-
-													// Convert all search terms to lowercase for case-insensitive matching
-													const normalizedSearchTerms = userMessageAction.action.previousMessageKeywordSearch.map((term) => term.toLowerCase());
-
-													// Filter messages that match any of the search terms in their text content
-
-													previousMessages.push(
-														...Object.values(messageHistory)
-															.filter((historyMessage) => historyMessage.message_id !== userMessage.message_id)
-															.filter((historyMessage) => {
-																// Assuming that 'content' can have multiple entries, we check each content entry if it's of type text
-																return historyMessage.content.some((contentItem) => {
-																	if (contentItem.text) {
-																		// Normalize the text for case-insensitive search
-																		const normalizedText = contentItem.text.toLowerCase();
-																		// Check if any of the search terms are included in the text
-																		return normalizedSearchTerms.some((term) => normalizedText.includes(term));
-																	}
-																	return false;
+												];
+												if (messagesToSummary.length > 0) {
+													savingPromises.push(
+														messageSummary(messagesToSummary, '@cf/facebook/bart-large-cnn')
+															.then((summary) => {
+																const newName = summary.trim();
+																const conversation = conversations.find((conversation) => conversation.key === (userMessage.conversation_id || aiMessage.conversation_id));
+																if (conversation) {
+																	// Change UI
+																	conversation.name = newName;
+																}
+																// Change in storage
+																return new IDBConversations().updateConversation({
+																	key: userMessage.conversation_id || aiMessage.conversation_id,
+																	name: summary,
+																	ctime: new Date(),
 																});
 															})
-															.sort((a, b) => b.btime.getTime() - a.btime.getTime())
-															// Reverse so that the oldest are first as chat conventions
-															.reverse()
-															.map((message) => {
-																// Find the first text content item in the message
-																const textContent = message.content.find((contentItem) => contentItem.text)?.text ?? 'Content not found';
-																return {
-																	role: message.role,
-																	content: textContent,
-																};
-															}),
-													);
-
-													// Remove history search status
-													if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
-														messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'historySearching');
-													}
-												}
-
-												if (userMessageAction.action.webSearchTerms) {
-													// Add web search status
-													(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('webSearching');
-
-													actions.push(
-														messageActionDdg(userMessageAction.action.webSearchTerms).then((ddg) => {
-															// Remove web search status
-															if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
-																messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'webSearching');
-															}
-
-															messageContext[aiMessage.key!]!.webSearchInfo = ddg;
-														}),
+															.catch(console.error),
 													);
 												}
-												/**
-												 * @todo url browsing
-												 * @link https://developers.cloudflare.com/durable-objects/examples/websocket-hibernation-server/
-												 * @link https://developers.cloudflare.com/workers/examples/websockets/#write-a-websocket-client
-												 * @link https://github.com/cloudflare/workers-chat-demo/blob/master/src/chat.mjs
-												 */
-												/**
-												 * @todo typechat translation
-												 */
-
-												Promise.allSettled(actions)
-													.catch(mainReject)
-													.finally(() => {
-														const finalActions: Promise<void>[] = [
-															// Text write
-															new Promise<void>((resolve, reject) => {
-																// Add typing status
-																(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('typing');
-
-																const model: Parameters<typeof messageText>[0] = '@hf/thebloke/llama-2-13b-chat-awq';
-
-																retryWithSelectiveRemoval(messageText, model, [...previousMessages, { role: 'user', content: message }], calculateActionTaken(userMessageAction.action), messageContext[aiMessage.key!])
-																	.then(async (chatResponse) => {
-																		/**
-																		 * @todo text generate
-																		 */
-																		const composedInsert: IDBMessageContent = {
-																			text: '',
-																			model_used: model,
-																		};
-
-																		// Add to UI
-																		// push() returns new length and since it's the last item, just subtract 1
-																		const previousText = messageHistory[aiMessage.key!]!.content.push(composedInsert) - 1;
-
-																		for await (const chatResponseChunk of chatResponse) {
-																			composedInsert.text += chatResponseChunk ?? '';
-																			// Add to UI
-																			messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-																		}
-
-																		// Cleanup whitespace
-																		composedInsert.text = composedInsert.text?.trim();
-																		messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
-
-																		// Remove typing status
-																		if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
-																			messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'typing');
-																		}
-
-																		// Add to storage
-																		new IDBMessages()
-																			.updateMessage({
-																				key: aiMessage.key!,
-																				content: [composedInsert],
-																				status: messageHistory[aiMessage.key!]!.status,
-																			})
-																			.then(() => resolve())
-																			.catch(reject);
-																	})
-																	.catch(reject);
-															}),
-														];
-
-														if (userMessageAction.action.imageGenerate) {
-															finalActions.push(
-																new Promise<void>((resolve, reject) => {
-																	// Add image generating status
-																	(messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).push('imageGenerating');
-
-																	messageActionImage(userMessageAction.action.imageGenerate!).then(({ raw, model }) => {
-																		// Remove image generating status
-																		if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
-																			messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'imageGenerating');
-																		}
-
-																		// Parse back from `base64` (required as part of server <-serialization-> client)
-																		const image = Uint8Array.from(atob(raw), (char) => char.charCodeAt(0));
-
-																		const imageInsert: IDBMessageContent = {
-																			image,
-																			model_used: model as Parameters<Ai['run']>[0],
-																		};
-																		// Add to UI
-																		messageHistory[aiMessage.key!]!.content.push(imageInsert);
-																		// Add to storage
-																		new IDBMessages()
-																			.updateMessage({
-																				key: aiMessage.key!,
-																				content: [imageInsert],
-																				status: messageHistory[aiMessage.key!]!.status,
-																			})
-																			.then(() => resolve())
-																			.catch(reject);
-																	});
-																}),
-															);
-														}
-
-														// Finally done with everything
-														Promise.allSettled(finalActions)
-															.catch(mainReject)
-															.finally(() => {
-																// Remove all status
-																messageHistory[aiMessage.key!]!.status = true;
-
-																const messagesToSummary: string[] = [];
-																const userTextContentIndex = messageHistory[userMessage.key!]!.content.findIndex((record) => 'text' in record);
-																if (userTextContentIndex > -1) messagesToSummary.push(messageHistory[userMessage.key!]!.content[userTextContentIndex]!.text!);
-																const aiTextContentIndex = messageHistory[aiMessage.key!]!.content.findIndex((record) => 'text' in record);
-																if (aiTextContentIndex > -1) messagesToSummary.push(messageHistory[aiMessage.key!]!.content[aiTextContentIndex]!.text!);
-
-																const savingPromises: Promise<any>[] = [
-																	new IDBMessages().updateMessage({
-																		key: aiMessage.key!,
-																		status: true,
-																	}),
-																];
-
-																if (messagesToSummary.length > 0) {
-																	savingPromises.push(
-																		messageSummary(messagesToSummary, '@cf/facebook/bart-large-cnn')
-																			.then((summary) => {
-																				const newName = summary.trim();
-
-																				const conversation = conversations.find((conversation) => conversation.key === (userMessage.conversation_id || aiMessage.conversation_id));
-																				if (conversation) {
-																					// Change UI
-																					conversation.name = newName;
-																				}
-																				// Change in storage
-																				return new IDBConversations().updateConversation({
-																					key: userMessage.conversation_id || aiMessage.conversation_id,
-																					name: summary,
-																					ctime: new Date(),
-																				});
-																			})
-																			.catch(console.error),
-																	);
-																}
-
-																// Final save
-																Promise.allSettled(savingPromises)
-																	.then(() => mainResolve())
-																	.catch(mainReject);
-															});
-													});
-											})
-											.catch(mainReject);
+												// Final save
+												return Promise.allSettled(savingPromises)
+													.then(() => mainResolve())
+													.catch(mainReject);
+											});
 									})
 									// llamaguard fail
 									.catch(() => {

@@ -142,6 +142,8 @@ dist
 .mf
 .rollup.cache
 tsconfig.tsbuildinfo
+*.config.d.mts
+*eslint*.d.cts
 
 .idea
 .DS_Store
@@ -155,7 +157,3 @@ tsconfig.tsbuildinfo
 functions/**/*.js
 .wrangler
 .dev.vars
-
-# TypeChat
-worker/aiTypes/*.d.ts
-worker/aiTypes/types.json

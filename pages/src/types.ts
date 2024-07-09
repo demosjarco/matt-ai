@@ -1,8 +1,7 @@
 import type { randomUUID } from 'node:crypto';
 import type { workersAiCatalog } from '../../shared/workers-ai-catalog';
-import type { MessageAction } from '../../worker/aiTypes/MessageAction';
 import type Helper from '../../worker/src/index';
-import type { IDBMessage } from './IDB/schemas/v2';
+import type { IDBMessage } from './IDB/schemas/v3';
 
 export interface EnvVars extends Secrets, Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';
@@ -58,8 +57,6 @@ export type MessageContext = Record<NonNullable<IDBMessage['key']>, MessageConte
 export interface MessageContextValue {
 	webSearchInfo?: Record<string, any>;
 }
-
-export type MessageActionTaken = Record<keyof MessageAction, boolean>;
 
 export type AsyncFunctionWithParams<P1, P2, P3, R, T> = (param1: P1, items: T[], param2: P2, param3: P3) => Promise<R>;
 

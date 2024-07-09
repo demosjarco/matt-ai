@@ -1,6 +1,6 @@
 import type { DBSchema, IDBPDatabase } from 'idb';
-import type { MessageAction } from '../../../../worker/aiTypes/MessageAction';
 import type { modelPossibilitiesName } from '../../types';
+import { AiLocalBase } from './vBase';
 
 export interface AiLocalSchema extends DBSchema {
 	conversations: {
@@ -86,7 +86,7 @@ export interface IDBMessageContentChips extends Record<string, any> {}
 export interface IDBMessageContentReferences extends Record<string, any> {}
 
 export interface IDBMessageContent {
-	action?: MessageAction;
+	action?: Record<string, any>;
 	text?: IDBMessageContentText;
 	image?: IDBMessageContentImage;
 	card?: IDBMessageContentCard;
@@ -96,8 +96,9 @@ export type IDBMessageContentText = string;
 export interface IDBMessageContentCard extends Record<string, any> {}
 export type IDBMessageContentImage = AiTextToImageOutput;
 
-export class AiLocal {
-	public static upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
+// @ts-expect-error
+export class AiLocal extends AiLocalBase {
+	public static override upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
 		// Just nuke it, whole new ORM and stuff
 		if (oldDatabase.objectStoreNames.contains('conversations')) oldDatabase.deleteObjectStore('conversations');
 		if (oldDatabase.objectStoreNames.contains('messages')) oldDatabase.deleteObjectStore('messages');
