@@ -1,6 +1,6 @@
 import { component$, useTask$ } from '@builder.io/qwik';
 import { FaDownloadSolid, FaImageSolid } from '@qwikest/icons/font-awesome';
-import type { IDBMessageContentImage } from '../../../../IDB/schemas/v2';
+import type { IDBMessageContentImage } from '../../../../IDB/schemas/v3';
 
 export default component$<{ imageAction?: string; image?: IDBMessageContentImage }>(({ imageAction, image }) => {
 	useTask$(({ track }) => {

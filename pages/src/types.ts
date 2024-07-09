@@ -1,7 +1,7 @@
 import type { randomUUID } from 'node:crypto';
 import type { workersAiCatalog } from '../../shared/workers-ai-catalog';
 import type Helper from '../../worker/src/index';
-import type { IDBMessage } from './IDB/schemas/v2';
+import type { IDBMessage } from './IDB/schemas/v3';
 
 export interface EnvVars extends Secrets, Bindings, Partial<PagesEnvironmentvariables>, Record<string, any> {
 	NODE_ENV: 'production' | 'development';

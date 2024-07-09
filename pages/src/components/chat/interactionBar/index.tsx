@@ -2,7 +2,7 @@ import { $, component$, useContext, useStore, useTask$ } from '@builder.io/qwik'
 import { Form, useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
-import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v2';
+import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v3';
 import { messageGuard, messageSummary, messageText } from '../../../aiBrain/messageProcessing';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
