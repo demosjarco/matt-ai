@@ -20,8 +20,8 @@ RUN --mount=type=cache,target=/var/cache/apt apt-get install -y sudo
 # # Install additional (python)
 # # https://github.com/docker-library/python/blob/master/3.12/slim-bookworm/Dockerfile#L20
 # RUN --mount=type=cache,target=/var/cache/apt apt-get install -y ca-certificates netbase tzdata
-# # https://github.com/docker-library/python/blob/master/3.12/slim-bookworm/Dockerfile#L34-L56
-# RUN --mount=type=cache,target=/var/cache/apt apt-get install -y dpkg-dev gcc gnupg libbluetooth-dev libbz2-dev libc6-dev libdb-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev
+# https://github.com/docker-library/python/blob/master/3.12/slim-bookworm/Dockerfile#L34-L56
+RUN --mount=type=cache,target=/var/cache/apt apt-get install -y dpkg-dev gcc gnupg libbluetooth-dev libbz2-dev libc6-dev libdb-dev libexpat1-dev libffi-dev libgdbm-dev liblzma-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev make tk-dev uuid-dev wget xz-utils zlib1g-dev
 # # https://github.com/docker-library/python/blob/master/3.12/slim-bookworm/Dockerfile#L147
 # RUN --mount=type=cache,target=/var/cache/apt apt-get install -y wget
 # Clean up cache (reduce image size)
