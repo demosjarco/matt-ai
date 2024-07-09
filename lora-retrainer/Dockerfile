@@ -35,5 +35,9 @@ RUN node --version
 RUN npm --version
 RUN python3 --version
 
+# Cache locations reference
+# /root/.npm
+# /root/.cache/pip
+
 # Set the default command
 CMD ["/bin/sh"]
