@@ -9,6 +9,8 @@ RUN --mount=type=cache,target=/var/cache/apk apk upgrade
 RUN --mount=type=cache,target=/var/cache/apk apk cache clean
 RUN --mount=type=cache,target=/var/cache/apk apk del --purge
 
+LABEL org.opencontainers.image.source="https://github.com/demosjarco/matt-ai.git"
+
 # Copy Node.js
 COPY --from=nodebase /usr/local/bin /usr/local/bin
 COPY --from=nodebase /usr/local/lib /usr/local/lib
