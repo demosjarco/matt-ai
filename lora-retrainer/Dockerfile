@@ -3,6 +3,12 @@ FROM node:lts-alpine@sha256:df01469346db2bf1cfc1f7261aeab86b2960efa840fe2bd46d83
 FROM python:3-alpine@sha256:b7662fc33e07f05fb2f579c3634e1e4d2e30c02553397c6c24f775cb360dbc03 as pythonbase
 
 FROM alpine:3@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0
+
+RUN --mount=type=cache,target=/var/cache/apk apk update
+RUN --mount=type=cache,target=/var/cache/apk apk upgrade
+RUN --mount=type=cache,target=/var/cache/apk apk cache clean
+RUN --mount=type=cache,target=/var/cache/apk apk del --purge
+
 # Copy Node.js
 COPY --from=nodebase /usr/local/bin /usr/local/bin
 COPY --from=nodebase /usr/local/lib /usr/local/lib
