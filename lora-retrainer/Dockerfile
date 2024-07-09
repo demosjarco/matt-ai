@@ -72,5 +72,8 @@ RUN --mount=type=cache,target=/root/.cache/pip python -m nltk.downloader punkt
 # Install deepspeed for distributed training optimizations
 # RUN --mount=type=cache,target=/root/.cache/pip pip install deepspeed
 
+RUN --mount=type=cache,target=/root/.npm npm cache clean --force
+RUN --mount=type=cache,target=/root/.cache/pip pip cache purge
+
 # Set the default command
 CMD ["/bin/sh"]
