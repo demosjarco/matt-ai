@@ -37,7 +37,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
       - name: Merge from ${{ github.head_ref || github.ref_name }} to ${{ github.head_ref || github.ref_name }}-${{ matrix.branch-suffix }}
         run: git merge -X theirs origin/${{ github.head_ref || github.ref_name }}
-      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+      - uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         id: sn
         with:
           node-version: ${{ matrix.node-version }}
