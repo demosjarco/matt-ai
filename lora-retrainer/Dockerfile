@@ -55,6 +55,7 @@ RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node
 RUN chmod 0440 /etc/sudoers.d/node
 
 USER runner
+WORKDIR /app
 
 # Cache locations reference
 # RUN npm config get cache
