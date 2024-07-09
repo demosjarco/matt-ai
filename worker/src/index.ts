@@ -4,7 +4,7 @@ import type { EnvVars } from './types.js';
 
 export default class extends WorkerEntrypoint<EnvVars> {
 	// Dummy entry point, crashes without it
-	override async fetch(_request: Request) {
+	override async fetch() {
 		return new Response('Hello world');
 	}
 
