@@ -2,7 +2,7 @@ import { server$ } from '@builder.io/qwik-city';
 import { autoTrimTools, runWithTools } from '@cloudflare/ai-utils';
 import type { AiTextGenerationInput, AiTextGenerationOutput, RoleScopedChatInput } from '@cloudflare/workers-types';
 import { addMetadata } from 'meta-png';
-import type { filteredModelPossibilitiesName, modelPossibilitiesName } from '../types';
+import type { EnvVars, filteredModelPossibilitiesName, modelPossibilitiesName } from '../types';
 
 function isNotReadableStream(output: AiTextGenerationOutput): output is { response?: string } {
 	return !(output instanceof ReadableStream);
@@ -222,7 +222,7 @@ export const messageSummary = server$(function (messages: RoleScopedChatInput['c
 	}).then((response) => response.summary);
 });
 
-function image(ai: Ai, prompt: AiTextToImageInput['prompt'], model: modelPossibilitiesName<'Text-to-Image'>, num_steps: AiTextToImageInput['num_steps'] = 20) {
+function image(ai: Ai, prompt: AiTextToImageInput['prompt'], model: modelPossibilitiesName<'Text-to-Image'>, num_steps: AiTextToImageInput['num_steps'] = 20, buildHash?: EnvVars['CF_PAGES_COMMIT_SHA']) {
 	return ai
 		.run(model, { prompt, num_steps })
 		.then(async (imageGeneration: AiTextToImageOutput | NonNullable<Awaited<ReturnType<typeof fetch>>['body']>) => {
@@ -232,7 +232,7 @@ function image(ai: Ai, prompt: AiTextToImageInput['prompt'], model: modelPossibi
 
 			const imageGenerationWithmetadata1 = addMetadata(imageGeneration, 'Title', prompt);
 			const imageGenerationWithmetadata2 = addMetadata(imageGenerationWithmetadata1, 'Software', model.split('/').slice(1).join('/'));
-			const imageGenerationWithmetadata3 = addMetadata(imageGenerationWithmetadata2, 'Author', `M.A.T.T. AI${this.helpers.c.env.CF_PAGES_COMMIT_SHA ? ` v${this.helpers.c.env.CF_PAGES_COMMIT_SHA}` : ''}`);
+			const imageGenerationWithmetadata3 = addMetadata(imageGenerationWithmetadata2, 'Author', `M.A.T.T. AI${buildHash ? ` v${buildHash}` : ''}`);
 
 			return {
 				raw: Buffer.from(imageGenerationWithmetadata3.buffer).toString('base64'),
@@ -245,14 +245,14 @@ function image(ai: Ai, prompt: AiTextToImageInput['prompt'], model: modelPossibi
 }
 export const messageActionImage = server$(function (prompt: Parameters<typeof image>[1], model?: Parameters<typeof image>[2], num_steps?: Parameters<typeof image>[3]) {
 	if (model === undefined) {
-		return image(this.platform.env.AI, prompt, '@cf/stabilityai/stable-diffusion-xl-base-1.0', num_steps).catch(() =>
-			image(this.platform.env.AI, prompt, '@cf/bytedance/stable-diffusion-xl-lightning', num_steps).catch(() =>
-				image(this.platform.env.AI, prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps).catch((e) => {
+		return image(this.platform.env.AI, prompt, '@cf/stabilityai/stable-diffusion-xl-base-1.0', num_steps, this.platform.env.CF_PAGES_COMMIT_SHA).catch(() =>
+			image(this.platform.env.AI, prompt, '@cf/bytedance/stable-diffusion-xl-lightning', num_steps, this.platform.env.CF_PAGES_COMMIT_SHA).catch(() =>
+				image(this.platform.env.AI, prompt, '@cf/lykon/dreamshaper-8-lcm', num_steps, this.platform.env.CF_PAGES_COMMIT_SHA).catch((e) => {
 					throw e;
 				}),
 			),
 		);
 	} else {
-		return image(this.platform.env.AI, prompt, model, num_steps);
+		return image(this.platform.env.AI, prompt, model, num_steps, this.platform.env.CF_PAGES_COMMIT_SHA);
 	}
 });
