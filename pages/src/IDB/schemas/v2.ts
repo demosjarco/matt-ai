@@ -1,5 +1,6 @@
 import type { DBSchema, IDBPDatabase } from 'idb';
 import type { modelPossibilitiesName } from '../../types';
+import { AiLocalBase } from './vBase';
 
 export interface AiLocalSchema extends DBSchema {
 	conversations: {
@@ -95,8 +96,8 @@ export type IDBMessageContentText = string;
 export interface IDBMessageContentCard extends Record<string, any> {}
 export type IDBMessageContentImage = AiTextToImageOutput;
 
-export class AiLocal {
-	public static upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
+export class AiLocal extends AiLocalBase {
+	public static override upgrade(oldDatabase: IDBPDatabase, newDatabase: IDBPDatabase<AiLocalSchema>) {
 		// Just nuke it, whole new ORM and stuff
 		if (oldDatabase.objectStoreNames.contains('conversations')) oldDatabase.deleteObjectStore('conversations');
 		if (oldDatabase.objectStoreNames.contains('messages')) oldDatabase.deleteObjectStore('messages');

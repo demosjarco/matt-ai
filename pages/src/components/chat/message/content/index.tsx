@@ -1,5 +1,5 @@
 import { component$, useSignal, useTask$ } from '@builder.io/qwik';
-import type { IDBMessage } from '../../../../IDB/schemas/v2';
+import type { IDBMessage } from '../../../../IDB/schemas/v3';
 import { serverNodeEnv } from '../../../../routes/layout';
 import Card from './card';
 import Debug from './debug';
