@@ -1,5 +1,6 @@
 import { connect, launch, sessions, type Browser, type BrowserWorker } from '@cloudflare/puppeteer';
 import { WorkerEntrypoint } from 'cloudflare:workers';
+import { randomInt } from 'node:crypto';
 import type { EnvVars } from './types.js';
 
 export default class extends WorkerEntrypoint<EnvVars> {
@@ -19,7 +20,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 				return;
 			}
 
-			const sessionId = sessionsIds[Math.floor(Math.random() * sessionsIds.length)];
+			const sessionId = sessionsIds[randomInt(sessionsIds.length)];
 
 			return sessionId!;
 		});
