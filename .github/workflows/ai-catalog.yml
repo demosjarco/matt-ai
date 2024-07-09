@@ -6,7 +6,7 @@ on:
       - '.github/workflows/ai-catalog.yml'
       - 'shared/workers-ai-catalog.ts'
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 concurrency:
