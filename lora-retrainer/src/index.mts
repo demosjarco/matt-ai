@@ -37,7 +37,7 @@ class HTTPResponder {
 		// Performance
 		this.server.use('*', compress());
 		this.server.use('*', etag());
-		this.server.use('*', bodyLimit({ maxSize: 1 * 1024 }));
+		this.server.use('*', bodyLimit({ maxSize: 128 * 1024 * 1024 }));
 
 		// Debug
 		this.server.use('*', prettyJSON());
