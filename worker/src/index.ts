@@ -73,7 +73,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 								properties: {
 									score: {
 										type: 'integer',
-										description: 'The score from 0 to 100. 0 being completely irrelevant. 100 being perfect spot on relevant to user request',
+										description: 'The score is an integer from 0 to 100. 0 being completely irrelevant. 100 being perfect spot on relevant to user request',
 									},
 								},
 								required: ['score'],
@@ -87,7 +87,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 								properties: {
 									score: {
 										type: 'integer',
-										description: 'The score from 0 to 100. 0 being completely garbled and not human readable. 100 being perfect grammar and spelling',
+										description: 'The score is an integer from 0 to 100. 0 being completely garbled and not human readable. 100 being perfect grammar and spelling',
 									},
 								},
 								required: ['score'],
@@ -101,7 +101,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 								properties: {
 									score: {
 										type: 'integer',
-										description: 'The score from 0 to 100. 0 is like forgetting what the user even asked and answering differently. 100 is addressing all aspects of the assigned task, including depth, breadth, relevant details, and overall completeness.',
+										description: 'The score is an integer from 0 to 100. 0 is like forgetting what the user even asked and answering differently. 100 is addressing all aspects of the assigned task, including depth, breadth, relevant details, and overall completeness.',
 									},
 								},
 								required: ['score'],
@@ -115,7 +115,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 								properties: {
 									score: {
 										type: 'integer',
-										description: 'The score from 0 to 100. 0 having the response filled with hallucinations. 100 being perfect spot on accuracy',
+										description: 'The score is an integer from 0 to 100. 0 having the response filled with hallucinations. 100 being perfect spot on accuracy',
 									},
 								},
 								required: ['score'],
