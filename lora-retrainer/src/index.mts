@@ -37,7 +37,6 @@ class HTTPResponder {
 		// Performance
 		this.server.use('*', compress());
 		this.server.use('*', etag());
-		// JSON with 2 fields is really tiny
 		this.server.use('*', bodyLimit({ maxSize: 1 * 1024 }));
 
 		// Debug
