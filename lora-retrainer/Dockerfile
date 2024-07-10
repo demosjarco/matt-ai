@@ -10,6 +10,8 @@ SHELL ["/bin/bash", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
 # Update packge lists
 RUN --mount=type=cache,target=/var/cache/apt apt-get update
+# Install missing packages
+RUN --mount=type=cache,target=/var/cache/apt apt-get install -y libaio-dev
 # Upgrade packages (non-breaking)
 RUN --mount=type=cache,target=/var/cache/apt apt-get upgrade -y
 
