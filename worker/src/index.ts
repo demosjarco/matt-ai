@@ -143,7 +143,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 			const final = { ...grades, finalGrade, willUseAsTrainingData: finalGrade >= 80 };
 
 			if (final.willUseAsTrainingData) {
-				const finalPlus = { ...final, csvRows: [`"### Human: ${req} \n ### Assistant: ${res}"`] };
+				const finalPlus = { ...final, csvRows: [`"### Human: ${req} ### Assistant: ${res}"`] };
 				/**
 				 * @todo write to D1
 				 */
