@@ -141,8 +141,18 @@ export default class extends WorkerEntrypoint<EnvVars> {
 			 */
 
 			const final = { ...grades, finalGrade, willUseAsTrainingData: finalGrade >= 80 };
-			console.debug(final);
-			return final;
+
+			if (final.willUseAsTrainingData) {
+				const finalPlus = { ...final, csvRows: [`"### Human: ${req} \n ### Assistant: ${res}"`] };
+				/**
+				 * @todo write to D1
+				 */
+				console.debug(finalPlus);
+				return finalPlus;
+			} else {
+				console.debug(final);
+				return final;
+			}
 		});
 	}
 	private combineGrading(results: InferenceResult[]) {
