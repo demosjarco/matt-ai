@@ -24,7 +24,7 @@ class HTTPResponder {
 
 		// Security
 		this.server.use('*', secureHeaders());
-		this.server.use('*', csrf());
+		// this.server.use('*', csrf());
 		this.server.use(
 			'*',
 			cors({
