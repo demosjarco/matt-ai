@@ -156,7 +156,14 @@ class HTTPResponder {
 							return Promise.allSettled([mkdir(fileDirectory, { recursive: true }).then(() => writeFile(`${fileDirectory}train.csv`, csv.stream())), writeFile(`conf.${csvHash}.yaml`, stringify(conf))])
 								.then(() =>
 									// c.json({ body, form: c.req.valid('form'), yaml: stringify(conf) }),
-									promisify(exec)(`conda run --no-capture-output -p env /bin/bash -c "autotrain --config node/conf.${csvHash}.yaml"`, { cwd: '..' })
+									promisify(exec)(`conda run --no-capture-output -p env /bin/bash -c "autotrain --config node/conf.${csvHash}.yaml"`, {
+										cwd: '..',
+										env: {
+											...process.env,
+											HF_TOKEN: hf_token,
+											HF_USERNAME: hf_username,
+										},
+									})
 										.then(({ stdout }) => {
 											console.log(stdout);
 											return c.text(stdout);
