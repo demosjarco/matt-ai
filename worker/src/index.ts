@@ -14,7 +14,7 @@ interface InferenceResult {
 	arguments: {
 		score: number;
 	};
-	name: string;
+	name: 'Relevance' | 'Clarity' | 'Comprehensiveness' | 'Hallucination/Accuracy';
 }
 
 export default class extends WorkerEntrypoint<EnvVars> {
@@ -132,7 +132,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 
 		return app.fetch(request, this.env, this.ctx);
 	}
-	private combineGrading(results: InferenceResult[]): Record<string, number> {
+	private combineGrading(results: InferenceResult[]) {
 		const scoreMap = results.reduce(
 			(acc, { name, arguments: { score } }) => {
 				if (!acc[name]) {
@@ -142,7 +142,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 				acc[name].count += 1;
 				return acc;
 			},
-			{} as Record<string, { total: number; count: number }>,
+			{} as Record<InferenceResult['name'], { total: number; count: number }>,
 		);
 
 		return Object.keys(scoreMap).reduce(
@@ -150,7 +150,7 @@ export default class extends WorkerEntrypoint<EnvVars> {
 				acc[name] = scoreMap[name].total / scoreMap[name].count;
 				return acc;
 			},
-			{} as Record<string, number>,
+			{} as Record<InferenceResult['name'], number>,
 		);
 	}
 
