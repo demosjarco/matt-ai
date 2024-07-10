@@ -140,7 +140,9 @@ export default class extends WorkerEntrypoint<EnvVars> {
 			 * steven: 40%, 40%, 10%, 10%
 			 */
 
-			return { ...grades, finalGrade, willUseAsTrainingData: finalGrade >= 80 };
+			const final = { ...grades, finalGrade, willUseAsTrainingData: finalGrade >= 80 };
+			console.debug(final);
+			return final;
 		});
 	}
 	private combineGrading(results: InferenceResult[]) {
