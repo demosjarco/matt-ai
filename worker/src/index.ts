@@ -2,7 +2,6 @@ import { connect, launch, sessions, type Browser, type BrowserWorker } from '@cl
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { csrf } from 'hono/csrf';
 import { etag } from 'hono/etag';
 import { secureHeaders } from 'hono/secure-headers';
 import { timing } from 'hono/timing';
@@ -17,7 +16,6 @@ export default class extends WorkerEntrypoint<EnvVars> {
 		const app = new Hono<{ Bindings: EnvVars }>();
 		const validApiMethods = ['POST', 'GET'];
 
-		app.use('*', csrf());
 		app.use('*', (c, next) => {
 			return cors({
 				origin: '*',
