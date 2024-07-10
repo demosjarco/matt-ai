@@ -46,7 +46,7 @@ class HTTPResponder {
 
 		const status = new Hono();
 		status.get('/', (c) =>
-			promisify(exec)(['autotrain', '--help'].join(' ')).then(({ stdout, stderr }) => {
+			promisify(exec)(`conda run --no-capture-output -p env /bin/bash -c "autotrain --help"`, { cwd: '..' }).then(({ stdout, stderr }) => {
 				console.log(stdout);
 				console.error(stderr);
 
