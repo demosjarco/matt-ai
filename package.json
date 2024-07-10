@@ -22,7 +22,8 @@
 	"homepage": "https://github.com/demosjarco/matt-ai#readme",
 	"workspaces": [
 		"pages",
-		"worker"
+		"worker",
+		"lora-retrainer"
 	],
 	"dependencies": {
 		"@cloudflare/ai-utils": "^1.0.1"

@@ -1,0 +1,24 @@
+{
+	"name": "lora-retrainer",
+	"type": "module",
+	"main": "dist/index.mjs",
+	"scripts": {
+		"clean": "",
+		"build": "tsc",
+		"base": "node --disallow-code-generation-from-strings --enable-source-maps --tls-min-v1.3 --trace-warnings --use-largepages=silent",
+		"start": "npm run base -- .",
+		"dev": "npm run base -- --watch ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/demosjarco/matt-ai.git"
+	},
+	"author": "DemosJarco <1209494+demosjarco@users.noreply.github.com>",
+	"contributors": [],
+	"license": "Apache-2.0",
+	"private": true,
+	"bugs": {
+		"url": "https://github.com/demosjarco/matt-ai/issues"
+	},
+	"homepage": "https://github.com/demosjarco/matt-ai#readme"
+}
