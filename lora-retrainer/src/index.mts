@@ -113,7 +113,7 @@ class HTTPResponder {
 						return streamHasher(csv.stream()).then((csvHash) => {
 							const { trainer, model_name, project_name, block_size, learning_rate, warmup_ratio, weight_decay, num_epochs, batch_size, gradient_accumulation, mixed_precision, peft, quantization, lora_r, lora_alpha, lora_dropout, unsloth, hf_username, hf_token, push_to_hub } = c.req.valid('form');
 
-							const fileDirectory = 'data/';
+							const fileDirectory = `data/${csvHash}/`;
 
 							const conf = {
 								task: `llm-${trainer}`,
@@ -153,7 +153,7 @@ class HTTPResponder {
 								},
 							};
 
-							return Promise.allSettled([mkdir(fileDirectory, { recursive: true }).then(() => writeFile(`${fileDirectory}train.${csvHash}.csv`, csv.stream())), writeFile(`conf.${csvHash}.yaml`, stringify(conf))])
+							return Promise.allSettled([mkdir(fileDirectory, { recursive: true }).then(() => writeFile(`${fileDirectory}train.csv`, csv.stream())), writeFile(`conf.${csvHash}.yaml`, stringify(conf))])
 								.then(() =>
 									// c.json({ body, form: c.req.valid('form'), yaml: stringify(conf) }),
 									promisify(exec)(`conda run --no-capture-output -p env /bin/bash -c "autotrain --config node/conf.${csvHash}.yaml"`, { cwd: '..' })
@@ -166,7 +166,7 @@ class HTTPResponder {
 											return c.text(stderr, 500);
 										}),
 								)
-								.finally(() => Promise.allSettled([unlink(`${fileDirectory}train.${csvHash}.csv`), unlink(`conf.${csvHash}.yaml`)]));
+								.finally(() => Promise.allSettled([unlink(`${fileDirectory}train.csv`), unlink(`conf.${csvHash}.yaml`)]));
 						});
 					} else {
 						throw new HTTPException(415, { message: 'Unsupported Media Type' });
