@@ -153,7 +153,7 @@ class HTTPResponder {
 								},
 							};
 
-							return Promise.allSettled([mkdir(fileDirectory, { recursive: true }).then(() => writeFile(`train.${fileDirectory}${csvHash}.csv`, csv.stream())), writeFile(`conf.${csvHash}.yaml`, stringify(conf))])
+							return Promise.allSettled([mkdir(fileDirectory, { recursive: true }).then(() => writeFile(`${fileDirectory}train.${csvHash}.csv`, csv.stream())), writeFile(`conf.${csvHash}.yaml`, stringify(conf))])
 								.then(() =>
 									// c.json({ body, form: c.req.valid('form'), yaml: stringify(conf) }),
 									promisify(exec)(`conda run --no-capture-output -p env /bin/bash -c "autotrain --config node/conf.${csvHash}.yaml"`, { cwd: '..' })
@@ -166,7 +166,7 @@ class HTTPResponder {
 											return c.text(stderr, 500);
 										}),
 								)
-								.finally(() => Promise.allSettled([unlink(`train.${fileDirectory}${csvHash}.csv`), unlink(`conf.${csvHash}.yaml`)]));
+								.finally(() => Promise.allSettled([unlink(`${fileDirectory}train.${csvHash}.csv`), unlink(`conf.${csvHash}.yaml`)]));
 						});
 					} else {
 						throw new HTTPException(415, { message: 'Unsupported Media Type' });
