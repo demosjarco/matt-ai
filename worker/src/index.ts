@@ -1,4 +1,5 @@
 import { connect, launch, sessions, type Browser, type BrowserWorker } from '@cloudflare/puppeteer';
+import { zValidator } from '@hono/zod-validator';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -6,7 +7,15 @@ import { etag } from 'hono/etag';
 import { secureHeaders } from 'hono/secure-headers';
 import { timing } from 'hono/timing';
 import { randomInt } from 'node:crypto';
-import type { EnvVars } from './types.js';
+import { z } from 'zod';
+import type { EnvVars, filteredModelPossibilities } from './types.js';
+
+interface InferenceResult {
+	arguments: {
+		score: number;
+	};
+	name: string;
+}
 
 export default class extends WorkerEntrypoint<EnvVars> {
 	// Dummy entry point, crashes without it
@@ -28,9 +37,121 @@ export default class extends WorkerEntrypoint<EnvVars> {
 		app.use('*', etag());
 		app.use('*', timing());
 
-		app.get('/', (c) => c.text('Hello world'));
+		app.post(
+			'/',
+			zValidator(
+				'form',
+				z.object({
+					req: z.string().trim(),
+					res: z.string().trim(),
+				}),
+			),
+			(c) => {
+				const { req, res } = c.req.valid('form');
+
+				/**
+				 * It's `LLMClassifierFromTemplate` from `autoevals` but withotu openai hardcoding
+				 */
+				const useCoT: boolean = true;
+				// @ts-ignore
+				return this.env.AI.run('@hf/nousresearch/hermes-2-pro-mistral-7b' satisfies filteredModelPossibilities<'Text Generation', 'function_calling', true>, {
+					// Financial safety limit
+					max_tokens: 512,
+					// Works better
+					temperature: 0.2,
+					messages: [
+						{ role: 'system', content: `You are an peer-review evaluator for AI responses. Evaluate the following response and associated request using the tools as criteria.${useCoT ? ' Use your reasoning in a step-by-step manner to be sure that your conclusion is correct. Avoid simply stating the correct answer at the outset.' : ''}` },
+						{ role: 'user', content: req },
+						{ role: 'assistant', content: res },
+					],
+					tools: [
+						{
+							name: 'Relevance',
+							description: 'How relevant is the response to the request?',
+							parameters: {
+								type: 'object',
+								properties: {
+									score: {
+										type: 'integer',
+										description: 'The score from 0 to 100. 0 being completely irrelevant. 100 being perfect spot on relevant to user request',
+									},
+								},
+								required: ['score'],
+							},
+						},
+						{
+							name: 'Clarity',
+							description: 'How clear and understandable is the response?',
+							parameters: {
+								type: 'object',
+								properties: {
+									score: {
+										type: 'integer',
+										description: 'The score from 0 to 100. 0 being completely garbled and not human readable. 100 being perfect grammar and spelling',
+									},
+								},
+								required: ['score'],
+							},
+						},
+						{
+							name: 'Comprehensiveness',
+							description: 'How comprehensive is the response?',
+							parameters: {
+								type: 'object',
+								properties: {
+									score: {
+										type: 'integer',
+										description: 'The score from 0 to 100. 0 is like forgetting what the user even asked and answering differently. 100 is addressing all aspects of the assigned task, including depth, breadth, relevant details, and overall completeness.',
+									},
+								},
+								required: ['score'],
+							},
+						},
+						{
+							name: 'Hallucination/Accuracy',
+							description: 'Does the response contain any factual inaccuracies or hallucinations?',
+							parameters: {
+								type: 'object',
+								properties: {
+									score: {
+										type: 'integer',
+										description: 'The score from 0 to 100. 0 having the response filled with hallucinations. 100 being perfect spot on accuracy',
+									},
+								},
+								required: ['score'],
+							},
+						},
+					],
+				}).then((response) => {
+					const { tool_calls } = response as Exclude<AiTextGenerationOutput, ReadableStream>;
+
+					return c.json(this.combineGrading(tool_calls as InferenceResult[]));
+				});
+			},
+		);
 
 		return app.fetch(request, this.env, this.ctx);
+	}
+	private combineGrading(results: InferenceResult[]): Record<string, number> {
+		const scoreMap = results.reduce(
+			(acc, { name, arguments: { score } }) => {
+				if (!acc[name]) {
+					acc[name] = { total: 0, count: 0 };
+				}
+				acc[name].total += score;
+				acc[name].count += 1;
+				return acc;
+			},
+			{} as Record<string, { total: number; count: number }>,
+		);
+
+		return Object.keys(scoreMap).reduce(
+			(acc, name) => {
+				acc[name] = scoreMap[name].total / scoreMap[name].count;
+				return acc;
+			},
+			{} as Record<string, number>,
+		);
 	}
 
 	private getRandomSession(endpoint: BrowserWorker) {
