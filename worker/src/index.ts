@@ -124,8 +124,10 @@ export default class extends WorkerEntrypoint<EnvVars> {
 					],
 				}).then((response) => {
 					const { tool_calls } = response as Exclude<AiTextGenerationOutput, ReadableStream>;
+					const grades = this.combineGrading(tool_calls as InferenceResult[]);
+					const finalGrade = 0.3 * grades.Relevance + 0.25 * grades.Clarity + 0.25 * grades.Comprehensiveness + 0.2 * grades['Hallucination/Accuracy'];
 
-					return c.json(this.combineGrading(tool_calls as InferenceResult[]));
+					return c.json({ ...grades, finalGrade, willUseAsTrainingData: finalGrade >= 80 });
 				});
 			},
 		);
