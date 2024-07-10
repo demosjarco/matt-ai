@@ -59,7 +59,7 @@ RUN --mount=type=cache,target=/app/.npm npm run-script install --if-present
 RUN --mount=type=cache,target=/app/.npm npm cache clean --force
 
 # Reset borked permissions
-RUN chown -R user:user /app/node
+RUN chown -R user:user /app
 
 FROM node
 

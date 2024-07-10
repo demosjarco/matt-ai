@@ -12,7 +12,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import { timing } from 'hono/timing';
 import { exec } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { unlink, writeFile } from 'node:fs/promises';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import type { ReadableStream } from 'node:stream/web';
 import { promisify } from 'node:util';
 import { stringify } from 'yaml';
@@ -77,13 +77,18 @@ class HTTPResponder {
 				'form',
 				z.object({
 					file: z.any(),
-					project_name: z.string().trim(),
-					// workersAiCatalog.modelGroups['Text Generation'].models.filter((model) => 'lora' in model.properties && model.properties.lora).map((model) => model.name)
-					model_name: z.enum(['@cf/google/gemma-2b-it-lora', '@cf/mistral/mistral-7b-instruct-v0.1', '@cf/mistral/mistral-7b-instruct-v0.2-lora', '@hf/mistral/mistral-7b-instruct-v0.2', '@cf/meta-llama/llama-2-7b-chat-hf-lora', '@cf/mistral/mistral-7b-instruct-v0.1-vllm', '@cf/google/gemma-7b-it-lora', '@hf/google/gemma-7b-it'] as const),
-					push_to_hub: z.boolean().default(false),
+					project_name: z
+						.string()
+						.trim()
+						.regex(/^[a-z\d-]+$/i, { message: 'must be alphanumeric but can contain hyphens' }),
+					/**
+					 * @link https://developers.cloudflare.com/workers-ai/tutorials/fine-tune-models-with-autotrain#project-config
+					 */
+					model_name: z.enum(['mistralai/Mistral-7B-Instruct-v0.2', 'google/gemma-2b-it', 'google/gemma-7b-it', 'meta-llama/llama-2-7b-chat-hf'] as const),
+					push_to_hub: z.coerce.boolean().default(false),
 					hf_token: z.string().toLowerCase().startsWith('hf_').trim(),
 					hf_username: z.string().trim(),
-					unsloth: z.boolean().default(false),
+					unsloth: z.coerce.boolean().default(false),
 					learning_rate: z.number().default(2e-4),
 					num_epochs: z.number().default(1),
 					batch_size: z.number().min(1).max(32).default(1),
@@ -93,7 +98,7 @@ class HTTPResponder {
 					weight_decay: z.number().default(0.01),
 					gradient_accumulation: z.number().default(4),
 					mixed_precision: z.enum(['fp16', 'bf16', 'none'] as const).default('fp16'),
-					peft: z.boolean().default(true),
+					peft: z.coerce.boolean().default(true),
 					quantization: z.enum(['int4', 'int8', 'none'] as const).default('none'), // .default('int4'),
 					lora_r: z.number().default(8), // .default(16),
 					lora_alpha: z.number().default(32),
@@ -106,19 +111,18 @@ class HTTPResponder {
 
 					if (csv.type === 'text/csv') {
 						return streamHasher(csv.stream()).then((csvHash) => {
-							console.debug('csv', csv, csvHash);
-							// return c.json(c.req.valid('form'));
-
 							const { trainer, model_name, project_name, block_size, learning_rate, warmup_ratio, weight_decay, num_epochs, batch_size, gradient_accumulation, mixed_precision, peft, quantization, lora_r, lora_alpha, lora_dropout, unsloth, hf_username, hf_token, push_to_hub } = c.req.valid('form');
 
-							const conf = stringify({
+							const fileDirectory = 'data/';
+
+							const conf = {
 								task: `llm-${trainer}`,
 								base_model: model_name,
 								project_name,
 								log: 'tensorboard',
 								backend: 'local',
 								data: {
-									path: 'data/',
+									path: `node/${fileDirectory}`,
 									train_split: 'train',
 									valid_split: null,
 									chat_template: null,
@@ -147,12 +151,22 @@ class HTTPResponder {
 									token: hf_token,
 									push_to_hub,
 								},
-							});
+							};
 
-							return Promise.allSettled([writeFile(`dist/${csvHash}.csv`, csv.stream()), writeFile(`conf.${csvHash}.yaml`, conf)])
-								.then(() => c.text(conf))
-								.catch(console.error)
-								.finally(() => Promise.allSettled([unlink(`dist/${csvHash}.csv`), unlink(`conf.${csvHash}.yaml`)]));
+							return Promise.allSettled([mkdir(fileDirectory, { recursive: true }).then(() => writeFile(`train.${fileDirectory}${csvHash}.csv`, csv.stream())), writeFile(`conf.${csvHash}.yaml`, stringify(conf))])
+								.then(() =>
+									// c.json({ body, form: c.req.valid('form'), yaml: stringify(conf) }),
+									promisify(exec)(`conda run --no-capture-output -p env /bin/bash -c "autotrain --config node/conf.${csvHash}.yaml"`, { cwd: '..' })
+										.then(({ stdout }) => {
+											console.log(stdout);
+											return c.text(stdout);
+										})
+										.catch((stderr) => {
+											console.error(stderr);
+											return c.text(stderr, 500);
+										}),
+								)
+								.finally(() => Promise.allSettled([unlink(`train.${fileDirectory}${csvHash}.csv`), unlink(`conf.${csvHash}.yaml`)]));
 						});
 					} else {
 						throw new HTTPException(415, { message: 'Unsupported Media Type' });
