@@ -3,7 +3,7 @@ import { Form, useLocation } from '@builder.io/qwik-city';
 import { IDBConversations } from '../../../IDB/conversations';
 import { IDBMessages } from '../../../IDB/messages';
 import type { IDBMessage, IDBMessageContent } from '../../../IDB/schemas/v3';
-import { messageGuard, messageSummary, messageText } from '../../../aiBrain/messageProcessing';
+import { messageGuard, messageJudge, messageSummary, messageText } from '../../../aiBrain/messageProcessing';
 import { ConversationsContext, MessagesContext } from '../../../extras/context';
 import { useFormSubmissionWithTurnstile } from '../../../routes/layout';
 import type { MessageContext } from '../../../types';
@@ -123,6 +123,8 @@ export default component$(() => {
 												// Cleanup whitespace
 												composedInsert.text = composedInsert.text?.trim();
 												messageHistory[aiMessage.key!]!.content[previousText] = composedInsert;
+												// Judgement
+												console.debug(await messageJudge(message, messageHistory[aiMessage.key!]!.content[previousText]!.text!));
 												// Remove typing status
 												if (Array.isArray(messageHistory[aiMessage.key!]!.status)) {
 													messageHistory[aiMessage.key!]!.status = (messageHistory[aiMessage.key!]!.status as Exclude<IDBMessage['status'], boolean>).filter((str) => str !== 'typing');

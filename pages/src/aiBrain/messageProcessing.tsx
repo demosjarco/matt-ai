@@ -215,6 +215,10 @@ export const messageText = server$(async function* (model: filteredModelPossibil
 	}
 });
 
+export const messageJudge = server$(function (req: RoleScopedChatInput['content'], res: RoleScopedChatInput['content']) {
+	return this.platform.env.BACKEND_WORKER.aiGrade(req, res);
+});
+
 export const messageSummary = server$(function (messages: RoleScopedChatInput['content'][], model: modelPossibilitiesName<'Summarization'>) {
 	return this.platform.env.AI.run(model, {
 		input_text: messages.join('\n'),
