@@ -50,11 +50,6 @@ RUN python3 --version
 # Setup PLP user
 RUN groupadd --gid 1000 runner && useradd --uid 1000 --gid runner --shell /bin/bash --create-home runner
 
-# Setup sudo
-RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/node
-RUN chmod 0440 /etc/sudoers.d/node
-
-USER runner
 WORKDIR /app
 
 # Cache locations reference
@@ -62,6 +57,20 @@ WORKDIR /app
 # /root/.npm
 # RUN pip cache dir
 # /root/.cache/pip
+
+COPY --link package*.json ./
+# not ci because this workspace is borked
+# also needs sudo for creating lock file
+RUN --mount=type=cache,target=/root/.npm npm install --ignore-scripts --omit=dev
+RUN --mount=type=cache,target=/root/.npm npm run-script install --if-present
+COPY --link ./dist ./dist
+RUN ls -liA dist
+
+# Setup sudo
+RUN echo node ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/runner
+RUN chmod 0440 /etc/sudoers.d/runner
+
+USER runner
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install autotrain-advanced
 # Installing PyTorch with CUDA 12.1 support
@@ -74,8 +83,11 @@ RUN --mount=type=cache,target=/root/.cache/pip python -m nltk.downloader punkt
 # Install deepspeed for distributed training optimizations
 # RUN --mount=type=cache,target=/root/.cache/pip pip install deepspeed
 
+# Cleanup
 RUN --mount=type=cache,target=/root/.npm npm cache clean --force
 RUN --mount=type=cache,target=/root/.cache/pip pip cache purge
 
+EXPOSE 8080/tcp
+
 # Set the default command
-CMD ["/bin/sh"]
+CMD ["npm", "start"]
