@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"label": "Build",
-			"dependsOn": ["Lint", "Qwik Types", "Qwik Client", "Qwik Server"],
+			"dependsOn": ["Lint", "Qwik Types", "Qwik Client", "Qwik Server", "LoRA Retrainer Types"],
 			"isBackground": true,
 			"group": {
 				"kind": "build",
@@ -66,6 +66,24 @@
 			},
 			"icon": {
 				"id": "server-process"
+			}
+		},
+		{
+			"label": "LoRA Retrainer Types",
+			"type": "typescript",
+			"tsconfig": "lora-retrainer/tsconfig.json",
+			"option": "watch",
+			"problemMatcher": ["$tsc-watch"],
+			"isBackground": true,
+			"presentation": {
+				"group": "lora-retrainer.compile"
+			},
+			"options": {
+				"cwd": "${workspaceFolder}/lora-retrainer"
+			},
+			"icon": {
+				"id": "symbol-type-parameter",
+				"color": "terminal.ansiBlue"
 			}
 		}
 	]
