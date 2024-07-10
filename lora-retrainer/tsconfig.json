@@ -1,5 +1,10 @@
 {
-	"extends": "../tsconfig.json",
-	"files": ["./.eslintrc.cjs", "prettier.config.mjs"],
-	"include": ["src"]
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "dist",
+    "noEmit": false
+  },
+  "files": ["./.eslintrc.cjs", "prettier.config.mjs"],
+  "include": ["src"]
 }
