@@ -19,6 +19,9 @@
 	},
 	"homepage": "https://github.com/demosjarco/matt-ai#readme",
 	"dependencies": {
-		"@cloudflare/puppeteer": "^0.0.11"
+		"@cloudflare/puppeteer": "^0.0.11",
+		"@hono/zod-validator": "^0.2.2",
+		"autoevals": "^0.0.76",
+		"hono": "^4.4.12"
 	}
 }

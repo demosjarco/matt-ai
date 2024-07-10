@@ -1,12 +1,38 @@
 import { connect, launch, sessions, type Browser, type BrowserWorker } from '@cloudflare/puppeteer';
 import { WorkerEntrypoint } from 'cloudflare:workers';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { csrf } from 'hono/csrf';
+import { etag } from 'hono/etag';
+import { secureHeaders } from 'hono/secure-headers';
+import { timing } from 'hono/timing';
 import { randomInt } from 'node:crypto';
 import type { EnvVars } from './types.js';
 
 export default class extends WorkerEntrypoint<EnvVars> {
 	// Dummy entry point, crashes without it
-	override async fetch() {
-		return new Response('Hello world');
+	override async fetch(request: Request) {
+		// return new Response('Hello world');
+
+		const app = new Hono<{ Bindings: EnvVars }>();
+		const validApiMethods = ['POST', 'GET'];
+
+		app.use('*', csrf());
+		app.use('*', (c, next) => {
+			return cors({
+				origin: '*',
+				allowMethods: [...new Set([...validApiMethods, 'OPTIONS'])],
+				maxAge: 300,
+			})(c, next);
+		});
+		app.use('*', secureHeaders());
+
+		app.use('*', etag());
+		app.use('*', timing());
+
+		app.get('/', (c) => c.text('Hello world'));
+
+		return app.fetch(request, this.env, this.ctx);
 	}
 
 	private getRandomSession(endpoint: BrowserWorker) {
