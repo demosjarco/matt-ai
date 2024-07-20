@@ -325,14 +325,7 @@
 					"name": "@cf/meta/llama-2-7b-chat-int8",
 					"description": "Quantized (int8) generative text model with 7 billion parameters from Meta",
 					"tags": [],
-					"properties": {
-						"beta": false,
-						"context_length_limit": 2048,
-						"info": "https://ai.meta.com/llama/",
-						"planned_deprecation_date": "2024-06-30",
-						"sequence_length_limit": 1800,
-						"terms": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/"
-					}
+					"properties": {}
 				},
 				{
 					"id": "980ec5e9-33c2-483a-a2d8-cd092fdf273f",
@@ -397,18 +390,6 @@
 					"tags": [],
 					"properties": {
 						"beta": true
-					}
-				},
-				{
-					"id": "610e6b36-a090-4a2f-8548-eace1aac6598",
-					"source": 1,
-					"name": "@cf/mistral/mistral-7b-instruct-v0.1-vllm",
-					"description": "Instruct fine-tuned version of the Mistral-7b generative text model with 7 billion parameters.",
-					"tags": [],
-					"properties": {
-						"beta": false,
-						"info": "https://mistral.ai/news/announcing-mistral-7b/",
-						"lora": true
 					}
 				},
 				{
