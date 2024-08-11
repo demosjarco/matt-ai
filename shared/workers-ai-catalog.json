@@ -325,14 +325,7 @@
 					"name": "@cf/meta/llama-2-7b-chat-int8",
 					"description": "Quantized (int8) generative text model with 7 billion parameters from Meta",
 					"tags": [],
-					"properties": {
-						"beta": false,
-						"context_length_limit": 2048,
-						"info": "https://ai.meta.com/llama/",
-						"planned_deprecation_date": "2024-06-30",
-						"sequence_length_limit": 1800,
-						"terms": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/"
-					}
+					"properties": {}
 				},
 				{
 					"id": "980ec5e9-33c2-483a-a2d8-cd092fdf273f",
@@ -400,18 +393,6 @@
 					}
 				},
 				{
-					"id": "610e6b36-a090-4a2f-8548-eace1aac6598",
-					"source": 1,
-					"name": "@cf/mistral/mistral-7b-instruct-v0.1-vllm",
-					"description": "Instruct fine-tuned version of the Mistral-7b generative text model with 7 billion parameters.",
-					"tags": [],
-					"properties": {
-						"beta": false,
-						"info": "https://mistral.ai/news/announcing-mistral-7b/",
-						"lora": true
-					}
-				},
-				{
 					"id": "60474554-f03b-4ff4-8ecc-c1b7c71d7b29",
 					"source": 2,
 					"name": "@hf/thebloke/deepseek-coder-6.7b-instruct-awq",
@@ -458,6 +439,17 @@
 						"max_batch_prefill_tokens": 8192,
 						"max_input_length": 4096,
 						"max_total_tokens": 8192
+					}
+				},
+				{
+					"id": "41975cc2-c82e-4e98-b7b8-88ffb186a545",
+					"source": 1,
+					"name": "@cf/meta/llama-3.1-8b-instruct",
+					"description": "The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models. The Llama 3.1 instruction tuned text only models are optimized for multilingual dialogue use cases and outperform many of the available open source and closed chat models on common industry benchmarks.",
+					"tags": [],
+					"properties": {
+						"beta": true,
+						"terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE"
 					}
 				},
 				{
