@@ -328,6 +328,17 @@
 					"properties": {}
 				},
 				{
+					"id": "9b9c87c6-d4b7-494c-b177-87feab5904db",
+					"source": 1,
+					"name": "@cf/meta/llama-3.1-8b-instruct-fp8",
+					"description": "Llama 3.1 8B quantized to FP8 precision",
+					"tags": [],
+					"properties": {
+						"beta": true,
+						"terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE"
+					}
+				},
+				{
 					"id": "980ec5e9-33c2-483a-a2d8-cd092fdf273f",
 					"source": 2,
 					"name": "@hf/thebloke/mistral-7b-instruct-v0.1-awq",
@@ -443,6 +454,17 @@
 					"source": 1,
 					"name": "@cf/meta/llama-3.1-8b-instruct",
 					"description": "The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models. The Llama 3.1 instruction tuned text only models are optimized for multilingual dialogue use cases and outperform many of the available open source and closed chat models on common industry benchmarks.",
+					"tags": [],
+					"properties": {
+						"beta": true,
+						"terms": "https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE"
+					}
+				},
+				{
+					"id": "3dcb4f2d-26a8-412b-b6e3-2a368beff66b",
+					"source": 1,
+					"name": "@cf/meta/llama-3.1-8b-instruct-awq",
+					"description": "Quantized (int4) generative text model with 8 billion parameters from Meta.\n",
 					"tags": [],
 					"properties": {
 						"beta": true,
