@@ -39,10 +39,10 @@
 		"flowbite": "^2.5.1",
 		"idb": "^8.0.0",
 		"marked": "^11.2.0",
-		"marked-alert": "^2.0.1",
-		"marked-bidi": "^1.0.10",
-		"marked-extended-tables": "^1.0.8",
-		"marked-footnote": "^1.2.2",
+		"marked-alert": "^2.0.2",
+		"marked-bidi": "^1.0.11",
+		"marked-extended-tables": "^1.0.10",
+		"marked-footnote": "^1.2.3",
 		"meta-png": "^1.0.6"
 	},
 	"devDependencies": {
