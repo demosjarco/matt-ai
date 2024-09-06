@@ -8,7 +8,7 @@ export const workersAiCatalog = {
 					id: 'c1c12ce4-c36a-4aa6-8da4-f63ba4b8984d',
 					source: 1,
 					name: '@cf/openai/whisper',
-					description: 'Automatic speech recognition (ASR) system trained on 680,000 hours of multilingual and multitask supervised data',
+					description: 'Whisper is a general-purpose speech recognition model. It is trained on a large dataset of diverse audio and is also a multitasking model that can perform multilingual speech recognition, speech translation, and language identification.',
 					tags: [],
 					properties: {
 						beta: false,
