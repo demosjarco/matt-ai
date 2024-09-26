@@ -218,6 +218,17 @@ export const workersAiCatalog = {
 					},
 				},
 				{
+					id: 'd9dc8363-66f4-4bb0-8641-464ee7bfc131',
+					source: 1,
+					name: '@cf/meta/llama-3.2-3b-instruct',
+					description: 'The Llama 3.2 instruction-tuned text only models are optimized for multilingual dialogue use cases, including agentic retrieval and summarization tasks.',
+					tags: [],
+					properties: {
+						beta: true,
+						terms: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE',
+					},
+				},
+				{
 					id: 'd9b7a55c-cefa-4208-8ab3-11497a2b046c',
 					source: 2,
 					name: '@hf/thebloke/llamaguard-7b-awq',
@@ -358,6 +369,17 @@ export const workersAiCatalog = {
 					properties: {
 						beta: true,
 						info: 'https://huggingface.co/qwen/qwen1.5-7b-chat-awq',
+					},
+				},
+				{
+					id: '906a57fd-b018-4d6c-a43e-a296d4cc5839',
+					source: 1,
+					name: '@cf/meta/llama-3.2-1b-instruct',
+					description: 'The Llama 3.2 instruction-tuned text only models are optimized for multilingual dialogue use cases, including agentic retrieval and summarization tasks.',
+					tags: [],
+					properties: {
+						beta: true,
+						terms: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE',
 					},
 				},
 				{
@@ -514,6 +536,17 @@ export const workersAiCatalog = {
 						beta: true,
 						info: 'https://llama.meta.com',
 						terms: 'https://llama.meta.com/llama3/license/#',
+					},
+				},
+				{
+					id: '2cbc033b-ded8-4e02-bbb2-47cf05d5cfe5',
+					source: 1,
+					name: '@cf/meta/llama-3.2-11b-vision-instruct',
+					description: ' The Llama 3.2-Vision instruction-tuned models are optimized for visual recognition, image reasoning, captioning, and answering general questions about an image.',
+					tags: [],
+					properties: {
+						beta: true,
+						terms: 'https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE',
 					},
 				},
 				{
