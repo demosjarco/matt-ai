@@ -35,14 +35,14 @@
 	},
 	"dependencies": {
 		"@qwikest/icons": "^0.0.13",
-		"dompurify": "^3.1.6",
+		"dompurify": "^3.1.7",
 		"flowbite": "^2.5.1",
 		"idb": "^8.0.0",
 		"marked": "^11.2.0",
-		"marked-alert": "^2.0.1",
-		"marked-bidi": "^1.0.10",
-		"marked-extended-tables": "^1.0.8",
-		"marked-footnote": "^1.2.2",
+		"marked-alert": "^2.1.0",
+		"marked-bidi": "^1.0.11",
+		"marked-extended-tables": "^1.0.10",
+		"marked-footnote": "^1.2.4",
 		"meta-png": "^1.0.6"
 	},
 	"devDependencies": {
