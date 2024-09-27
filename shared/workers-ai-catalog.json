@@ -637,6 +637,16 @@
 					}
 				},
 				{
+					"id": "9e087485-23dc-47fa-997d-f5bfafc0c7cc",
+					"source": 1,
+					"name": "@cf/black-forest-labs/flux-1-schnell",
+					"description": "FLUX.1 [schnell] is a 12 billion parameter rectified flow transformer capable of generating images from text descriptions. ",
+					"tags": [],
+					"properties": {
+						"beta": true
+					}
+				},
+				{
 					"id": "7f797b20-3eb0-44fd-b571-6cbbaa3c423b",
 					"source": 1,
 					"name": "@cf/bytedance/stable-diffusion-xl-lightning",
