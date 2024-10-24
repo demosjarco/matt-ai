@@ -65,7 +65,7 @@ jobs:
           echo "export const workersAiCatalog = $final_json as const" > ${{ env.CATALOG_FILE_TS }}
           echo "$final_json" > ${{ env.CATALOG_FILE_JSON }}
         shell: bash
-      - uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: lts/*
           check-latest: true
