@@ -30,7 +30,7 @@
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240620.0",
 		"@demosjarco/prettier-config": "^1.0.1",
-		"prettier": "^3.3.2",
+		"prettier": "^3.3.3",
 		"typescript": "^5.5.3",
 		"wrangler": "^3.63.2"
 	}
